@@ -245,7 +245,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     // }
 
     // await Utils().init();
-    // HttpUtils().addHttpProxy();
+    // HttpEngine().addHttpProxy();
     // HttpCrop().addHttpProxy();
     // HttpDaqun().addHttpProxy();
     // HttpYapiUtils().addHttpProxy();

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/view/utils.dart';
 
@@ -15,6 +17,35 @@ class ClipboardWidget extends StatefulWidget {
 class _ClipboardWidgetState extends State<ClipboardWidget> {
   final TextEditingController _inputController = TextEditingController();
   final OutlineInputBorder _outlineInputBorder = outlineInputBorder;
+
+//复制
+  copyText(text) {
+    Clipboard.setData(ClipboardData(text: text));
+  }
+
+//读取剪切板 返回
+  Future<ClipboardData?> getClipboardData() async {
+    return await Clipboard.getData(Clipboard.kTextPlain);
+  }
+
+  handlePasteAction() async {
+    var result = await getClipboardData();
+    if (result != null) {
+      var text = result.text!;
+      setState(() {
+        _inputController.text = text;
+      });
+    }
+  }
+
+  handleDownloadAction() async {
+    // getRequestFunction1();
+    var resp = await HttpApi().getTTResult(_inputController.text);
+    print(resp.code);
+    print(resp.message);
+    print(resp.data);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -52,14 +83,15 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
         Expanded(
           child: SizedBox(
             height: 50,
-            child: addShadows(generateActionButton("Paste", () {})),
+            child: addShadows(generateActionButton("Paste", handlePasteAction)),
           ),
         ),
         const SizedBox(width: 20),
         Expanded(
           child: SizedBox(
             height: 50,
-            child: addShadows(generateActionButton("Download", () {})),
+            child: addShadows(
+                generateActionButton("Download", handleDownloadAction)),
           ),
         )
       ],
@@ -69,11 +101,6 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
   Widget generateTextFiled() {
     return addShadows(
       TextField(
-        // maxLength: maxLength,
-        // autofocus: true,
-        // inputFormatters: [
-        //   LengthLimitingTextInputFormatter(maxLength)
-        // ],
         maxLines: 5, //最多多少行
         minLines: 3,
         controller: _inputController,

@@ -32,9 +32,10 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 configurations.all {
     resolutionStrategy {
-//        force 'androidx.core:core:1.8.0'
-        force 'androidx.core:core-ktx:1.8.0'
-//        force 'androidx.annotation:annotation-experimental:1.2.0'
+        force 'androidx.core:core:1.6.0'
+        force 'androidx.core:core-ktx:1.6.0'
+        force 'androidx.window:window-java:1.0.0-alpha07'
+        force 'androidx.work:work-runtime:2.5.0'
     }
 }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/color.dart';
 import 'package:top_one/view/wave_progress_widget.dart';
 
 class TaskInfoWidget extends StatefulWidget {
@@ -54,7 +53,14 @@ class _TaskInfoWidgetState extends State<TaskInfoWidget>
                   padding: const EdgeInsets.only(
                       top: 16, left: 16, right: 16, bottom: 16),
                   child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+                      Image.asset(
+                        "assets/introduction_animation/introduction_animation.png",
+                        width: 74,
+                        height: 74,
+                        fit: BoxFit.cover,
+                      ),
                       Expanded(
                         child: Column(
                           children: <Widget>[
@@ -62,41 +68,6 @@ class _TaskInfoWidgetState extends State<TaskInfoWidget>
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 4, bottom: 3),
-                                      child: Text(
-                                        '2100',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontFamily: FitnessAppTheme.fontName,
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: 32,
-                                          color: FitnessAppTheme.nearlyDarkBlue,
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 8, bottom: 8),
-                                      child: Text(
-                                        'ml',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                          fontFamily: FitnessAppTheme.fontName,
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 18,
-                                          letterSpacing: -0.2,
-                                          color: FitnessAppTheme.nearlyDarkBlue,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
                                 Padding(
                                   padding: const EdgeInsets.only(
                                       left: 4, top: 2, bottom: 14),
@@ -165,37 +136,6 @@ class _TaskInfoWidgetState extends State<TaskInfoWidget>
                                       ),
                                     ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 4),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 24,
-                                          height: 24,
-                                          child: Image.asset(
-                                              'assets/fitness_app/bell.png'),
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            'Your bottle is empty, refill it!.',
-                                            textAlign: TextAlign.start,
-                                            style: TextStyle(
-                                              fontFamily:
-                                                  FitnessAppTheme.fontName,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 12,
-                                              letterSpacing: 0.0,
-                                              color: HexColor('#F65283'),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
                                 ],
                               ),
                             )
@@ -209,12 +149,9 @@ class _TaskInfoWidgetState extends State<TaskInfoWidget>
                           width: 60,
                           height: 160,
                           decoration: BoxDecoration(
-                            color: HexColor('#E8EDFE'),
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(80.0),
-                                bottomLeft: Radius.circular(80.0),
-                                bottomRight: Radius.circular(80.0),
-                                topRight: Radius.circular(80.0)),
+                            color: FitnessAppTheme.nearlyLightBlue,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(80.0)),
                             boxShadow: <BoxShadow>[
                               BoxShadow(
                                   color: FitnessAppTheme.grey.withOpacity(0.4),
