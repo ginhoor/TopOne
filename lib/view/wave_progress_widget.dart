@@ -5,10 +5,9 @@ import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 
 class WaveProgressWidget extends StatefulWidget {
-  final double percentageValue;
+  double percentageValue;
 
-  const WaveProgressWidget({Key? key, this.percentageValue = 100.0})
-      : super(key: key);
+  WaveProgressWidget({Key? key, this.percentageValue = 0.0}) : super(key: key);
   @override
   _WaveProgressWidgetState createState() => _WaveProgressWidgetState();
 }
@@ -19,7 +18,7 @@ class _WaveProgressWidgetState extends State<WaveProgressWidget>
   AnimationController? waveAnimationController;
   Offset bottleOffset1 = Offset(0, 0);
   List<Offset> animList1 = [];
-  Offset bottleOffset2 = Offset(60, 0);
+  Offset bottleOffset2 = Offset(30, 0);
   List<Offset> animList2 = [];
 
   @override

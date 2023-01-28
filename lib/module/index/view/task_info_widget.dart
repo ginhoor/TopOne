@@ -1,177 +1,251 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:top_one/model/downloads.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/view/wave_progress_widget.dart';
+import 'package:top_one/tool/string.dart';
 
-class DownloadInfoWidget extends StatefulWidget {
-  const DownloadInfoWidget(
-      {Key? key, this.mainScreenAnimationController, this.mainScreenAnimation})
-      : super(key: key);
+class TaskInfoWidget extends StatelessWidget {
+  const TaskInfoWidget({
+    Key? key,
+    required this.data,
+    this.onTap,
+    this.onActionTap,
+    this.onCancel,
+  }) : super(key: key);
 
-  final AnimationController? mainScreenAnimationController;
-  final Animation<double>? mainScreenAnimation;
+  final TaskModel data;
 
-  @override
-  _DownloadInfoWidgetState createState() => _DownloadInfoWidgetState();
-}
-
-class _DownloadInfoWidgetState extends State<DownloadInfoWidget>
-    with TickerProviderStateMixin {
-  Future<bool> getData() async {
-    await Future<dynamic>.delayed(const Duration(milliseconds: 50));
-    return true;
-  }
+  final Function(TaskModel)? onTap;
+  final Function(TaskModel)? onActionTap;
+  final Function(TaskModel)? onCancel;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.mainScreenAnimationController!,
-      builder: (BuildContext context, Widget? child) {
-        return FadeTransition(
-          opacity: widget.mainScreenAnimation!,
-          child: Transform(
-            transform: Matrix4.translationValues(
-                0.0, 30 * (1.0 - widget.mainScreenAnimation!.value), 0.0),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  left: 24, right: 24, top: 16, bottom: 18),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: FitnessAppTheme.white,
-                  borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(8.0),
-                      bottomLeft: Radius.circular(8.0),
-                      bottomRight: Radius.circular(8.0),
-                      topRight: Radius.circular(68.0)),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                        color: FitnessAppTheme.grey.withOpacity(0.2),
-                        offset: const Offset(1.1, 1.1),
-                        blurRadius: 10.0),
-                  ],
+    return _buildTap(
+      context,
+      _buildBorder(
+        context,
+        _buildContent(
+          context,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTap(BuildContext context, Widget content) {
+    return InkWell(
+      onTap: data.status == DownloadTaskStatus.complete
+          ? () {
+              onTap != null ? onTap!(data) : null;
+            }
+          : null,
+      child: content,
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(4.0)),
+              child: CachedNetworkImage(
+                imageUrl: data.img ?? "",
+                placeholder: (context, url) => CircularProgressIndicator(
+                  backgroundColor: Colors.grey[200],
+                  valueColor: AlwaysStoppedAnimation(
+                    Colors.grey[800],
+                  ),
+                  strokeWidth: 10.0,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                      top: 16, left: 16, right: 16, bottom: 16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Image.asset(
-                        "assets/introduction_animation/introduction_animation.png",
-                        width: 74,
-                        height: 74,
-                        fit: BoxFit.cover,
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: <Widget>[
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 4, top: 2, bottom: 14),
-                                  child: Text(
-                                    'of daily goal 3.5L',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      fontFamily: FitnessAppTheme.fontName,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      letterSpacing: 0.0,
-                                      color: FitnessAppTheme.darkText,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 4, right: 4, top: 8, bottom: 16),
-                              child: Container(
-                                height: 2,
-                                decoration: BoxDecoration(
-                                  color: FitnessAppTheme.background,
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(4.0)),
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 16),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.only(left: 4),
-                                        child: Icon(
-                                          Icons.access_time,
-                                          color: FitnessAppTheme.grey
-                                              .withOpacity(0.5),
-                                          size: 16,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(left: 4.0),
-                                        child: Text(
-                                          'Last drink 8:26 AM',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            fontFamily:
-                                                FitnessAppTheme.fontName,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 14,
-                                            letterSpacing: 0.0,
-                                            color: FitnessAppTheme.grey
-                                                .withOpacity(0.5),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding:
-                            const EdgeInsets.only(left: 16, right: 8, top: 16),
-                        child: Container(
-                          width: 60,
-                          height: 160,
-                          decoration: BoxDecoration(
-                            color: FitnessAppTheme.nearlyLightBlue,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(80.0)),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                  color: FitnessAppTheme.grey.withOpacity(0.4),
-                                  offset: const Offset(2, 2),
-                                  blurRadius: 4),
-                            ],
-                          ),
-                          child: WaveProgressWidget(
-                            percentageValue: 30.0,
-                          ),
-                        ),
-                      )
-                    ],
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+                width: 70,
+                height: 70,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 16, top: 5, right: 8, bottom: 14),
+                child: Text(
+                  data.name ?? "",
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                    fontFamily: FitnessAppTheme.fontName,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 18,
+                    letterSpacing: 0.0,
+                    color: FitnessAppTheme.darkText,
                   ),
                 ),
               ),
             ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Row(
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.access_time,
+                color: FitnessAppTheme.grey.withOpacity(0.5),
+                size: 14,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: 8,
+                  ),
+                  child: Text(
+                    timeFormatMDHMS(data.startTime),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontFamily: FitnessAppTheme.fontName,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                      letterSpacing: 0.0,
+                      color: FitnessAppTheme.grey.withOpacity(0.5),
+                    ),
+                  ),
+                ),
+              ),
+              _buildTrailing(data),
+            ],
           ),
-        );
-      },
+        ),
+        if (data.status == DownloadTaskStatus.running ||
+            data.status == DownloadTaskStatus.paused)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: LinearProgressIndicator(
+              value: data.progress / 100,
+            ),
+          )
+      ],
+    );
+  }
+
+  Widget _buildTrailing(TaskModel data) {
+    if (data.status == DownloadTaskStatus.running) {
+      return Row(
+        children: [
+          Text('${data.progress}%'),
+          IconButton(
+            onPressed: () => onActionTap?.call(data),
+            constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+            icon: const Icon(Icons.pause, color: Colors.yellow),
+            tooltip: 'Pause',
+          ),
+        ],
+      );
+    } else if (data.status == DownloadTaskStatus.paused) {
+      return Row(
+        children: [
+          Text('${data.progress}%'),
+          IconButton(
+            onPressed: () => onActionTap?.call(data),
+            constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+            icon: const Icon(Icons.play_arrow, color: Colors.green),
+            tooltip: 'Resume',
+          ),
+          if (onCancel != null)
+            IconButton(
+              onPressed: () => onCancel?.call(data),
+              constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+              icon: const Icon(Icons.cancel, color: Colors.red),
+              tooltip: 'Cancel',
+            ),
+        ],
+      );
+    } else if (data.status == DownloadTaskStatus.complete) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Text('Ready', style: TextStyle(color: Colors.green)),
+          IconButton(
+            onPressed: () => onActionTap?.call(data),
+            constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+            icon: const Icon(Icons.delete),
+            tooltip: 'Delete',
+          )
+        ],
+      );
+    } else if (data.status == DownloadTaskStatus.canceled) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Text('Canceled', style: TextStyle(color: Colors.red)),
+          if (onActionTap != null)
+            IconButton(
+              onPressed: () => onActionTap?.call(data),
+              constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+              icon: const Icon(Icons.cancel),
+              tooltip: 'Cancel',
+            )
+        ],
+      );
+    } else if (data.status == DownloadTaskStatus.failed) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          const Text('Failed', style: TextStyle(color: Colors.red)),
+          IconButton(
+            onPressed: () => onActionTap?.call(data),
+            constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+            icon: const Icon(Icons.refresh, color: Colors.green),
+            tooltip: 'Refresh',
+          )
+        ],
+      );
+    } else if (data.status == DownloadTaskStatus.enqueued) {
+      return const Text('Pending', style: TextStyle(color: Colors.orange));
+    } else {
+// if (data.status == DownloadTaskStatus.undefined) {
+      return IconButton(
+        onPressed: () => onActionTap?.call(data),
+        constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
+        icon: const Icon(Icons.file_download),
+        tooltip: 'Start',
+      );
+    }
+  }
+
+  Widget _buildBorder(BuildContext context, Widget content) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 18),
+      child: Container(
+        decoration: BoxDecoration(
+          color: FitnessAppTheme.white,
+          borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8.0),
+              bottomLeft: Radius.circular(8.0),
+              bottomRight: Radius.circular(8.0),
+              topRight: Radius.circular(68.0)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+                color: FitnessAppTheme.grey.withOpacity(0.2),
+                offset: const Offset(1.1, 1.1),
+                blurRadius: 10.0),
+          ],
+        ),
+        child: Padding(
+          padding:
+              const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+          child: content,
+        ),
+      ),
     );
   }
 }

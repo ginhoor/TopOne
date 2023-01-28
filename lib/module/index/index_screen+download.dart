@@ -7,13 +7,13 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/index/index_screen.dart';
-import 'package:top_one/module/index/view/download_list_item.dart';
+import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/tool/logger.dart';
 
 extension HandleDownload on IndexScreen {
-  handleItemTap(BuildContext context, DownloadInfo? task) async {
-    final success = await openDownloadedFile(task);
+  handleItemTap(BuildContext context, TaskModel model) async {
+    final success = await openDownloadedFile(model);
     if (!success) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -24,55 +24,62 @@ extension HandleDownload on IndexScreen {
   }
 
   Future<void> handleItemActionTap(
-      BuildContext context, DownloadInfo task) async {
-    if (task.status == DownloadTaskStatus.undefined) {
-      await requestDownload(task);
-    } else if (task.status == DownloadTaskStatus.running) {
-      await pauseDownload(task);
-    } else if (task.status == DownloadTaskStatus.paused) {
-      await resumeDownload(task);
-    } else if (task.status == DownloadTaskStatus.complete ||
-        task.status == DownloadTaskStatus.canceled) {
-      await handleDelete(context, task);
-    } else if (task.status == DownloadTaskStatus.failed) {
-      await retryDownload(task);
+      BuildContext context, TaskModel model) async {
+    if (model.status == DownloadTaskStatus.undefined) {
+      await requestDownload(model);
+    } else if (model.status == DownloadTaskStatus.running) {
+      await pauseDownload(model);
+    } else if (model.status == DownloadTaskStatus.paused) {
+      await resumeDownload(model);
+    } else if (model.status == DownloadTaskStatus.complete ||
+        model.status == DownloadTaskStatus.canceled) {
+      await handleDelete(context, model);
+    } else if (model.status == DownloadTaskStatus.failed) {
+      await retryDownload(model);
     }
   }
 
-  Future<void> handleDelete(BuildContext context, DownloadInfo task) async {
+  Future<void> handleDelete(BuildContext context, TaskModel model) async {
     await FlutterDownloader.remove(
-      taskId: task.taskId!,
+      taskId: model.taskId,
       shouldDeleteContent: true,
     );
   }
 
-  Future<void> requestDownload(DownloadInfo task) async {
-    var savedDir = await DownloadService().getSavedDirPath();
-    task.taskId = await FlutterDownloader.enqueue(
-      url: task.link,
-      // headers: {'auth': 'test_for_sql_encoding'},
-      headers: {},
-      savedDir: savedDir,
-      saveInPublicStorage: true,
-    );
+  Future<void> requestDownload(TaskModel model) async {
+    // var savedDir = await DownloadService().getSavedDirPath();
+    // final taskId = await FlutterDownloader.enqueue(
+    //   url: model.video,
+    //   // headers: {'auth': 'test_for_sql_encoding'},
+    //   headers: {},
+    //   savedDir: savedDir,
+    //   saveInPublicStorage: true,
+    // );
+    // if (taskId != null) {
+    //   model.taskId = taskId;
+    // }
   }
 
-  Future<void> pauseDownload(DownloadInfo task) async {
-    await FlutterDownloader.pause(taskId: task.taskId!);
+  Future<void> pauseDownload(TaskModel model) async {
+    await FlutterDownloader.pause(taskId: model.taskId);
   }
 
-  Future<void> resumeDownload(DownloadInfo task) async {
-    final newTaskId = await FlutterDownloader.resume(taskId: task.taskId!);
-    task.taskId = newTaskId;
+  Future<void> resumeDownload(TaskModel model) async {
+    final newTaskId = await FlutterDownloader.resume(taskId: model.taskId);
+    if (newTaskId != null) {
+      model.taskId = newTaskId;
+    }
   }
 
-  Future<void> retryDownload(DownloadInfo task) async {
-    final newTaskId = await FlutterDownloader.retry(taskId: task.taskId!);
-    task.taskId = newTaskId;
+  Future<void> retryDownload(TaskModel model) async {
+    final newTaskId = await FlutterDownloader.retry(taskId: model.taskId);
+    if (newTaskId != null) {
+      model.taskId = newTaskId;
+    }
   }
 
-  Future<bool> openDownloadedFile(DownloadInfo? task) async {
-    final taskId = task?.taskId;
+  Future<bool> openDownloadedFile(TaskModel? model) async {
+    final taskId = model?.taskId;
     if (taskId == null) {
       return false;
     }
@@ -85,8 +92,8 @@ extension HandleDownload on IndexScreen {
     }
     if (Platform.isAndroid) {
       var pList = [Permission.storage];
-      final info = await DeviceInfoPlugin().androidInfo;
-      if (info.version.sdkInt >= 30) {
+      final model = await DeviceInfoPlugin().androidInfo;
+      if (model.version.sdkInt >= 30) {
         pList.add(Permission.manageExternalStorage);
       }
       for (Permission p in pList) {
@@ -100,17 +107,17 @@ extension HandleDownload on IndexScreen {
     return false;
   }
 
-  DownloadListItem buildTaskItem(BuildContext context, TaskModel item) {
-    return DownloadListItem(
-      data: item,
-      onTap: (task) async {
-        await handleItemTap(context, task);
+  Widget buildTaskItem(BuildContext context, TaskModel model) {
+    return TaskInfoWidget(
+      data: model,
+      onTap: (model) async {
+        await handleItemTap(context, model);
       },
-      onActionTap: (task) async {
-        await handleItemActionTap(context, task);
+      onActionTap: (model) async {
+        await handleItemActionTap(context, model);
       },
-      onCancel: (task) async {
-        await handleDelete(context, task);
+      onCancel: (model) async {
+        await handleDelete(context, model);
       },
     );
   }
@@ -154,7 +161,7 @@ extension HandleDownload on IndexScreen {
   }
 
   Future<void> _prepareSaveDir() async {
-    var localPath = (await DownloadService().getSavedDirPath())!;
+    var localPath = (await DownloadService().getSavedDirPath());
     final savedDir = Directory(localPath);
     if (!savedDir.existsSync()) {
       await savedDir.create();

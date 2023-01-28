@@ -5,16 +5,19 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/model/tt_result.dart';
+import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/view/utils.dart';
 
 class ClipboardWidget extends StatefulWidget {
-  final AnimationController? animationController;
-  final Animation<double>? animation;
-  const ClipboardWidget({Key? key, this.animationController, this.animation})
+  final AnimationController animationController;
+  final Animation<double> animation;
+  const ClipboardWidget(
+      {Key? key, required this.animationController, required this.animation})
       : super(key: key);
 
   @override
@@ -59,11 +62,12 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
 
   handleDownloadAction() async {
     var url = _inputController.text;
+    url = "https://vt.tiktok.com/ZS8DV7GDd/";
     if (!verifyURL(url)) {
       logDebug("链接无效");
       return;
     }
-    var resp = await HttpApi().getTTResult(_inputController.text);
+    var resp = await HttpApi().getTTResult(url);
     var result = TTResult.fromJson(resp.data);
     logDebug(result.name);
     logDebug(result.title);
@@ -71,8 +75,13 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     logDebug(result.bgm);
     logDebug(result.avatar);
     logDebug(result.img);
+
     if (result.video != null) {
-      downloadFile(result.video!);
+      var taskId = await downloadFile(result.video!);
+      if (taskId != null) {
+        var vm = Provider.of<IndexScreenVM>(context, listen: false);
+        vm.createDownloadTask(taskId, result);
+      }
     }
   }
 
@@ -119,20 +128,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
                 generateActionBar(),
               ],
             ),
-            widget.animation!);
-
-        // FadeTransition(
-        //   opacity: widget.animation!,
-        //   child: Transform(
-        //     transform: Matrix4.translationValues(
-        //         0.0, 30 * (1.0 - widget.animation!.value), 0.0),
-        //     child: Padding(
-        //       padding: const EdgeInsets.only(
-        //           left: 24, right: 24, top: 16, bottom: 18),
-        //       child:,
-        //     ),
-        //   ),
-        // );
+            widget.animation);
       },
     );
   }
@@ -143,7 +139,9 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
         Expanded(
           child: SizedBox(
             height: 50,
-            child: addShadows(generateActionButton("Paste", handlePasteAction)),
+            child: addShadows(
+              generateActionButton("Paste", handlePasteAction),
+            ),
           ),
         ),
         const SizedBox(width: 20),
@@ -151,7 +149,8 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
           child: SizedBox(
             height: 50,
             child: addShadows(
-                generateActionButton("Download", handleDownloadAction)),
+              generateActionButton("Download", handleDownloadAction),
+            ),
           ),
         )
       ],
