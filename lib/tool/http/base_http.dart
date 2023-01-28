@@ -136,6 +136,7 @@ class BaseHttp {
   HttpResp handleResponse(Response? response, String path, bool showErr) {
     if (response != null) {
       Map<String, dynamic> respData;
+
       if (response.data is Map) {
         respData = response.data;
       } else if (response.data is String) {

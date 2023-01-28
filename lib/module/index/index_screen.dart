@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_one/module/index/index_screen+download.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
-import 'package:top_one/module/index/meals_list_view.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/view/app_top_bar.dart';
-import 'package:top_one/view/body_measurement.dart';
-import 'package:top_one/view/glass_view.dart';
-import 'package:top_one/view/mediterranean_diet_view.dart';
-import 'package:top_one/view/title_view.dart';
-import 'package:top_one/view/utils.dart';
 
 import 'view/clipboard_widget.dart';
 
@@ -24,13 +19,14 @@ class _IndexScreenState extends State<IndexScreen>
     with TickerProviderStateMixin {
   IndexScreenVM vm = IndexScreenVM();
   Animation<double>? topBarAnimation;
-
+  List<Widget> staticCells = [];
   // 进入页面后的动效时长
   AnimationController? animationController;
   final ScrollController scrollController = ScrollController();
 
   @override
   void initState() {
+    vm.state = this;
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
 
@@ -38,126 +34,39 @@ class _IndexScreenState extends State<IndexScreen>
         CurvedAnimation(
             parent: animationController!,
             curve: const Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    setupListData();
+    setupDownloader();
+    setupStaticCells();
+    vm.loadTestData();
 
     scrollController.addListener(handleTopBarWhenScroll);
     super.initState();
   }
 
-  void setupListData() {
-    const int count = 9;
+  setupDownloader() {
+    vm.bindBackgroundIsolate();
+    vm.registerDownloaderCallback();
+  }
 
-    vm.listViews.add(
+  setupStaticCells() {
+    int count = 9;
+    staticCells.add(
       ClipboardWidget(
         animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
             parent: animationController!,
-            curve: const Interval((1 / count) * 1, 1.0,
-                curve: Curves.fastOutSlowIn))),
+            curve:
+                Interval((1 / count) * 1, 1.0, curve: Curves.fastOutSlowIn))),
         animationController: animationController!,
       ),
     );
-
-    vm.listViews.add(
-      TaskInfoWidget(
+    staticCells.add(
+      DownloadInfoWidget(
         mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
             CurvedAnimation(
                 parent: animationController!,
-                curve: const Interval((1 / count) * 7, 1.0,
+                curve: Interval((1 / count) * 7, 1.0,
                     curve: Curves.fastOutSlowIn))),
         mainScreenAnimationController: animationController!,
       ),
-    );
-
-    // vm.listViews.add(
-    //   WaterView(
-    //     mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
-    //         CurvedAnimation(
-    //             parent: animationController!,
-    //             curve: const Interval((1 / count) * 7, 1.0,
-    //                 curve: Curves.fastOutSlowIn))),
-    //     mainScreenAnimationController: animationController!,
-    //   ),
-    // );
-
-    vm.listViews.add(createProgress(Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: animationController!,
-            curve: const Interval((1 / count) * 1, 1.0,
-                curve: Curves.fastOutSlowIn)))));
-
-    vm.listViews.add(
-      MediterranesnDietView(
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: animationController!,
-            curve: const Interval((1 / count) * 1, 1.0,
-                curve: Curves.fastOutSlowIn))),
-        animationController: animationController!,
-      ),
-    );
-    vm.listViews.add(
-      TitleView(
-        titleTxt: 'Meals today',
-        subTxt: 'Customize',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: animationController!,
-            curve: const Interval((1 / count) * 2, 1.0,
-                curve: Curves.fastOutSlowIn))),
-        animationController: animationController!,
-      ),
-    );
-
-    vm.listViews.add(
-      MealsListView(
-        mainScreenAnimation: Tween<double>(begin: 0.0, end: 1.0).animate(
-            CurvedAnimation(
-                parent: animationController!,
-                curve: const Interval((1 / count) * 3, 1.0,
-                    curve: Curves.fastOutSlowIn))),
-        mainScreenAnimationController: animationController,
-      ),
-    );
-
-    vm.listViews.add(
-      TitleView(
-        titleTxt: 'Body measurement',
-        subTxt: 'Today',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: animationController!,
-            curve: const Interval((1 / count) * 4, 1.0,
-                curve: Curves.fastOutSlowIn))),
-        animationController: animationController!,
-      ),
-    );
-
-    vm.listViews.add(
-      BodyMeasurementView(
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: animationController!,
-            curve: const Interval((1 / count) * 5, 1.0,
-                curve: Curves.fastOutSlowIn))),
-        animationController: animationController!,
-      ),
-    );
-    vm.listViews.add(
-      TitleView(
-        titleTxt: 'Water',
-        subTxt: 'Aqua SmartBottle',
-        animation: Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
-            parent: animationController!,
-            curve: const Interval((1 / count) * 6, 1.0,
-                curve: Curves.fastOutSlowIn))),
-        animationController: animationController!,
-      ),
-    );
-
-    vm.listViews.add(
-      GlassView(
-          animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-              CurvedAnimation(
-                  parent: animationController!,
-                  curve: const Interval((1 / count) * 8, 1.0,
-                      curve: Curves.fastOutSlowIn))),
-          animationController: animationController!),
     );
   }
 
@@ -197,11 +106,15 @@ class _IndexScreenState extends State<IndexScreen>
             24,
         bottom: 62 + MediaQuery.of(context).padding.bottom,
       ),
-      itemCount: vm.listViews.length,
+      itemCount: staticCells.length + vm.items.length,
       scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         animationController?.forward();
-        return vm.listViews[index];
+        if (index < staticCells.length) {
+          return staticCells[index];
+        }
+        var item = vm.items[index - staticCells.length];
+        return widget.buildTaskItem(context, item);
       },
     );
   }

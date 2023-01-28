@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/view/wave_progress_widget.dart';
 
-class TaskInfoWidget extends StatefulWidget {
-  const TaskInfoWidget(
+class DownloadInfoWidget extends StatefulWidget {
+  const DownloadInfoWidget(
       {Key? key, this.mainScreenAnimationController, this.mainScreenAnimation})
       : super(key: key);
 
@@ -11,10 +11,10 @@ class TaskInfoWidget extends StatefulWidget {
   final Animation<double>? mainScreenAnimation;
 
   @override
-  _TaskInfoWidgetState createState() => _TaskInfoWidgetState();
+  _DownloadInfoWidgetState createState() => _DownloadInfoWidgetState();
 }
 
-class _TaskInfoWidgetState extends State<TaskInfoWidget>
+class _DownloadInfoWidgetState extends State<DownloadInfoWidget>
     with TickerProviderStateMixin {
   Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 50));

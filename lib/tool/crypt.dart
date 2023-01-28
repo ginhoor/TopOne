@@ -1,6 +1,10 @@
 //aes加密
 import 'package:encrypt/encrypt.dart';
 
+final key = Key.fromUtf8("Gw11FzWc3A80vPs7");
+
+final iv = IV.fromUtf8("Giaj5NxUFjb3Eki8");
+
 Encrypted aesEncode(String content, Key key, IV iv) {
   // final key = Key.fromUtf8("8888888888888888");
   // final iv = IV.fromUtf8("8888888888888888")
