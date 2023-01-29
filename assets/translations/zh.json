@@ -1,6 +1,6 @@
 {
     "retry": "重试",
-    "paste": "粘贴",
+    "paste": "粘贴链接",
     "pause": "暂停",
     "cancel": "取消",
     "delete": "删除",
@@ -10,7 +10,9 @@
     "refresh": "刷新",
     "pending": "等待中",
     "start": "开始",
+    "chacking": "分析链接中...",
     "open_file_error": "打开文件失败",
     "storage_permission_error": "授予存储权限以继续",
-    "url_invaild_error": "无效链接，请检查后再试"
+    "url_invaild_error": "无效链接，请检查后再试",
+    "create_task_failed_error": "创建任务失败"
 }

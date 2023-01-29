@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/model/tt_result.dart';
@@ -59,11 +60,14 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
 
   handleDownloadAction() async {
     var url = _inputController.text;
-    url = "https://vt.tiktok.com/ZS8DV7GDd/";
+    url = "https://vt.tiktok.com/ZS8DExoLo/";
     if (!verifyURL(url)) {
-      showToast(context, const Text("url_invaild_error").tr());
+      if (mounted) {
+        showToast(context, const Text("url_invaild_error").tr());
+      }
       return;
     }
+    await EasyLoading.show(status: "chacking".tr());
     var resp = await HttpApi().getTTResult(url);
     var result = TTResult.fromJson(resp.data);
     logDebug(result.name);
@@ -74,7 +78,11 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     logDebug(result.img);
     if (result.video == null) return;
     var vm = Provider.of<IndexScreenVM>(context, listen: false);
-    vm.createDownloadTask(result);
+    var success = await vm.createDownloadTask(result);
+    await EasyLoading.dismiss();
+    if (!success && mounted) {
+      showToast(context, const Text("create_task_failed_error").tr());
+    }
   }
 
   @override

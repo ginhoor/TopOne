@@ -56,12 +56,15 @@ class TaskInfoWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(4.0)),
               child: CachedNetworkImage(
                 imageUrl: data.metaData.img ?? "",
-                placeholder: (context, url) => CircularProgressIndicator(
-                  backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation(
-                    Colors.grey[800],
+                placeholder: (context, url) => Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.grey[200],
+                    valueColor: AlwaysStoppedAnimation(
+                      Colors.grey[800],
+                    ),
+                    strokeWidth: 10.0,
                   ),
-                  strokeWidth: 10.0,
                 ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
                 width: 70,

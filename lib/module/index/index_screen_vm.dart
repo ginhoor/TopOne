@@ -32,11 +32,11 @@ class IndexScreenVM extends ChangeNotifier {
   }
 
   loadTasks() async {
-    EasyLoading.show();
+    await EasyLoading.show();
     var existTasks = await FlutterDownloader.loadTasksWithRawQuery(
         query: "SELECT * FROM task ORDER BY time_created DESC");
     if (existTasks == null || existTasks.isEmpty) {
-      EasyLoading.dismiss();
+      await EasyLoading.dismiss();
       return;
     }
     List<TaskModel> models = [];
@@ -58,7 +58,7 @@ class IndexScreenVM extends ChangeNotifier {
     items = models;
     updateItemsVersion();
     notifyListeners();
-    EasyLoading.dismiss();
+    await EasyLoading.dismiss();
   }
 
   Future<DownloadTask?> findCompletedTask(String taskId) async {
@@ -73,7 +73,6 @@ class IndexScreenVM extends ChangeNotifier {
 
   Future<bool> createDownloadTask(TTResult result) async {
     if (result.video == null) return false;
-    EasyLoading.show();
     var savedDir = await DownloadService().getSavedDirPath();
     final taskId = await FlutterDownloader.enqueue(
       url: result.video!,
@@ -85,7 +84,6 @@ class IndexScreenVM extends ChangeNotifier {
           false, // click on notification to open downloaded file (for Android)
     );
     if (taskId == null) {
-      EasyLoading.dismiss();
       return false;
     }
     final model = TaskModel(metaData: result, taskId: taskId);
@@ -93,7 +91,7 @@ class IndexScreenVM extends ChangeNotifier {
     _saveMetaData(model.taskId, result);
     updateItemsVersion();
     notifyListeners();
-    EasyLoading.dismiss();
+
     return true;
   }
 
@@ -102,25 +100,25 @@ class IndexScreenVM extends ChangeNotifier {
   }
 
   resumeDownloadTask(String taskId) async {
-    EasyLoading.show();
+    await EasyLoading.show();
     final newTaskId = await FlutterDownloader.resume(taskId: taskId);
     if (newTaskId == null) {
-      EasyLoading.dismiss();
+      await EasyLoading.dismiss();
       return;
     }
     _updateTaskId(taskId, newTaskId);
-    EasyLoading.dismiss();
+    await EasyLoading.dismiss();
   }
 
   retryDownloadTask(String taskId) async {
-    EasyLoading.show();
+    await EasyLoading.show();
     final newTaskId = await FlutterDownloader.retry(taskId: taskId);
     if (newTaskId == null) {
-      EasyLoading.dismiss();
+      await EasyLoading.dismiss();
       return;
     }
     _updateTaskId(taskId, newTaskId);
-    EasyLoading.dismiss();
+    await EasyLoading.dismiss();
   }
 
   _updateTaskId(String taskId, String newTaskId) {
@@ -147,21 +145,21 @@ class IndexScreenVM extends ChangeNotifier {
   }
 
   deleteDownloadTask(String taskId) async {
-    EasyLoading.show();
+    await EasyLoading.show();
     await FlutterDownloader.remove(
       taskId: taskId,
       shouldDeleteContent: true,
     );
     var item = getItem(taskId);
     if (item == null) {
-      EasyLoading.dismiss();
+      await EasyLoading.dismiss();
       return;
     }
     items.remove(item);
     _deleteMetaData(taskId);
     updateItemsVersion();
     notifyListeners();
-    EasyLoading.dismiss();
+    await EasyLoading.dismiss();
   }
 
   Future<TTResult?> _queryMetaData(String taskId) async {

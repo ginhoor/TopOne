@@ -1,10 +1,12 @@
 import 'dart:io';
 
-import 'package:chewie/chewie.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPreviewScreen extends StatefulWidget {
@@ -18,8 +20,7 @@ class VideoPreviewScreen extends StatefulWidget {
 
 class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
   late VideoPlayerController videoPlayerController;
-  late ChewieController chewieController;
-  late Chewie playerWidget;
+
   @override
   void initState() {
     super.initState();
@@ -33,12 +34,19 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
     } else {
       videoPlayerController = VideoPlayerController.asset("");
     }
-    chewieController = ChewieController(
-      videoPlayerController: videoPlayerController,
-      autoPlay: true,
-      looping: true,
-    );
-    playerWidget = Chewie(controller: chewieController);
+
+    videoPlayerController.addListener(() {
+      if (!videoPlayerController.value.isPlaying) {
+        if (mounted) setState(() {});
+      }
+    });
+    videoPlayerController.initialize().then((_) {
+      if (mounted) {
+        setState(() {
+          videoPlayerController.play();
+        });
+      }
+    });
   }
 
   @override
@@ -52,13 +60,116 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
           backgroundColor: AppTheme.nearlyWhite,
           body: Stack(
             children: <Widget>[
-              SizedBox(
-                height: MediaQuery.of(context).padding.top,
+              Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: AspectRatio(
+                    aspectRatio: videoPlayerController.value.aspectRatio,
+                    child: videoPlayerController.value.isInitialized
+                        ? VideoPlayer(videoPlayerController)
+                        : CachedNetworkImage(
+                            imageUrl: widget.metaData.img ?? "",
+                          ),
+                  ),
+                ),
               ),
-              playerWidget,
-              SizedBox(
-                height: MediaQuery.of(context).padding.bottom,
-              )
+              Center(
+                child: GestureDetector(
+                  child: Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: Colors.transparent,
+                    child: videoPlayerController.value.isPlaying
+                        ? null
+                        : const Icon(Icons.play_arrow,
+                            size: 140, color: FitnessAppTheme.nearlyWhite),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      videoPlayerController.value.isPlaying
+                          ? videoPlayerController.pause()
+                          : videoPlayerController.play();
+                    });
+                  },
+                ),
+              ),
+              GestureDetector(
+                child: Padding(
+                  padding: EdgeInsets.only(
+                      left: 16, top: (MediaQuery.of(context).padding.top)),
+                  child: const SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: Icon(Icons.arrow_back,
+                        size: 30, color: FitnessAppTheme.nearlyWhite),
+                  ),
+                ),
+                onTap: () {
+                  if (mounted) videoPlayerController.dispose();
+                  AppNavigator.popPage();
+                },
+              ),
+
+              Positioned(
+                  bottom: 150,
+                  left: 0,
+                  right: 0,
+                  height: 60,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        ClipRRect(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(30.0)),
+                          child: CachedNetworkImage(
+                            imageUrl: widget.metaData.avatar ?? "",
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            width: 60,
+                            height: 60,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          widget.metaData.name ?? "",
+                          textAlign: TextAlign.start,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  )),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: 140,
+                child: Container(
+                  color: Colors.black38,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.only(top: 16, left: 16, right: 16),
+                    child: Column(children: [
+                      Expanded(
+                        child: Text(widget.metaData.title ?? "",
+                            maxLines: 5,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 17)),
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
+
+              // SizedBox(
+              //   height: MediaQuery.of(context).padding.bottom,
+              // )
             ],
           ),
         ),
