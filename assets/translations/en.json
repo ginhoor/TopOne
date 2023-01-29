@@ -1,0 +1,16 @@
+{
+    "retry": "Retry",
+    "paste": "Paste",
+    "pause": "Pause",
+    "resume": "Resume",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "failed": "Failed",
+    "download": "Download",
+    "refresh": "Refresh",
+    "pending": "Pending",
+    "start": "Start",
+    "open_file_error": "Cannot open this file",
+    "storage_permission_error": "Grant storage permission to continue",
+    "url_invaild_error": "url is invaild"
+}

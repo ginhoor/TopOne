@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,7 @@ import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/tool/logger.dart';
+import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
 
 class ClipboardWidget extends StatefulWidget {
@@ -59,7 +61,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     var url = _inputController.text;
     url = "https://vt.tiktok.com/ZS8DV7GDd/";
     if (!verifyURL(url)) {
-      logDebug("链接无效");
+      showToast(context, const Text("url_invaild_error").tr());
       return;
     }
     var resp = await HttpApi().getTTResult(url);
@@ -70,17 +72,15 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     logDebug(result.bgm);
     logDebug(result.avatar);
     logDebug(result.img);
-
-    if (result.video != null) {
-      var vm = Provider.of<IndexScreenVM>(context, listen: false);
-      vm.createDownloadTask(result);
-    }
+    if (result.video == null) return;
+    var vm = Provider.of<IndexScreenVM>(context, listen: false);
+    vm.createDownloadTask(result);
   }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: widget.animationController!,
+      animation: widget.animationController,
       builder: (BuildContext context, Widget? child) {
         return addFadeTransition(
             Column(
@@ -102,7 +102,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
           child: SizedBox(
             height: 50,
             child: addShadows(
-              generateActionButton("Paste", handlePasteAction),
+              generateActionButton("paste", handlePasteAction),
             ),
           ),
         ),
@@ -111,7 +111,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
           child: SizedBox(
             height: 50,
             child: addShadows(
-              generateActionButton("Download", handleDownloadAction),
+              generateActionButton("download", handleDownloadAction),
             ),
           ),
         )

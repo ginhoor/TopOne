@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:top_one/model/downloads.dart';
@@ -143,7 +144,7 @@ class TaskInfoWidget extends StatelessWidget {
             onPressed: () => onActionTap?.call(data),
             constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
             icon: const Icon(Icons.pause, color: Colors.yellow),
-            tooltip: 'Pause',
+            tooltip: 'pause'.tr(),
           ),
         ],
       );
@@ -155,14 +156,14 @@ class TaskInfoWidget extends StatelessWidget {
             onPressed: () => onActionTap?.call(data),
             constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
             icon: const Icon(Icons.play_arrow, color: Colors.green),
-            tooltip: 'Resume',
+            tooltip: 'resume'.tr(),
           ),
           if (onCancel != null)
             IconButton(
               onPressed: () => onCancel?.call(data),
               constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
               icon: const Icon(Icons.cancel, color: Colors.red),
-              tooltip: 'Cancel',
+              tooltip: 'cancel'.tr(),
             ),
         ],
       );
@@ -176,7 +177,7 @@ class TaskInfoWidget extends StatelessWidget {
             onPressed: () => onActionTap?.call(data),
             constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
             icon: const Icon(Icons.delete),
-            tooltip: 'Delete',
+            tooltip: 'delete'.tr(),
           )
         ],
       );
@@ -185,13 +186,13 @@ class TaskInfoWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const Text('Canceled', style: TextStyle(color: Colors.red)),
+          const Text('Canceled', style: TextStyle(color: Colors.red)).tr(),
           if (onActionTap != null)
             IconButton(
               onPressed: () => onActionTap?.call(data),
               constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
               icon: const Icon(Icons.cancel),
-              tooltip: 'Cancel',
+              tooltip: 'cancel'.tr(),
             )
         ],
       );
@@ -200,24 +201,24 @@ class TaskInfoWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const Text('Failed', style: TextStyle(color: Colors.red)),
+          const Text('failed', style: TextStyle(color: Colors.red)).tr(),
           IconButton(
             onPressed: () => onActionTap?.call(data),
             constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
             icon: const Icon(Icons.refresh, color: Colors.green),
-            tooltip: 'Refresh',
+            tooltip: 'retry'.tr(),
           )
         ],
       );
     } else if (data.status == DownloadTaskStatus.enqueued) {
-      return const Text('Pending', style: TextStyle(color: Colors.orange));
+      return const Text('pending', style: TextStyle(color: Colors.orange)).tr();
     } else {
 // if (data.status == DownloadTaskStatus.undefined) {
       return IconButton(
         onPressed: () => onActionTap?.call(data),
         constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
         icon: const Icon(Icons.file_download),
-        tooltip: 'Start',
+        tooltip: 'start'.tr(),
       );
     }
   }

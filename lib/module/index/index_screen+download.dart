@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:top_one/module/index/index_screen.dart';
 import 'package:top_one/service/download_service.dart';
@@ -8,13 +9,13 @@ extension HandleDownload on IndexScreen {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: Text(
-              'Grant storage permission to continue',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: const Text(
+              'storage_permission_error',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.blueGrey, fontSize: 18),
-            ),
+            ).tr(),
           ),
           const SizedBox(height: 32),
           TextButton(

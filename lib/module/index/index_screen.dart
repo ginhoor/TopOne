@@ -1,8 +1,9 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:top_one/app_navigator_observer.dart';
+import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
@@ -77,9 +78,7 @@ class _IndexScreenState extends State<IndexScreen>
             children: <Widget>[
               _buildListView(),
               _buildAppTopBar(),
-              SizedBox(
-                height: MediaQuery.of(context).padding.bottom,
-              )
+              SizedBox(height: MediaQuery.of(context).padding.bottom)
             ],
           ),
         ),
@@ -90,11 +89,7 @@ class _IndexScreenState extends State<IndexScreen>
   Widget _buildAppTopBar() {
     return Selector(
       builder: (context, topBarOpacity, _) {
-        return AppTopBar(
-          animationController,
-          topBarAnimation,
-          topBarOpacity,
-        );
+        return AppTopBar(animationController, topBarAnimation, topBarOpacity);
       },
       selector: (BuildContext context, IndexScreenVM vm) {
         return vm.topBarOpacity;
@@ -138,7 +133,7 @@ class _IndexScreenState extends State<IndexScreen>
         var exist = await vm.findCompletedTask(model.taskId);
         if (exist == null) {
           if (!mounted) return;
-          showToast(context, const Text('Cannot open this file'));
+          showToast(context, const Text('open_file_error').tr());
           return;
         }
         var item = vm.getItem(model.taskId);
@@ -171,17 +166,12 @@ class _IndexScreenState extends State<IndexScreen>
 
   void _handleTopBarWhenScroll() {
     if (scrollController.offset >= 24) {
-      if (vm.topBarOpacity != 1.0) {
-        vm.updateTopBarOpacity(1.0);
-      }
+      if (vm.topBarOpacity != 1.0) vm.updateTopBarOpacity(1.0);
     } else if (scrollController.offset <= 24 && scrollController.offset >= 0) {
-      if (vm.topBarOpacity != scrollController.offset / 24) {
-        vm.updateTopBarOpacity(scrollController.offset / 24);
-      }
+      var val = scrollController.offset / 24;
+      if (vm.topBarOpacity != val) vm.updateTopBarOpacity(val);
     } else if (scrollController.offset <= 0) {
-      if (vm.topBarOpacity != 0.0) {
-        vm.updateTopBarOpacity(0.0);
-      }
+      if (vm.topBarOpacity != 0.0) vm.updateTopBarOpacity(0.0);
     }
   }
 }

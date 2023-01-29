@@ -1,0 +1,16 @@
+{
+    "retry": "重试",
+    "paste": "粘贴",
+    "pause": "暂停",
+    "cancel": "取消",
+    "delete": "删除",
+    "download": "下载",
+    "resume": "继续",
+    "failed": "失败",
+    "refresh": "刷新",
+    "pending": "等待中",
+    "start": "开始",
+    "open_file_error": "打开文件失败",
+    "storage_permission_error": "授予存储权限以继续",
+    "url_invaild_error": "无效链接，请检查后再试"
+}

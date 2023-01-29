@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/tool/color.dart';
@@ -66,7 +67,7 @@ Widget generateActionButton(String title, void Function() onTap) {
               color: FitnessAppTheme.nearlyBlack,
               fontSize: 16.0,
             ),
-          ),
+          ).tr(),
         ),
       ),
     ),
