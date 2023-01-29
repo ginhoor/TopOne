@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:top_one/app.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-
-String appName = "Top One";
 
 class AppTopBar extends StatelessWidget {
   final AnimationController animationController;

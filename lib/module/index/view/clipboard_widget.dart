@@ -1,10 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/model/tt_result.dart';
@@ -77,42 +72,9 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     logDebug(result.img);
 
     if (result.video != null) {
-      var taskId = await downloadFile(result.video!);
-      if (taskId != null) {
-        var vm = Provider.of<IndexScreenVM>(context, listen: false);
-        vm.createDownloadTask(taskId, result);
-      }
+      var vm = Provider.of<IndexScreenVM>(context, listen: false);
+      vm.createDownloadTask(result);
     }
-  }
-
-  Future<String> getDownloadDirPath() async {
-    Directory documentDirectory = await getApplicationDocumentsDirectory();
-    var savedDirPath = path.join(documentDirectory.path, 'Downloads');
-    var dir = Directory(savedDirPath);
-    try {
-      bool exists = await dir.exists();
-      if (!exists) {
-        await dir.create();
-      }
-    } catch (e) {
-      logError(e.toString());
-    }
-    return savedDirPath;
-  }
-
-  Future<String?> downloadFile(String url) async {
-    var savedDir = await getDownloadDirPath();
-    logDebug(savedDir);
-    final taskId = await FlutterDownloader.enqueue(
-      url: url,
-      headers: {}, // optional: header send with url (auth token etc)
-      savedDir: savedDir,
-      showNotification:
-          true, // show download progress in status bar (for Android)
-      openFileFromNotification:
-          true, // click on notification to open downloaded file (for Android)
-    );
-    return taskId;
   }
 
   @override

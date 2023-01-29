@@ -1,11 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:collection/collection.dart';
+import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:path/path.dart' as path;
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
+import 'package:top_one/service/download_service.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/tool/string.dart';
 
@@ -14,64 +19,126 @@ const _isolatePortServerName = "index_downloader_send_port";
 class IndexScreenVM extends ChangeNotifier {
   double topBarOpacity = 0.0;
   List<DownloadTask> downloaderTasks = [];
+  final _port = ReceivePort();
 
+  List<TaskModel> items = [];
   String itemsVersion = "";
   void updateItemsVersion() {
     itemsVersion = generateRandomString(5);
   }
 
-  List<TaskModel> items = [];
-  Map<String, TaskModel> itemInfosMap = {};
-  final _port = ReceivePort();
+  TaskModel? getItem(String taskId) {
+    return items.firstWhereOrNull((item) => item.taskId == taskId);
+  }
 
   loadTasks() async {
-    downloaderTasks = await FlutterDownloader.loadTasks() ?? [];
-
-//     items.clear();
-//     itemInfosMap.clear();
-// // TODO: 处理其他数据
-//     var infos = downloaderTasks.map((task) {
-//       var info =
-//           TaskModel(name: "test", link: task.url, taskId: task.taskId);
-//       return info;
-//     });
-//     items.addAll(infos.map((info) {
-//       return TaskModel(name: info.taskId, info: info);
-//     }));
-//     for (var item in items) {
-//       itemInfosMap[item.info.taskId] = item.info;
-//     }
-    updateItemsVersion();
-    notifyListeners();
-  }
-
-  createDownloadTask(String taskId, TTResult result) {
-    final model = TaskModel(
-      taskId: taskId,
-      video: result.video,
-      bgm: result.bgm,
-      title: result.title,
-      img: result.img,
-      name: result.name,
-      avatar: result.avatar,
-    );
-
-    items.insert(0, model);
-    itemInfosMap[model.taskId] = model;
-    updateItemsVersion();
-    notifyListeners();
-  }
-
-  updateDownloadInfo(String taskId, DownloadTaskStatus status, int progress) {
-    var item = items.firstWhereOrNull((item) => item.taskId == taskId);
-    if (item != null) {
-      item
-        ..status = status
-        ..progress = progress;
-      itemInfosMap[item.taskId] = item;
-      updateItemsVersion();
-      notifyListeners();
+    EasyLoading.show();
+    var existTasks = await FlutterDownloader.loadTasksWithRawQuery(
+        query: "SELECT * FROM task ORDER BY time_created DESC");
+    if (existTasks == null || existTasks.isEmpty) {
+      EasyLoading.dismiss();
+      return;
     }
+    List<TaskModel> models = [];
+    for (var task in existTasks) {
+      var taskId = task.taskId;
+      var metaData = await _queryMetaData(taskId);
+      if (metaData == null) {
+        deleteDownloadTask(taskId);
+        continue;
+      }
+      var model = TaskModel(
+          metaData: metaData,
+          taskId: taskId,
+          progress: task.progress,
+          status: task.status);
+      model.startTime = task.timeCreated;
+      models.add(model);
+    }
+    items = models;
+    updateItemsVersion();
+    notifyListeners();
+    EasyLoading.dismiss();
+  }
+
+  Future<DownloadTask?> findCompletedTask(String taskId) async {
+    var item = getItem(taskId);
+    if (item == null) return null;
+    if (item.status != DownloadTaskStatus.complete) return null;
+    var results = await FlutterDownloader.loadTasksWithRawQuery(
+        query: "SELECT * FROM task WHERE task_id == '$taskId'");
+    if (results != null && results.isEmpty) return null;
+    return results!.first;
+  }
+
+  Future<bool> createDownloadTask(TTResult result) async {
+    if (result.video == null) return false;
+    EasyLoading.show();
+    var savedDir = await DownloadService().getSavedDirPath();
+    final taskId = await FlutterDownloader.enqueue(
+      url: result.video!,
+      headers: {}, // optional: header send with url (auth token etc)
+      savedDir: savedDir,
+      showNotification:
+          true, // show download progress in status bar (for Android)
+      openFileFromNotification:
+          false, // click on notification to open downloaded file (for Android)
+    );
+    if (taskId == null) {
+      EasyLoading.dismiss();
+      return false;
+    }
+    final model = TaskModel(metaData: result, taskId: taskId);
+    items.insert(0, model);
+    _saveMetaData(model.taskId, result);
+    updateItemsVersion();
+    notifyListeners();
+    EasyLoading.dismiss();
+    return true;
+  }
+
+  pauseDownloadTask(String taskId) async {
+    await FlutterDownloader.pause(taskId: taskId);
+  }
+
+  resumeDownloadTask(String taskId) async {
+    EasyLoading.show();
+    final newTaskId = await FlutterDownloader.resume(taskId: taskId);
+    if (newTaskId == null) {
+      EasyLoading.dismiss();
+      return;
+    }
+    _updateTaskId(taskId, newTaskId);
+    EasyLoading.dismiss();
+  }
+
+  retryDownloadTask(String taskId) async {
+    EasyLoading.show();
+    final newTaskId = await FlutterDownloader.retry(taskId: taskId);
+    if (newTaskId == null) {
+      EasyLoading.dismiss();
+      return;
+    }
+    _updateTaskId(taskId, newTaskId);
+    EasyLoading.dismiss();
+  }
+
+  _updateTaskId(String taskId, String newTaskId) {
+    var item = getItem(taskId);
+    if (item == null) return;
+    item.taskId = newTaskId;
+    updateItemsVersion();
+    notifyListeners();
+  }
+
+  _updateDownloadInfo(String taskId, DownloadTaskStatus status, int progress) {
+    var item = getItem(taskId);
+    if (item == null) return;
+    item
+      ..status = status
+      ..progress = progress;
+    updateItemsVersion();
+    notifyListeners();
   }
 
   updateTopBarOpacity(double topBarOpacity) {
@@ -79,30 +146,67 @@ class IndexScreenVM extends ChangeNotifier {
     notifyListeners();
   }
 
+  deleteDownloadTask(String taskId) async {
+    EasyLoading.show();
+    await FlutterDownloader.remove(
+      taskId: taskId,
+      shouldDeleteContent: true,
+    );
+    var item = getItem(taskId);
+    if (item == null) {
+      EasyLoading.dismiss();
+      return;
+    }
+    items.remove(item);
+    _deleteMetaData(taskId);
+    updateItemsVersion();
+    notifyListeners();
+    EasyLoading.dismiss();
+  }
+
+  Future<TTResult?> _queryMetaData(String taskId) async {
+    final dirPath = await DownloadService().getMetaDataDirPath();
+    final filePath = path.join(dirPath, taskId);
+    final file = File(filePath);
+    var fileExists = file.existsSync();
+    if (fileExists) {
+      var fileContent = json.decode(file.readAsStringSync());
+      return TTResult.fromJson(fileContent);
+    }
+    return null;
+  }
+
+  _saveMetaData(String taskId, TTResult result) async {
+    final dirPath = await DownloadService().getMetaDataDirPath();
+    final filePath = path.join(dirPath, taskId);
+    final file = File(filePath);
+    file.createSync();
+    var content = result.toJson();
+    file.writeAsStringSync(json.encode(content));
+  }
+
+  _deleteMetaData(String taskId) async {
+    final dirPath = await DownloadService().getMetaDataDirPath();
+    final filePath = path.join(dirPath, taskId);
+    final file = File(filePath);
+    file.delete();
+  }
+
   registerDownloaderCallback() {
     FlutterDownloader.registerCallback(downloadCallback, step: 1);
   }
 
   @pragma('vm:entry-point')
-  static downloadCallback(
-    String id,
-    DownloadTaskStatus status,
-    int progress,
-  ) {
-    logDebug(
-      'Callback on background isolate: '
-      'task ($id) is in status ($status) and process ($progress)',
-    );
-
+  static downloadCallback(String id, DownloadTaskStatus status, int progress) {
+    logDebug('Callback on background isolate: '
+        'task ($id) is in status ($status) and process ($progress)');
     IsolateNameServer.lookupPortByName(_isolatePortServerName)
         ?.send([id, status, progress]);
   }
 
   bindBackgroundIsolate() {
     final isSuccess = IsolateNameServer.registerPortWithName(
-      _port.sendPort,
-      _isolatePortServerName,
-    );
+        _port.sendPort, _isolatePortServerName);
     if (!isSuccess) {
       unbindBackgroundIsolate();
       bindBackgroundIsolate();
@@ -112,13 +216,9 @@ class IndexScreenVM extends ChangeNotifier {
       final taskId = (data as List<dynamic>)[0] as String;
       final status = data[1] as DownloadTaskStatus;
       final progress = data[2] as int;
-
-      logDebug(
-        'Callback on UI isolate: '
-        'task ($taskId) is in status ($status) and process ($progress)',
-      );
-
-      updateDownloadInfo(taskId, status, progress);
+      logDebug('Callback on UI isolate: '
+          'task ($taskId) is in status ($status) and process ($progress)');
+      _updateDownloadInfo(taskId, status, progress);
     });
   }
 

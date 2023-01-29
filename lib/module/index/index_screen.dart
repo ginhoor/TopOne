@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:top_one/app_navigator_observer.dart';
 import 'package:top_one/model/downloads.dart';
-import 'package:top_one/module/index/index_screen+download.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
+import 'package:top_one/module/video/video_preview_screen.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
@@ -35,11 +38,10 @@ class _IndexScreenState extends State<IndexScreen>
         CurvedAnimation(
             parent: animationController,
             curve: const Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    scrollController.addListener(handleTopBarWhenScroll);
+    scrollController.addListener(_handleTopBarWhenScroll);
     setupDownloader();
     setupStaticCells();
-    vm.loadTasks;
-
+    vm.loadTasks();
     super.initState();
   }
 
@@ -133,25 +135,41 @@ class _IndexScreenState extends State<IndexScreen>
     return TaskInfoWidget(
       data: model,
       onTap: (model) async {
-        widget.openDownloadedFile(model, () {
-          if (mounted) {
-            showToast(
-              context,
-              const Text('Cannot open this file'),
-            );
-          }
-        });
+        var exist = await vm.findCompletedTask(model.taskId);
+        if (exist == null) {
+          if (!mounted) return;
+          showToast(context, const Text('Cannot open this file'));
+          return;
+        }
+        var item = vm.getItem(model.taskId);
+        if (item == null) return;
+        var metaData = item.metaData;
+        var filePath = path.join(exist.savedDir, exist.filename);
+        AppNavigator.pushPage(VideoPreviewScreen(
+          metaData: metaData,
+          localFilePath: filePath,
+        ));
       },
       onActionTap: (model) async {
-        await widget.handleItemActionTap(model);
+        if (model.status == DownloadTaskStatus.undefined) {
+        } else if (model.status == DownloadTaskStatus.running) {
+          await vm.pauseDownloadTask(model.taskId);
+        } else if (model.status == DownloadTaskStatus.paused) {
+          await vm.resumeDownloadTask(model.taskId);
+        } else if (model.status == DownloadTaskStatus.complete ||
+            model.status == DownloadTaskStatus.canceled) {
+          await vm.deleteDownloadTask(model.taskId);
+        } else if (model.status == DownloadTaskStatus.failed) {
+          await vm.retryDownloadTask(model.taskId);
+        }
       },
-      onCancel: (model) async {
-        await widget.handleDelete(model);
+      onCancel: (model) {
+        vm.deleteDownloadTask(model.taskId);
       },
     );
   }
 
-  void handleTopBarWhenScroll() {
+  void _handleTopBarWhenScroll() {
     if (scrollController.offset >= 24) {
       if (vm.topBarOpacity != 1.0) {
         vm.updateTopBarOpacity(1.0);

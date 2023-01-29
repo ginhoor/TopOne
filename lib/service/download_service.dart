@@ -2,15 +2,16 @@ import 'dart:io';
 
 import 'package:android_path_provider/android_path_provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:top_one/tool/logger.dart';
 
 class DownloadService {
-  static const String BASE_URL_PROD = 'https://imweb.bianfeng.com';
-  static const String BASE_URL_DEV = 'https://imweb-dev.daqun.team';
-  static const String KNOWLEDGE_ENTRANCE =
-      "https://daqun-miniapp.imeete.com/think_tank/#/mobile/search";
+  // static const String BASE_URL_PROD = 'https://imweb.bianfeng.com';
+  // static const String BASE_URL_DEV = 'https://imweb-dev.daqun.team';
+  // static const String KNOWLEDGE_ENTRANCE =
+  //     "https://daqun-miniapp.imeete.com/think_tank/#/mobile/search";
 
   bool hasGranted = false;
   DownloadService._internal();
@@ -18,25 +19,29 @@ class DownloadService {
   static final DownloadService _instance = DownloadService._internal();
   factory DownloadService() => _instance;
 
-  Future<void> setup() async {
+  Future<void> setupDirs() async {
     await prepareSaveDir();
+    await prepareMetaSaveDir();
   }
 
   Future<void> prepareSaveDir() async {
     final hasGranted = await checkPermission();
-    if (!hasGranted) {
-      return;
-    }
-    var localPath = (await DownloadService().getSavedDirPath());
+    if (!hasGranted) return;
+    var localPath = await getSavedDirPath();
     final savedDir = Directory(localPath);
-    if (!savedDir.existsSync()) {
-      await savedDir.create();
-    }
+    logDebug('get downloads path: $savedDir');
+    if (!savedDir.existsSync()) await savedDir.create();
   }
 
-  Future<String> getSavedDirPath() async {
-    String externalStorageDirPath = "";
+  Future<void> prepareMetaSaveDir() async {
+    var localPath = await getMetaDataDirPath();
+    final savedDir = Directory(localPath);
+    logDebug('get meta data path: $savedDir');
+    if (!savedDir.existsSync()) await savedDir.create();
+  }
 
+  Future<String> getExternalStorageDirPath() async {
+    String externalStorageDirPath = "";
     if (Platform.isAndroid) {
       try {
         externalStorageDirPath = await AndroidPathProvider.downloadsPath;
@@ -50,8 +55,32 @@ class DownloadService {
       externalStorageDirPath =
           (await getApplicationDocumentsDirectory()).absolute.path;
     }
-    logDebug('get downloads path: $externalStorageDirPath');
     return externalStorageDirPath;
+  }
+
+  Future<String> getSavedDirPath() async {
+    var savedDirPath =
+        path.join(await getExternalStorageDirPath(), 'Downloads');
+    var dir = Directory(savedDirPath);
+    try {
+      bool exists = await dir.exists();
+      if (!exists) await dir.create();
+    } catch (e) {
+      logError(e.toString());
+    }
+    return savedDirPath;
+  }
+
+  Future<String> getMetaDataDirPath() async {
+    var savedDirPath = path.join(await getExternalStorageDirPath(), 'MetaData');
+    var dir = Directory(savedDirPath);
+    try {
+      bool exists = await dir.exists();
+      if (!exists) await dir.create();
+    } catch (e) {
+      logError(e.toString());
+    }
+    return savedDirPath;
   }
 
   Future<bool> checkPermission() async {

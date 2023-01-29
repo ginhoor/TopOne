@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:top_one/app_navigator_observer.dart';
 import 'package:top_one/nav/navigation_home_screen.dart';
 import 'package:top_one/service/download_service.dart';
 
 import 'app_vm.dart';
+
+String appName = "Top One";
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -78,11 +82,11 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
     return MultiProvider(
       providers: [ChangeNotifierProvider.value(value: _appVM)],
-      child: const MaterialApp(
-        title: '大群',
+      child: MaterialApp(
+        title: appName,
         navigatorObservers: [
-          // AppNavigatorObserver(),
-          // AppNavigatorObserver.routeObserver,
+          AppNavigatorObserver(),
+          AppNavigatorObserver.routeObserver,
           // LeakNavigatorObserver(shouldCheck: (route) {
           // return false;
           // }),
@@ -92,7 +96,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         // routes: Routes.route(),
         // onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         // onUnknownRoute: (settings) => Routes.onUnknownRoute(settings),
-        home: NavigationHomeScreen(),
+        home: const NavigationHomeScreen(),
         // localizationsDelegates: [
         // GlobalMaterialLocalizations.delegate,
         // GlobalWidgetsLocalizations.delegate,
@@ -102,6 +106,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         //   Locale('zh', 'CN'),
         //   Locale('en', 'US'),
         // ],
+        builder: EasyLoading.init(),
       ),
     );
   }
@@ -233,7 +238,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   // }
 
   Future<void> initAppModule() async {
-    DownloadService().setup();
+    DownloadService().setupDirs();
 
     // await SharedPreferencesHelper().init();
     // AppConfig().appEnv =

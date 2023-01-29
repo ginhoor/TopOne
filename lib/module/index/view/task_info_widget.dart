@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/string.dart';
+import 'package:top_one/tool/time.dart';
 
 class TaskInfoWidget extends StatelessWidget {
   const TaskInfoWidget({
@@ -54,7 +54,7 @@ class TaskInfoWidget extends StatelessWidget {
             ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(4.0)),
               child: CachedNetworkImage(
-                imageUrl: data.img ?? "",
+                imageUrl: data.metaData.img ?? "",
                 placeholder: (context, url) => CircularProgressIndicator(
                   backgroundColor: Colors.grey[200],
                   valueColor: AlwaysStoppedAnimation(
@@ -73,7 +73,7 @@ class TaskInfoWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(
                     left: 16, top: 5, right: 8, bottom: 14),
                 child: Text(
-                  data.name ?? "",
+                  data.metaData.name ?? "",
                   textAlign: TextAlign.start,
                   style: const TextStyle(
                     fontFamily: FitnessAppTheme.fontName,

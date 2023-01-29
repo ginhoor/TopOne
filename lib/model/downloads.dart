@@ -1,24 +1,15 @@
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:top_one/model/tt_result.dart';
 
 class TaskModel {
   TaskModel(
-      {this.bgm,
-      this.title,
-      this.img,
-      this.avatar,
-      this.name,
-      this.video,
-      required this.taskId});
-
-  final String? name;
-  final String? video;
-  final String? bgm;
-  final String? title;
-  final String? img;
-  final String? avatar;
-  final int startTime = DateTime.now().millisecondsSinceEpoch;
+      {required this.metaData,
+      required this.taskId,
+      this.progress = 0,
+      this.status = DownloadTaskStatus.undefined});
+  TTResult metaData;
+  int startTime = DateTime.now().millisecondsSinceEpoch;
   String taskId;
-
-  int progress = 0;
-  DownloadTaskStatus status = DownloadTaskStatus.undefined;
+  int progress;
+  DownloadTaskStatus status;
 }
