@@ -25,7 +25,6 @@ class _IndexScreenState extends State<IndexScreen>
 
   @override
   void initState() {
-    vm.state = this;
     animationController = AnimationController(
         duration: const Duration(milliseconds: 1000), vsync: this);
 
@@ -99,27 +98,32 @@ class _IndexScreenState extends State<IndexScreen>
   }
 
   Widget _buildListView() {
-    return Consumer<IndexScreenVM>(builder: (context, vm, _) {
-      return ListView.builder(
-        controller: scrollController,
-        padding: EdgeInsets.only(
-          top: AppBar().preferredSize.height +
-              MediaQuery.of(context).padding.top +
-              24,
-          bottom: 62 + MediaQuery.of(context).padding.bottom,
-        ),
-        itemCount: staticCells.length + vm.items.length,
-        scrollDirection: Axis.vertical,
-        itemBuilder: (BuildContext context, int index) {
-          animationController.forward();
-          if (index < staticCells.length) {
-            return staticCells[index];
-          }
-          var item = vm.items[index - staticCells.length];
-          return widget.buildTaskItem(context, item);
-        },
-      );
-    });
+    return Selector(
+      builder: (BuildContext context, String version, _) {
+        return ListView.builder(
+          controller: scrollController,
+          padding: EdgeInsets.only(
+            top: AppBar().preferredSize.height +
+                MediaQuery.of(context).padding.top +
+                24,
+            bottom: 62 + MediaQuery.of(context).padding.bottom,
+          ),
+          itemCount: staticCells.length + vm.items.length,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (BuildContext context, int index) {
+            animationController.forward();
+            if (index < staticCells.length) {
+              return staticCells[index];
+            }
+            var item = vm.items[index - staticCells.length];
+            return widget.buildTaskItem(context, item);
+          },
+        );
+      },
+      selector: (BuildContext context, IndexScreenVM vm) {
+        return vm.itemsVersion;
+      },
+    );
   }
 
   void handleTopBarWhenScroll() {

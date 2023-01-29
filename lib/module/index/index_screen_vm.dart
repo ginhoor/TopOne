@@ -7,17 +7,21 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/tool/logger.dart';
+import 'package:top_one/tool/string.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
 
 class IndexScreenVM extends ChangeNotifier {
   double topBarOpacity = 0.0;
   List<DownloadTask> downloaderTasks = [];
+
+  String itemsVersion = "";
+  void updateItemsVersion() {
+    itemsVersion = generateRandomString(5);
+  }
+
   List<TaskModel> items = [];
   Map<String, TaskModel> itemInfosMap = {};
-
-  late State state;
-
   final _port = ReceivePort();
 
   loadTasks() async {
@@ -37,6 +41,7 @@ class IndexScreenVM extends ChangeNotifier {
 //     for (var item in items) {
 //       itemInfosMap[item.info.taskId] = item.info;
 //     }
+    updateItemsVersion();
     notifyListeners();
   }
 
@@ -53,6 +58,7 @@ class IndexScreenVM extends ChangeNotifier {
 
     items.insert(0, model);
     itemInfosMap[model.taskId] = model;
+    updateItemsVersion();
     notifyListeners();
   }
 
@@ -62,8 +68,8 @@ class IndexScreenVM extends ChangeNotifier {
       item
         ..status = status
         ..progress = progress;
-      itemInfosMap.remove(item.taskId);
       itemInfosMap[item.taskId] = item;
+      updateItemsVersion();
       notifyListeners();
     }
   }
