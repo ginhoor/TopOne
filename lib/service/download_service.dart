@@ -18,6 +18,22 @@ class DownloadService {
   static final DownloadService _instance = DownloadService._internal();
   factory DownloadService() => _instance;
 
+  Future<void> setup() async {
+    await prepareSaveDir();
+  }
+
+  Future<void> prepareSaveDir() async {
+    final hasGranted = await checkPermission();
+    if (!hasGranted) {
+      return;
+    }
+    var localPath = (await DownloadService().getSavedDirPath());
+    final savedDir = Directory(localPath);
+    if (!savedDir.existsSync()) {
+      await savedDir.create();
+    }
+  }
+
   Future<String> getSavedDirPath() async {
     String externalStorageDirPath = "";
 

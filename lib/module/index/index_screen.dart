@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/index/index_screen+download.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
+import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/view/app_top_bar.dart';
+import 'package:top_one/view/toast.dart';
 
 import 'view/clipboard_widget.dart';
 
@@ -116,12 +119,34 @@ class _IndexScreenState extends State<IndexScreen>
               return staticCells[index];
             }
             var item = vm.items[index - staticCells.length];
-            return widget.buildTaskItem(context, item);
+            return buildTaskItem(context, item);
           },
         );
       },
       selector: (BuildContext context, IndexScreenVM vm) {
         return vm.itemsVersion;
+      },
+    );
+  }
+
+  Widget buildTaskItem(BuildContext context, TaskModel model) {
+    return TaskInfoWidget(
+      data: model,
+      onTap: (model) async {
+        widget.openDownloadedFile(model, () {
+          if (mounted) {
+            showToast(
+              context,
+              const Text('Cannot open this file'),
+            );
+          }
+        });
+      },
+      onActionTap: (model) async {
+        await widget.handleItemActionTap(model);
+      },
+      onCancel: (model) async {
+        await widget.handleDelete(model);
       },
     );
   }

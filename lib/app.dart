@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:top_one/nav/navigation_home_screen.dart';
+import 'package:top_one/service/download_service.dart';
 
 import 'app_vm.dart';
 
@@ -232,6 +233,8 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   // }
 
   Future<void> initAppModule() async {
+    DownloadService().setup();
+
     // await SharedPreferencesHelper().init();
     // AppConfig().appEnv =
     //     SharedPreferencesHelper().getString(SharedPreferenceKeys.APP_ENV) == ''

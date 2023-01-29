@@ -9,11 +9,16 @@ import 'package:top_one/tool/logger.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // 初始化下载模块
-  await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
-
   if (Platform.isIOS) {
     getApplicationDocumentsDirectory().then((value) => logDebug(value));
+
+    var dir = await getApplicationSupportDirectory();
+    if (!dir.existsSync()) {
+      await dir.create();
+    }
+    await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
+  } else {
+    await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
   }
 
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
