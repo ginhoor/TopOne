@@ -20,7 +20,7 @@ Widget addFadeTransition(Widget child, Animation<double> animation) {
           Matrix4.translationValues(0.0, 30 * (1.0 - animation.value), 0.0),
       child: Padding(
           padding:
-              const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 18),
+              const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
           child: child),
     ),
   );

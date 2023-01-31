@@ -9,6 +9,6 @@ class HttpApi {
   HttpApi._instance();
 
   Future<HttpResp> getTTResult(String url) async {
-    return await HttpEngine().get("/result", queryParameters: {"link": url});
+    return await HttpEngine().get("/GetResult", queryParameters: {"link": url});
   }
 }

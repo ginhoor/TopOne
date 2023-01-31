@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
@@ -20,6 +21,8 @@ class VideoPreviewScreen extends StatefulWidget {
 
 class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
   late VideoPlayerController videoPlayerController;
+  double progressValue = 0; //进度
+  String labelProgress = ""; //tip内容
 
   @override
   void initState() {
@@ -35,10 +38,21 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
       videoPlayerController = VideoPlayerController.asset("");
     }
 
+    progressValue = 0.0;
+    labelProgress = '00:00';
     videoPlayerController.addListener(() {
       if (!videoPlayerController.value.isPlaying) {
         if (mounted) setState(() {});
       }
+      int position = videoPlayerController.value.position.inMilliseconds;
+      int duration = videoPlayerController.value.duration.inMilliseconds;
+      setState(() {
+        progressValue = position / duration * 100;
+        labelProgress = DateUtil.formatDateMs(
+          progressValue.toInt(),
+          format: 'mm:ss',
+        );
+      });
     });
     videoPlayerController.initialize().then((_) {
       if (mounted) {
@@ -112,61 +126,35 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
               ),
 
               Positioned(
-                  bottom: 150,
-                  left: 0,
-                  right: 0,
-                  height: 60,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        ClipRRect(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(30.0)),
-                          child: CachedNetworkImage(
-                            imageUrl: widget.metaData.avatar ?? "",
-                            errorWidget: (context, url, error) =>
-                                const Icon(Icons.error),
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Text(
-                          widget.metaData.name ?? "",
-                          textAlign: TextAlign.start,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 20),
-                        ),
-                      ],
-                    ),
-                  )),
+                bottom: 145,
+                left: 20,
+                right: 0,
+                height: 60,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: _buildAuthInfo(),
+                ),
+              ),
+              Positioned(
+                bottom: 125,
+                left: 0,
+                right: 0,
+                height: 10,
+                child: _buildVideoSlider(),
+              ),
               Positioned(
                 bottom: 0,
                 left: 0,
                 right: 0,
-                height: 140,
+                height: 120,
                 child: Container(
                   color: Colors.black38,
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 16, left: 16, right: 16),
-                    child: Column(children: [
-                      Expanded(
-                        child: Text(widget.metaData.title ?? "",
-                            maxLines: 5,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 17)),
-                      ),
-                    ]),
-                  ),
+                      padding:
+                          const EdgeInsets.only(top: 16, left: 16, right: 16),
+                      child: _buildVideoInfo()),
                 ),
               ),
-
               // SizedBox(
               //   height: MediaQuery.of(context).padding.bottom,
               // )
@@ -174,6 +162,83 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAuthInfo() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+          child: CachedNetworkImage(
+            imageUrl: widget.metaData.avatar ?? "",
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Text(
+          widget.metaData.name ?? "",
+          textAlign: TextAlign.start,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(color: Colors.white, fontSize: 17),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVideoSlider() {
+    return Slider(
+        activeColor: FitnessAppTheme.nearlyWhite,
+        inactiveColor: FitnessAppTheme.dismissibleBackground,
+        value: progressValue,
+        label: labelProgress,
+        divisions: 100,
+        onChangeStart: _onChangeStart,
+        onChangeEnd: _onChangeEnd,
+        onChanged: _onChanged,
+        min: 0,
+        max: 100);
+  }
+
+  void _onChangeEnd(_) {
+    int duration = videoPlayerController.value.duration.inMilliseconds;
+    videoPlayerController.seekTo(
+      Duration(milliseconds: (progressValue / 100 * duration).toInt()),
+    );
+    if (!videoPlayerController.value.isPlaying) videoPlayerController.play();
+  }
+
+  void _onChangeStart(_) {
+    if (videoPlayerController.value.isPlaying) videoPlayerController.pause();
+  }
+
+  void _onChanged(double value) {
+    int duration = videoPlayerController.value.duration.inMilliseconds;
+    setState(() {
+      progressValue = value;
+      labelProgress = DateUtil.formatDateMs(
+        (value / 100 * duration).toInt(),
+        format: 'mm:ss',
+      );
+    });
+  }
+
+  Widget _buildVideoInfo() {
+    return Column(
+      children: [
+        Expanded(
+          child: Text(
+            widget.metaData.title ?? "",
+            maxLines: 5,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: Colors.white, fontSize: 15),
+          ),
+        ),
+      ],
     );
   }
 }

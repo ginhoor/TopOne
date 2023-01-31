@@ -7,7 +7,6 @@ import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/logger.dart';
 import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
 
@@ -60,7 +59,6 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
 
   handleDownloadAction() async {
     var url = _inputController.text;
-    url = "https://vt.tiktok.com/ZS8DExoLo/";
     if (!verifyURL(url)) {
       if (mounted) {
         showToast(context, const Text("url_invaild_error").tr());
@@ -70,12 +68,12 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     await EasyLoading.show(status: "chacking".tr());
     var resp = await HttpApi().getTTResult(url);
     var result = TTResult.fromJson(resp.data);
-    logDebug(result.name);
-    logDebug(result.title);
-    logDebug(result.video);
-    logDebug(result.bgm);
-    logDebug(result.avatar);
-    logDebug(result.img);
+    // logDebug(result.name);
+    // logDebug(result.title);
+    // logDebug(result.video);
+    // logDebug(result.bgm);
+    // logDebug(result.avatar);
+    // logDebug(result.img);
     if (result.video == null) return;
     var vm = Provider.of<IndexScreenVM>(context, listen: false);
     var success = await vm.createDownloadTask(result);

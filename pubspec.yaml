@@ -27,6 +27,7 @@ dependencies:
   device_info_plus: ^8.0.0
   android_path_provider: ^0.3.0
   cached_network_image: ^3.2.3
+  common_utils: ^2.1.0
 
 dev_dependencies:
   flutter_test:

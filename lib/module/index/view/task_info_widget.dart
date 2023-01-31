@@ -67,8 +67,8 @@ class TaskInfoWidget extends StatelessWidget {
                   ),
                 ),
                 errorWidget: (context, url, error) => const Icon(Icons.error),
-                width: 70,
-                height: 70,
+                width: 140,
+                height: 140,
                 fit: BoxFit.cover,
               ),
             ),
@@ -77,12 +77,12 @@ class TaskInfoWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(
                     left: 16, top: 5, right: 8, bottom: 14),
                 child: Text(
-                  data.metaData.name ?? "",
+                  data.metaData.title ?? "",
                   textAlign: TextAlign.start,
                   style: const TextStyle(
                     fontFamily: FitnessAppTheme.fontName,
                     fontWeight: FontWeight.w500,
-                    fontSize: 18,
+                    fontSize: 14,
                     letterSpacing: 0.0,
                     color: FitnessAppTheme.darkText,
                   ),
@@ -126,14 +126,9 @@ class TaskInfoWidget extends StatelessWidget {
         ),
         if (data.status == DownloadTaskStatus.running ||
             data.status == DownloadTaskStatus.paused)
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: LinearProgressIndicator(
-              value: data.progress / 100,
-            ),
-          )
+          LinearProgressIndicator(
+            value: data.progress / 100,
+          ),
       ],
     );
   }
@@ -175,7 +170,7 @@ class TaskInfoWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const Text('Ready', style: TextStyle(color: Colors.green)),
+          const Text('done', style: TextStyle(color: Colors.green)).tr(),
           IconButton(
             onPressed: () => onActionTap?.call(data),
             constraints: const BoxConstraints(minHeight: 32, minWidth: 32),
@@ -189,7 +184,7 @@ class TaskInfoWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          const Text('Canceled', style: TextStyle(color: Colors.red)).tr(),
+          const Text('cancel', style: TextStyle(color: Colors.red)).tr(),
           if (onActionTap != null)
             IconButton(
               onPressed: () => onActionTap?.call(data),
@@ -228,7 +223,7 @@ class TaskInfoWidget extends StatelessWidget {
 
   Widget _buildBorder(BuildContext context, Widget content) {
     return Padding(
-      padding: const EdgeInsets.only(left: 24, right: 24, top: 16, bottom: 18),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
       child: Container(
         decoration: BoxDecoration(
           color: FitnessAppTheme.white,
