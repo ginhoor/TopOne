@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "804796483204",
+    "project_id": "topone-376314",
+    "storage_bucket": "topone-376314.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:804796483204:android:84a4e24e5bc9dd458164d1",
+        "android_client_info": {
+          "package_name": "com.gfr.top_one"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "804796483204-7jm2o3k20jl0f3c1e2g35f3jdoinhcan.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkVMJlvL3WwK33EKLm5W3bCj1gKHKGdSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "804796483204-7jm2o3k20jl0f3c1e2g35f3jdoinhcan.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

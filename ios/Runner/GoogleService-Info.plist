@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>804796483204-qru2m6tprd69h70sl3ch6gf1kb4trbgj.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.804796483204-qru2m6tprd69h70sl3ch6gf1kb4trbgj</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDICf615h7J0piyC1Xk5rlQeAKyspo2qlc</string>
+	<key>GCM_SENDER_ID</key>
+	<string>804796483204</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.gfr.topone</string>
+	<key>PROJECT_ID</key>
+	<string>topone-376314</string>
+	<key>STORAGE_BUCKET</key>
+	<string>topone-376314.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:804796483204:ios:6b2724b0709815878164d1</string>
+</dict>
+</plist>
