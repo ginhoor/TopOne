@@ -10,6 +10,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
+import 'package:top_one/service/analytics_event.dart';
+import 'package:top_one/service/analytics_service.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/tool/string.dart';
@@ -83,9 +85,8 @@ class IndexScreenVM extends ChangeNotifier {
       openFileFromNotification:
           false, // click on notification to open downloaded file (for Android)
     );
-    if (taskId == null) {
-      return false;
-    }
+    if (taskId == null) return false;
+    AnalyticsService().logEvent(AnalyticsEvent.createDownload);
     final model = TaskModel(metaData: result, taskId: taskId);
     items.insert(0, model);
     _saveMetaData(model.taskId, result);
@@ -97,6 +98,7 @@ class IndexScreenVM extends ChangeNotifier {
 
   pauseDownloadTask(String taskId) async {
     await FlutterDownloader.pause(taskId: taskId);
+    AnalyticsService().logEvent(AnalyticsEvent.pauseDownload);
   }
 
   resumeDownloadTask(String taskId) async {
@@ -106,6 +108,7 @@ class IndexScreenVM extends ChangeNotifier {
       await EasyLoading.dismiss();
       return;
     }
+    AnalyticsService().logEvent(AnalyticsEvent.resumeDownload);
     _updateTaskId(taskId, newTaskId);
     await EasyLoading.dismiss();
   }
@@ -117,6 +120,7 @@ class IndexScreenVM extends ChangeNotifier {
       await EasyLoading.dismiss();
       return;
     }
+    AnalyticsService().logEvent(AnalyticsEvent.retryDownload);
     _updateTaskId(taskId, newTaskId);
     await EasyLoading.dismiss();
   }
@@ -136,6 +140,10 @@ class IndexScreenVM extends ChangeNotifier {
       ..status = status
       ..progress = progress;
     updateItemsVersion();
+
+    if (status == DownloadTaskStatus.complete) {
+      AnalyticsService().logEvent(AnalyticsEvent.completeDownload);
+    }
     notifyListeners();
   }
 
@@ -155,6 +163,7 @@ class IndexScreenVM extends ChangeNotifier {
       await EasyLoading.dismiss();
       return;
     }
+    AnalyticsService().logEvent(AnalyticsEvent.deleteDownload);
     items.remove(item);
     _deleteMetaData(taskId);
     updateItemsVersion();

@@ -1,12 +1,10 @@
 import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/firebase_options.dart';
 import 'package:top_one/module/index/index_screen.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/app_theme.dart';
@@ -245,9 +243,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   Future<void> initAppModule() async {
     DownloadService().setupDirs();
 
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
     // await SharedPreferencesHelper().init();
     // AppConfig().appEnv =
     //     SharedPreferencesHelper().getString(SharedPreferenceKeys.APP_ENV) == ''

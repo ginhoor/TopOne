@@ -6,6 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
+import 'package:top_one/service/analytics_event.dart';
+import 'package:top_one/service/analytics_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
@@ -36,6 +38,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
   }
 
   handlePasteAction() async {
+    AnalyticsService().logEvent(AnalyticsEvent.pasteUrl);
     var result = await getClipboardData();
     if (result != null) {
       var text = result.text!;
@@ -58,6 +61,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
   }
 
   handleDownloadAction() async {
+    AnalyticsService().logEvent(AnalyticsEvent.tapDownload);
     var url = _inputController.text;
     if (!verifyURL(url)) {
       if (mounted) {

@@ -8,6 +8,8 @@ import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/module/video/video_preview_screen.dart';
+import 'package:top_one/service/analytics_event.dart';
+import 'package:top_one/service/analytics_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
@@ -130,6 +132,7 @@ class _IndexScreenState extends State<IndexScreen>
     return TaskInfoWidget(
       data: model,
       onTap: (model) async {
+        AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
         var exist = await vm.findCompletedTask(model.taskId);
         if (exist == null) {
           if (!mounted) return;
