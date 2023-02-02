@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:top_one/app/app.dart';
+import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/module/settings/settings_screen.dart';
+import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 
 class AppTopBar extends StatelessWidget {
@@ -43,9 +45,7 @@ Widget generateAppTopBar(AnimationController animationController,
                 ),
                 child: Column(
                   children: <Widget>[
-                    SizedBox(
-                      height: MediaQuery.of(context).padding.top,
-                    ),
+                    SizedBox(height: MediaQuery.of(context).padding.top),
                     Padding(
                       padding: EdgeInsets.only(
                           left: 16,
@@ -70,6 +70,12 @@ Widget generateAppTopBar(AnimationController animationController,
                                 ),
                               ),
                             ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.settings),
+                            onPressed: () {
+                              AppNavigator.pushPage(const SettingsScreen());
+                            },
                           ),
                         ],
                       ),

@@ -6,12 +6,11 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/module/index/index_screen.dart';
+import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 
 import 'app_vm.dart';
-
-String appName = "Top One";
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -242,7 +241,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
 
   Future<void> initAppModule() async {
     DownloadService().setupDirs();
-
+    await AppInfoService().init();
     // await SharedPreferencesHelper().init();
     // AppConfig().appEnv =
     //     SharedPreferencesHelper().getString(SharedPreferenceKeys.APP_ENV) == ''

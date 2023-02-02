@@ -124,7 +124,6 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                   AppNavigator.popPage();
                 },
               ),
-
               Positioned(
                 bottom: 145,
                 left: 20,

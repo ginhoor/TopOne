@@ -11,8 +11,12 @@
     "pending": "Pending",
     "done": "Done",
     "start": "Start",
+    "about": "About",
+    "version": "Version",
     "chacking": "Chacking Link...",
     "open_file_error": "Cannot open this file",
+    "privacy_policy": "Privacy Policy",
+    "terms_of_use": "Terms of Use",
     "storage_permission_error": "Grant storage permission to continue",
     "url_invaild_error": "Link is invaild, please try again",
     "create_task_failed_error": "Create task failed"
