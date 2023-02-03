@@ -9,6 +9,8 @@
     "download": "Download",
     "refresh": "Refresh",
     "pending": "Pending",
+    "save": "Save",
+    "save_video": "Do you want to save the video to the album?",
     "done": "Done",
     "start": "Start",
     "about": "About",

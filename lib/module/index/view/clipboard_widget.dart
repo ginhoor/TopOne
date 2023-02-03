@@ -1,4 +1,5 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,6 +10,7 @@ import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/tool/logger.dart';
 import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
 
@@ -42,6 +44,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     var result = await getClipboardData();
     if (result != null) {
       var text = result.text!;
+      text = "https://vt.tiktok.com/ZS8DV7GDd/";
       setState(() {
         _inputController.text = text;
       });
@@ -70,19 +73,27 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
       return;
     }
     await EasyLoading.show(status: "chacking".tr());
-    var resp = await HttpApi().getTTResult(url);
-    var result = TTResult.fromJson(resp.data);
-    // logDebug(result.name);
-    // logDebug(result.title);
-    // logDebug(result.video);
-    // logDebug(result.bgm);
-    // logDebug(result.avatar);
-    // logDebug(result.img);
-    if (result.video == null) return;
-    var vm = Provider.of<IndexScreenVM>(context, listen: false);
-    var success = await vm.createDownloadTask(result);
-    await EasyLoading.dismiss();
-    if (!success && mounted) {
+    try {
+      var resp = await HttpApi().getTTResult(url);
+      print("resp -> $resp");
+      if (resp.data == null) throw Error();
+      var result = TTResult.fromJson(resp.data);
+      // logDebug(result.name);
+      // logDebug(result.title);
+      // logDebug(result.video);
+      // logDebug(result.bgm);
+      // logDebug(result.avatar);
+      // logDebug(result.img);
+      if (result.video == null) throw Error();
+      var vm = Provider.of<IndexScreenVM>(context, listen: false);
+      var success = await vm.createDownloadTask(result);
+      await EasyLoading.dismiss();
+      if (!success && mounted) {
+        showToast(context, const Text("create_task_failed_error").tr());
+      }
+    } catch (e) {
+      logDebug(e);
+      await EasyLoading.dismiss();
       showToast(context, const Text("create_task_failed_error").tr());
     }
   }

@@ -149,7 +149,7 @@ class BaseHttp {
       } else {
         return HttpResp(code: 88888, message: '数据格式错误');
       }
-      var resp = HttpResp.fromMap(respData, response.toString());
+      var resp = HttpResp.fromMap(respData, result: response.toString());
 
       if (resp.code != 0) {
         handlError(path, resp, showErr);
@@ -181,12 +181,13 @@ class BaseHttp {
     String method, {
     data,
     Map<String, dynamic>? queryParameters,
+    Map<String, dynamic>? headerData,
     CancelToken? cancelToken,
     Options? options,
     bool showErr = true,
     bool retry = true,
   }) async {
-    options = getOptions(method, options: options);
+    options = getOptions(method, options: options, headerData: headerData);
     try {
       var response = await _dio.request(
         path,
@@ -221,39 +222,19 @@ class BaseHttp {
 
   Future<HttpResp> get(
     String path, {
-    // Map<String, dynamic>? paramsValue,
+    Map<String, dynamic>? headerData,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-    String? ticket,
     bool showErr = true,
     bool retry = false,
   }) async {
     queryParameters = queryParameters ?? <String, dynamic>{};
-
     Map<String, dynamic> params = await getParamsData(queryParameters);
-
-    // var timestamp = Utils.currentNetworkTimestamp();
-    // var paramsStr = '';
-
-    // ticket ??= await AuthManager().fetchTicket();
-
-    // if (paramsValue != null) {
-    //   paramsStr = jsonEncode(paramsValue);
-    //   queryParameters['paramsValue'] = paramsStr;
-    // }
-    // queryParameters['timestamp'] = timestamp;
-    // queryParameters['pid'] = _bfPid;
-    // queryParameters['_signature'] =
-    //     getSignature(timestamp, paramsStr, ticket: ticket);
-
-    // if (ticket != '') {
-    //   queryParameters['ticket'] = ticket;
-    // }
-
     return request(
       path,
       'GET',
+      headerData: headerData,
       queryParameters: params,
       cancelToken: cancelToken,
       options: options,

@@ -31,7 +31,7 @@ void main() async {
 
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[
     DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown
+    // DeviceOrientation.portraitDown
   ]);
 
   await Firebase.initializeApp(
@@ -50,6 +50,7 @@ void main() async {
     androidProvider:
         kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
   );
+  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   MobileAds.instance.initialize();
   runApp(

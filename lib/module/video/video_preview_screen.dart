@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/tt_result.dart';
+import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:video_player/video_player.dart';
@@ -48,6 +50,9 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
       int duration = videoPlayerController.value.duration.inMilliseconds;
       setState(() {
         progressValue = position / duration * 100;
+        if (progressValue.isNaN || progressValue.isInfinite) {
+          progressValue = 0.0;
+        }
         labelProgress = DateUtil.formatDateMs(
           progressValue.toInt(),
           format: 'mm:ss',
@@ -108,24 +113,79 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                   },
                 ),
               ),
-              GestureDetector(
-                child: Padding(
-                  padding: EdgeInsets.only(
-                      left: 16, top: (MediaQuery.of(context).padding.top)),
-                  child: const SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: Icon(Icons.arrow_back,
-                        size: 30, color: FitnessAppTheme.nearlyWhite),
+              Positioned(
+                left: 16,
+                top: (MediaQuery.of(context).padding.top),
+                child: GestureDetector(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(25.0)),
+                    child: Container(
+                      color: Colors.black26,
+                      child: const SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Icon(Icons.arrow_back,
+                            size: 30, color: FitnessAppTheme.nearlyWhite),
+                      ),
+                    ),
                   ),
+                  onTap: () {
+                    if (mounted) videoPlayerController.dispose();
+                    AppNavigator.popPage();
+                  },
                 ),
-                onTap: () {
-                  if (mounted) videoPlayerController.dispose();
-                  AppNavigator.popPage();
-                },
               ),
               Positioned(
-                bottom: 145,
+                right: 16,
+                top: (MediaQuery.of(context).padding.top),
+                child: GestureDetector(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(Radius.circular(25.0)),
+                    child: Container(
+                      color: Colors.black26,
+                      child: const SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: Icon(Icons.save_alt,
+                            size: 30, color: FitnessAppTheme.nearlyWhite),
+                      ),
+                    ),
+                  ),
+                  onTap: () {
+                    showDialog<void>(
+                        context: context,
+                        barrierDismissible: true,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('title').tr(),
+                            content: SingleChildScrollView(
+                              child: const Text("save_video").tr(),
+                            ),
+                            actions: [
+                              TextButton(
+                                child: const Text('save').tr(),
+                                onPressed: () async {
+                                  if (widget.localFilePath != null) {
+                                    await PhotoLibraryService()
+                                        .saveVideo(widget.localFilePath!);
+                                  }
+                                  AppNavigator.popPage();
+                                },
+                              ),
+                              TextButton(
+                                child: const Text('cancel').tr(),
+                                onPressed: () {
+                                  AppNavigator.popPage();
+                                },
+                              )
+                            ],
+                          );
+                        });
+                  },
+                ),
+              ),
+              Positioned(
+                bottom: 155,
                 left: 20,
                 right: 0,
                 height: 60,
@@ -135,7 +195,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                 ),
               ),
               Positioned(
-                bottom: 125,
+                bottom: 135,
                 left: 0,
                 right: 0,
                 height: 10,
@@ -145,7 +205,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                 bottom: 0,
                 left: 0,
                 right: 0,
-                height: 120,
+                height: 130,
                 child: Container(
                   color: Colors.black38,
                   child: Padding(
