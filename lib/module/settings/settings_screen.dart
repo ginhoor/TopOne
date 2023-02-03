@@ -5,6 +5,7 @@ import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/tool/logger.dart';
+import 'package:top_one/tool/store.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -24,6 +25,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   setupStaticCells() {
+    staticCells.add(_buildTitleCell(
+      "rate",
+      onTap: () {
+        openStorePage();
+      },
+    ));
     staticCells.add(_buildTitleCell(
       "privacy_policy",
       onTap: () {
