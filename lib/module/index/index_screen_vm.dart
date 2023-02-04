@@ -15,6 +15,7 @@ import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/tool/string.dart';
+import 'package:uuid/uuid.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
 
@@ -78,6 +79,7 @@ class IndexScreenVM extends ChangeNotifier {
     var savedDir = await DownloadService().getSavedDirPath();
     final taskId = await FlutterDownloader.enqueue(
       url: result.video!,
+      fileName: '${const Uuid().v1()}.mp4',
       headers: {}, // optional: header send with url (auth token etc)
       savedDir: savedDir,
       showNotification:

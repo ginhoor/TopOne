@@ -44,7 +44,8 @@ configurations.all {
         force 'androidx.core:core:1.6.0'
         force 'androidx.core:core-ktx:1.6.0'
         force 'androidx.window:window-java:1.0.0-alpha07'
-        force 'androidx.work:work-runtime:2.5.0'
+        // force 'androidx.work:work-runtime:2.5.0'
+        force 'androidx.work:work-runtime:2.7.0'
         force 'androidx.browser:browser:1.3.0'
     }
 }

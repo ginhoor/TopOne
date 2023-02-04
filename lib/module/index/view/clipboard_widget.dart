@@ -41,13 +41,19 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
 
   handlePasteAction() async {
     AnalyticsService().logEvent(AnalyticsEvent.pasteUrl);
-    var result = await getClipboardData();
-    if (result != null) {
-      var text = result.text!;
-      text = "https://vt.tiktok.com/ZS8DV7GDd/";
+    if (kDebugMode) {
+      var text = "https://vt.tiktok.com/ZS8DV7GDd/";
       setState(() {
         _inputController.text = text;
       });
+    } else {
+      var result = await getClipboardData();
+      if (result != null) {
+        var text = result.text!;
+        setState(() {
+          _inputController.text = text;
+        });
+      }
     }
   }
 
@@ -75,7 +81,6 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
     await EasyLoading.show(status: "chacking".tr());
     try {
       var resp = await HttpApi().getTTResult(url);
-      print("resp -> $resp");
       if (resp.data == null) throw Error();
       var result = TTResult.fromJson(resp.data);
       // logDebug(result.name);
@@ -88,8 +93,14 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
       var vm = Provider.of<IndexScreenVM>(context, listen: false);
       var success = await vm.createDownloadTask(result);
       await EasyLoading.dismiss();
-      if (!success && mounted) {
-        showToast(context, const Text("create_task_failed_error").tr());
+      if (success) {
+        setState(() {
+          _inputController.text = "";
+        });
+      } else {
+        if (mounted) {
+          showToast(context, const Text("create_task_failed_error").tr());
+        }
       }
     } catch (e) {
       logDebug(e);

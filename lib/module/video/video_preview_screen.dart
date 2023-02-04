@@ -157,7 +157,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                         barrierDismissible: true,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text('title').tr(),
+                            title: const Text('defualt_alert_title').tr(),
                             content: SingleChildScrollView(
                               child: const Text("save_video").tr(),
                             ),
