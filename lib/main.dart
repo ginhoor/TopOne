@@ -41,15 +41,15 @@ void main() async {
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
   await FirebaseAppCheck.instance.activate(
-    webRecaptchaSiteKey: 'recaptcha-v3-site-key',
-    // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
-    // your preferred provider. Choose from:
-    // 1. debug provider
-    // 2. safety net provider
-    // 3. play integrity provider
-    androidProvider:
-        kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-  );
+      webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+      // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
+      // your preferred provider. Choose from:
+      // 1. debug provider
+      // 2. safety net provider
+      // 3. play integrity provider
+      androidProvider: AndroidProvider.playIntegrity
+      // kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+      );
   await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   MobileAds.instance.initialize();

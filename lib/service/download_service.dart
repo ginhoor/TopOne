@@ -95,12 +95,13 @@ class DownloadService {
         pList.add(Permission.manageExternalStorage);
       }
       for (Permission p in pList) {
-        logDebug("Permission status $p ${p.status.isGranted}");
         if (!await p.request().isGranted) {
           hasGranted = false;
+          logDebug("Permission status $p false");
           return false;
         }
       }
+      logDebug("Permission status $pList true");
       hasGranted = true;
       return true;
     }
