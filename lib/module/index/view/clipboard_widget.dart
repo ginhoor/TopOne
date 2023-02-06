@@ -25,9 +25,30 @@ class ClipboardWidget extends StatefulWidget {
   State<ClipboardWidget> createState() => _ClipboardWidgetState();
 }
 
-class _ClipboardWidgetState extends State<ClipboardWidget> {
+class _ClipboardWidgetState extends State<ClipboardWidget>
+    with WidgetsBindingObserver {
   final TextEditingController _inputController = TextEditingController();
   final OutlineInputBorder _outlineInputBorder = outlineInputBorder;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this); // 注册监听器
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // 移除监听器
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state == AppLifecycleState.resumed) {
+      // 自动读取剪贴板
+      handlePasteAction();
+    }
+  }
 
 //复制
   copyText(text) {
@@ -41,19 +62,12 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
 
   handlePasteAction() async {
     AnalyticsService().logEvent(AnalyticsEvent.pasteUrl);
-    if (kDebugMode) {
-      var text = "https://vt.tiktok.com/ZS8DV7GDd/";
+    var result = await getClipboardData();
+    if (result != null) {
+      var text = result.text!;
       setState(() {
         _inputController.text = text;
       });
-    } else {
-      var result = await getClipboardData();
-      if (result != null) {
-        var text = result.text!;
-        setState(() {
-          _inputController.text = text;
-        });
-      }
     }
   }
 
@@ -162,6 +176,10 @@ class _ClipboardWidgetState extends State<ClipboardWidget> {
         style: const TextStyle(fontSize: 16, color: Colors.black87),
         decoration: InputDecoration(
           hintText: 'Type In Link To Start...',
+          suffixIcon: IconButton(
+            onPressed: _inputController.clear,
+            icon: const Icon(Icons.clear),
+          ),
           fillColor: Colors.grey[50],
           filled: true,
           isCollapsed: true,
