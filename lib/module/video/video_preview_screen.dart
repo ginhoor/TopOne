@@ -115,7 +115,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
               ),
               Positioned(
                 left: 16,
-                top: (MediaQuery.of(context).padding.top),
+                top: (MediaQuery.of(context).padding.top) + 16,
                 child: GestureDetector(
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(25.0)),
@@ -137,7 +137,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
               ),
               Positioned(
                 right: 16,
-                top: (MediaQuery.of(context).padding.top),
+                top: (MediaQuery.of(context).padding.top) + 16,
                 child: GestureDetector(
                   child: ClipRRect(
                     borderRadius: const BorderRadius.all(Radius.circular(25.0)),
