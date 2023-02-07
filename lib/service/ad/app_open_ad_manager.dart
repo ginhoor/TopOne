@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'dart:io' show Platform;
-
 // ignore_for_file: public_member_api_docs
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/tool/logger.dart';
 
 /// Utility class that manages loading and showing app open ads.
@@ -30,11 +29,8 @@ class AppOpenAdManager {
   AppOpenAd? _appOpenAd;
   bool _isShowingAd = false;
 
-  String adUnitId =
-      Platform.isAndroid ? 'ca-app-pub-3940256099942544/3419835294' : '';
-
   /// Load an [AppOpenAd].
-  void loadAd() {
+  void loadAd(String adUnitId) {
     AppOpenAd.load(
       adUnitId: adUnitId,
       orientation: AppOpenAd.orientationPortrait,
@@ -64,7 +60,7 @@ class AppOpenAdManager {
   void showAdIfAvailable() {
     if (!isAdAvailable) {
       logDebug('Tried to show ad before available.');
-      loadAd();
+      loadAd(ADService().appOpenUnitId);
       return;
     }
     if (_isShowingAd) {
@@ -75,7 +71,7 @@ class AppOpenAdManager {
       logDebug('Maximum cache duration exceeded. Loading another ad.');
       _appOpenAd!.dispose();
       _appOpenAd = null;
-      loadAd();
+      loadAd(ADService().appOpenUnitId);
       return;
     }
     // Set the fullScreenContentCallback and show the ad.
@@ -95,7 +91,7 @@ class AppOpenAdManager {
         _isShowingAd = false;
         ad.dispose();
         _appOpenAd = null;
-        loadAd();
+        loadAd(ADService().appOpenUnitId);
       },
     );
     _appOpenAd!.show();

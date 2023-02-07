@@ -5,17 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:top_one/tool/logger.dart';
 
-class BannerADService {
-  BannerAd? ad;
+class InlineADService {
+  AdManagerBannerAd? ad;
   String adUnitId;
   AdSize size;
+  AdSize? resultSize;
 
-  Function(BannerAd?)? onAdLoaded;
+  Function(AdManagerBannerAd?)? onAdLoaded;
   int retryCount = 0;
 
   StreamSubscription<ConnectivityResult>? networksOB;
 
-  BannerADService(this.adUnitId,
+  InlineADService(this.adUnitId,
       {this.onAdLoaded, this.size = AdSize.mediumRectangle}) {
     networksOB = Connectivity()
         .onConnectivityChanged
@@ -30,10 +31,10 @@ class BannerADService {
   }
 
   Widget adWidget() {
-    if (ad != null) {
+    if (ad != null && resultSize != null) {
       return SizedBox(
-          width: (ad!.size.width).toDouble(),
-          height: (ad!.size.height).toDouble(),
+          width: resultSize!.width.toDouble(),
+          height: resultSize!.height.toDouble(),
           child: AdWidget(ad: ad!));
     } else {
       return Container();
@@ -45,32 +46,35 @@ class BannerADService {
     ad?.dispose();
   }
 
-  void load() async {
-    await BannerAd(
+  Future<void> load() async {
+    await AdManagerBannerAd(
       adUnitId: adUnitId,
-      request: const AdRequest(),
-      size: size,
-      listener: BannerAdListener(
-        // Called when an ad is successfully received.
-        onAdLoaded: (ad) {
-          this.ad = ad as BannerAd;
-          if (onAdLoaded != null) {
-            onAdLoaded!(ad);
+      sizes: [size],
+      request: const AdManagerAdRequest(),
+      listener: AdManagerBannerAdListener(
+        onAdLoaded: (Ad ad) async {
+          logDebug('$AdManagerBannerAd Inline adaptive banner loaded');
+
+          // logDebug(
+          //     '$AdManagerBannerAd Inline adaptive banner loaded: ${ad.responseInfo}');
+          AdManagerBannerAd bannerAd = ad as AdManagerBannerAd;
+          final AdSize? size = await bannerAd.getPlatformAdSize();
+          if (size == null) {
+            logDebug(
+                '$AdManagerBannerAd Error: getPlatformAdSize() returned null for $bannerAd');
+            return;
           }
-          retryCount = 0;
+          this.ad = ad;
+          resultSize = size;
+
+          if (onAdLoaded != null) onAdLoaded!(ad);
         },
-        // Called when an ad request failed.
-        onAdFailedToLoad: (ad, err) {
-          logDebug('$BannerAd onAdFailedToLoad: $err');
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          logDebug(
+              '$AdManagerBannerAd Inline adaptive banner failedToLoad: $error');
           ad.dispose();
           handleRetry(adUnitId);
         },
-        // Called when an ad opens an overlay that covers the screen.
-        onAdOpened: (Ad ad) => logDebug('$BannerAd onAdOpened.'),
-        // Called when an ad removes an overlay that covers the screen.
-        onAdClosed: (Ad ad) => logDebug('$BannerAd onAdClosed.'),
-        // Called when an impression occurs on the ad.
-        onAdImpression: (Ad ad) {},
       ),
     ).load();
   }

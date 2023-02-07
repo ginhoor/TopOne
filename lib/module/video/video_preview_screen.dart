@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/tt_result.dart';
+import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
@@ -28,6 +29,12 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
   String labelProgress = ""; //tip内容
 
   @override
+  void dispose() {
+    ADService().videoPlayINTAdService?.show((p0) => null);
+    super.dispose();
+  }
+
+  @override
   void initState() {
     super.initState();
     var localFilePath = widget.localFilePath;
@@ -40,7 +47,6 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
     } else {
       videoPlayerController = VideoPlayerController.asset("");
     }
-
     progressValue = 0.0;
     labelProgress = '00:00';
     videoPlayerController.addListener(() {

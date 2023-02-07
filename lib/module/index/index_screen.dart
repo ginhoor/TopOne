@@ -1,20 +1,31 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:top_one/api/http_engine.dart';
+import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/downloads.dart';
+import 'package:top_one/model/tt_result.dart';
+import 'package:top_one/module/history/history_screen.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/module/index/view/index_task_info_widget.dart';
+import 'package:top_one/module/settings/settings_screen.dart';
 import 'package:top_one/module/video/video_preview_screen.dart';
+import 'package:top_one/service/ad/Inline_ad_service.dart';
+import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
-import 'package:top_one/service/ad/native_ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
+import 'package:top_one/service/download_service+metadata.dart';
+import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/tool/http/http_resp.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
@@ -35,16 +46,16 @@ class _IndexScreenState extends State<IndexScreen>
   List<Widget> topCells = [];
   List<Widget> bottomCells = [];
 
-  NativeAd? ad;
   // 进入页面后的动效时长
   late AnimationController animationController;
   final scrollController = ScrollController();
 
   late AppLifecycleReactor _appLifecycleReactor;
+  InlineADService? adService;
 
   @override
   void dispose() {
-    ad?.dispose();
+    adService?.dispose();
     super.dispose();
   }
 
@@ -58,70 +69,81 @@ class _IndexScreenState extends State<IndexScreen>
             parent: animationController,
             curve: const Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
     scrollController.addListener(_handleTopBarWhenScroll);
-    setupDownloader();
-    setupAd();
+    vm.bindBackgroundIsolate();
+    vm.registerDownloaderCallback();
     animationController.forward();
-
-    // vm.loadTasks();
     super.initState();
-    AppOpenAdManager appOpenAdManager = AppOpenAdManager()..loadAd();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    await setupAd();
+    super.didChangeDependencies();
+  }
+
+  static const _insets = 16.0;
+  double get _adWidth => MediaQuery.of(context).size.width - (2 * _insets);
+  setupAd() async {
+    AppOpenAdManager appOpenAdManager = AppOpenAdManager()
+      ..loadAd(kDebugMode
+          ? ADService().TESTAppOpenUnitId
+          : ADService().appOpenUnitId);
     _appLifecycleReactor =
         AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
     _appLifecycleReactor.listenToAppStateChanges();
+
+    // Get an inline adaptive size for the current orientation.
+    AdSize size = AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(
+        _adWidth.truncate());
+
+    adService = InlineADService(
+        kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId1,
+        size: size, onAdLoaded: (p0) {
+      setState(() {});
+    });
+    adService?.load();
   }
 
-  setupDownloader() {
-    vm.bindBackgroundIsolate();
-    vm.registerDownloaderCallback();
-  }
-
-  setupAd() {
-    NativeAd(
-      adUnitId: NativeADService.adUnitId,
-      request: const AdRequest(),
-      listener: NativeAdListener(
-        onAdLoaded: (Ad ad) {
-          logDebug('$NativeAd loaded.');
-          setState(() {
-            this.ad = ad as NativeAd;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          logDebug('$NativeAd failedToLoad: $error');
-          ad.dispose();
-        },
-        onAdOpened: (Ad ad) => logDebug('$NativeAd onAdOpened.'),
-        onAdClosed: (Ad ad) => logDebug('$NativeAd onAdClosed.'),
-      ),
-      nativeTemplateStyle: NativeTemplateStyle(
-        templateType: TemplateType.medium,
-        mainBackgroundColor: Colors.purple,
-        callToActionTextStyle: NativeTemplateTextStyle(
-          textColor: Colors.cyan,
-          backgroundColor: Colors.red,
-          style: NativeTemplateFontStyle.monospace,
-          size: 16.0,
-        ),
-        primaryTextStyle: NativeTemplateTextStyle(
-          textColor: Colors.red,
-          backgroundColor: Colors.cyan,
-          style: NativeTemplateFontStyle.italic,
-          size: 16.0,
-        ),
-        secondaryTextStyle: NativeTemplateTextStyle(
-          textColor: Colors.green,
-          backgroundColor: Colors.black,
-          style: NativeTemplateFontStyle.bold,
-          size: 16.0,
-        ),
-        tertiaryTextStyle: NativeTemplateTextStyle(
-          textColor: Colors.brown,
-          backgroundColor: Colors.amber,
-          style: NativeTemplateFontStyle.normal,
-          size: 16.0,
-        ),
-      ),
-    ).load();
+  Future<bool> handleDownloadAction(String text) async {
+    if (text.isEmpty) return false;
+    AnalyticsService().logEvent(AnalyticsEvent.tapDownload);
+    var url = text;
+    if (!DownloadService().verifyURL(url)) {
+      if (mounted) {
+        showToast(context, const Text("url_invaild_error").tr());
+      }
+      return false;
+    }
+    await EasyLoading.show(status: "chacking".tr());
+    try {
+      HttpResp resp = await HttpApi().getTTResult(url);
+      if (resp.data == null) throw Error();
+      var result = TTResult.fromJson(resp.data);
+      HttpEngine().respCache[url] = resp;
+      // logDebug(result.name);
+      // logDebug(result.title);
+      // logDebug(result.video);
+      // logDebug(result.bgm);
+      // logDebug(result.avatar);
+      // logDebug(result.img);
+      if (result.video == null) throw Error();
+      var success = await vm.createDownloadTask(result);
+      await EasyLoading.dismiss();
+      if (success) {
+        ADService().indexINTAdService?.show((p0) => null);
+        return true;
+      } else {
+        if (mounted) {
+          showToast(context, const Text("create_task_failed_error").tr());
+        }
+        return false;
+      }
+    } catch (e) {
+      logDebug(e);
+      await EasyLoading.dismiss();
+      showToast(context, const Text("create_task_failed_error").tr());
+      return false;
+    }
   }
 
   @override
@@ -143,7 +165,17 @@ class _IndexScreenState extends State<IndexScreen>
   Widget _buildAppTopBar() {
     return Selector(
       builder: (context, topBarOpacity, _) {
-        return AppTopBar(animationController, topBarAnimation, topBarOpacity);
+        return AppTopBar(
+          animationController,
+          topBarAnimation,
+          topBarOpacity,
+          tapSettings: () {
+            AppNavigator.pushPage(const SettingsScreen());
+          },
+          tapDownloadList: () {
+            AppNavigator.pushPage(const HistoryScreen());
+          },
+        );
       },
       selector: (BuildContext context, IndexScreenVM vm) {
         return vm.topBarOpacity;
@@ -172,6 +204,7 @@ class _IndexScreenState extends State<IndexScreen>
                 ),
               ),
               animationController: animationController,
+              handleDownload: handleDownloadAction,
             ),
             Selector(
               builder: (BuildContext context, String version, _) {
@@ -182,77 +215,10 @@ class _IndexScreenState extends State<IndexScreen>
                 return vm.itemsVersion;
               },
             ),
-            if (ad != null)
-              SizedBox(height: 600, child: AdWidget(ad: ad!))
-            else
-              Container()
+            adService?.adWidget() ?? Container(),
           ],
         ),
       ),
-    );
-  }
-
-  // Widget _buildContent() {
-  //   return LayoutBuilder(
-  //       builder: (BuildContext context, BoxConstraints constraints) {
-  //     return SingleChildScrollView(
-  //       controller: scrollController,
-  //       padding: EdgeInsets.only(
-  //         top: AppBar().preferredSize.height +
-  //             MediaQuery.of(context).padding.top +
-  //             24,
-  //         bottom: 62 + MediaQuery.of(context).padding.bottom,
-  //       ),
-  //       child: ConstrainedBox(
-  //         constraints: constraints.copyWith(
-  //           minHeight: constraints.maxHeight,
-  //           maxHeight: double.infinity,
-  //         ),
-  //         child: IntrinsicHeight(
-  //           child: Column(
-  //             children: [
-  //               ClipboardWidget(
-  //                 animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-  //                   CurvedAnimation(
-  //                     parent: animationController,
-  //                     curve: const Interval((1 / 9) * 1, 1.0,
-  //                         curve: Curves.fastOutSlowIn),
-  //                   ),
-  //                 ),
-  //                 animationController: animationController,
-  //               ),
-  //               Selector(
-  //                 builder: (BuildContext context, String version, _) {
-  //                   if (vm.currentTask == null) return Container();
-
-  //                   return buildTaskItem(context, vm.currentTask!);
-  //                 },
-  //                 selector: (BuildContext context, IndexScreenVM vm) {
-  //                   return vm.itemsVersion;
-  //                 },
-  //               ),
-  //               Container(
-  //                 color: Colors.amber,
-  //                 child: SizedBox(
-  //                   height: 100,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     );
-  //   });
-  // }
-
-  Widget _buildListView() {
-    return Selector(
-      builder: (BuildContext context, String version, _) {
-        return Container();
-      },
-      selector: (BuildContext context, IndexScreenVM vm) {
-        return vm.itemsVersion;
-      },
     );
   }
 

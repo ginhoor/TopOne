@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
@@ -8,6 +10,8 @@ import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/history/history_screen_vm.dart';
 import 'package:top_one/module/index/view/index_task_info_widget.dart';
 import 'package:top_one/module/video/video_preview_screen.dart';
+import 'package:top_one/service/ad/ad_service.dart';
+import 'package:top_one/service/ad/banner_ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
@@ -29,13 +33,40 @@ class _HistoryScreenState extends State<HistoryScreen>
   // // 进入页面后的动效时长
   // late AnimationController animationController;
   final scrollController = ScrollController();
+  BannerADService? adService;
+
+  @override
+  void dispose() {
+    adService?.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
     setupDownloader();
-
     vm.loadTasks();
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() async {
+    await setupAd();
+    super.didChangeDependencies();
+  }
+
+  setupAd() async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+            MediaQuery.of(context).size.width.truncate());
+    if (size == null) return;
+    adService = BannerADService(
+        kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId2,
+        size: size, onAdLoaded: (p0) {
+      setState(() {});
+    });
+    adService?.load();
+
+    ADService().historyINTAdService?.show((p0) => null);
   }
 
   setupDownloader() {
@@ -52,6 +83,7 @@ class _HistoryScreenState extends State<HistoryScreen>
         backgroundColor: FitnessAppTheme.background,
         body: Stack(
           children: <Widget>[
+            adService?.adWidget() ?? Container(),
             _buildListView(),
             SizedBox(height: MediaQuery.of(context).padding.bottom)
           ],
@@ -66,7 +98,8 @@ class _HistoryScreenState extends State<HistoryScreen>
         return ListView.builder(
           controller: scrollController,
           padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top,
+            top: MediaQuery.of(context).padding.top +
+                (adService?.ad != null ? adService!.ad!.size.height : 0),
             bottom: MediaQuery.of(context).padding.bottom,
           ),
           itemCount: vm.items.length,

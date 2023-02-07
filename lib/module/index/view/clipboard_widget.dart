@@ -1,26 +1,21 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:provider/provider.dart';
-import 'package:top_one/api/http_engine.dart';
-import 'package:top_one/api/req_ttd_api.dart';
-import 'package:top_one/model/tt_result.dart';
-import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/http/http_resp.dart';
-import 'package:top_one/tool/logger.dart';
-import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
 
 class ClipboardWidget extends StatefulWidget {
   final AnimationController animationController;
   final Animation<double> animation;
+  final Future<bool> Function(String text)? handleDownload;
+
   const ClipboardWidget(
-      {Key? key, required this.animationController, required this.animation})
+      {Key? key,
+      required this.animationController,
+      required this.animation,
+      this.handleDownload})
       : super(key: key);
 
   @override
@@ -73,65 +68,6 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
     }
   }
 
-  bool verifyURL(String url) {
-    var rule1 = RegExp('^http(s|)://.*tiktok.com.*/.*\$');
-    if (rule1.hasMatch(url)) {
-      return true;
-    }
-    var rule2 = RegExp('(/analytics\b)|(/music\b)|(m.tiktok.com/v/)');
-    if (rule2.hasMatch(url)) {
-      return true;
-    }
-    return false;
-  }
-
-  handleDownloadAction() async {
-    AnalyticsService().logEvent(AnalyticsEvent.tapDownload);
-    var url = _inputController.text;
-    if (!verifyURL(url)) {
-      if (mounted) {
-        showToast(context, const Text("url_invaild_error").tr());
-      }
-      return;
-    }
-    await EasyLoading.show(status: "chacking".tr());
-    try {
-      var exist = HttpEngine().respCache[url];
-      HttpResp resp;
-      if (exist != null) {
-        resp = exist;
-      } else {
-        resp = await HttpApi().getTTResult(url);
-      }
-      if (resp.data == null) throw Error();
-      var result = TTResult.fromJson(resp.data);
-      HttpEngine().respCache[url] = resp;
-      // logDebug(result.name);
-      // logDebug(result.title);
-      // logDebug(result.video);
-      // logDebug(result.bgm);
-      // logDebug(result.avatar);
-      // logDebug(result.img);
-      if (result.video == null) throw Error();
-      var vm = Provider.of<IndexScreenVM>(context, listen: false);
-      var success = await vm.createDownloadTask(result);
-      await EasyLoading.dismiss();
-      if (success) {
-        setState(() {
-          _inputController.text = "";
-        });
-      } else {
-        if (mounted) {
-          showToast(context, const Text("create_task_failed_error").tr());
-        }
-      }
-    } catch (e) {
-      logDebug(e);
-      await EasyLoading.dismiss();
-      showToast(context, const Text("create_task_failed_error").tr());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -167,8 +103,17 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
           child: SizedBox(
             height: 40,
             child: addShadows(
-              generateActionButton("download", handleDownloadAction,
-                  Colors.green.shade400, FitnessAppTheme.nearlyWhite),
+              generateActionButton("download", () async {
+                if (widget.handleDownload != null) {
+                  var success =
+                      await widget.handleDownload!(_inputController.text);
+                  if (success) {
+                    setState(() {
+                      _inputController.text = "";
+                    });
+                  }
+                }
+              }, Colors.green.shade400, FitnessAppTheme.nearlyWhite),
             ),
           ),
         )

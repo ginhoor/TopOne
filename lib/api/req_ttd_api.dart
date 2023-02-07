@@ -9,6 +9,10 @@ class HttpApi {
   HttpApi._instance();
 
   Future<HttpResp> getTTResult(String url) async {
+    var exist = HttpEngine().respCache[url];
+    if (exist != null) {
+      return exist;
+    }
     try {
       String? token;
       token = "";
