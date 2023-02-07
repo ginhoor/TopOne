@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:top_one/service/ad/interstitial_ad_service.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/tool/time.dart';
@@ -82,19 +81,27 @@ class ADService {
   InterstitialAdService? videoPlayINTAdService;
 
   preloadAds() {
-    indexINTAdService = InterstitialAdService(kDebugMode
-        ? ADService().TESTInterstitialVideoUnitId
-        : ADService().interstitialUnitId1)
-      ..load(null);
+    indexINTAdService = InterstitialAdService(
+      ADService().TESTInterstitialVideoUnitId,
+      // kDebugMode
+      //   ? ADService().TESTInterstitialVideoUnitId
+      //   : ADService().interstitialUnitId1
+    )..load(null);
 
-    historyINTAdService = InterstitialAdService(kDebugMode
-        ? ADService().TESTInterstitialVideoUnitId
-        : ADService().interstitialUnitId2)
-      ..load(null);
+    historyINTAdService =
+        InterstitialAdService(ADService().TESTInterstitialVideoUnitId
+            // kDebugMode
+            //   ? ADService().TESTInterstitialVideoUnitId
+            //   : ADService().interstitialUnitId2
+            )
+          ..load(null);
 
-    videoPlayINTAdService = InterstitialAdService(kDebugMode
-        ? ADService().TESTInterstitialVideoUnitId
-        : ADService().interstitialUnitId3)
-      ..load(null);
+    videoPlayINTAdService =
+        InterstitialAdService(ADService().TESTInterstitialVideoUnitId
+            // kDebugMode
+            //   ? ADService().TESTInterstitialVideoUnitId
+            //   : ADService().interstitialUnitId3
+            )
+          ..load(null);
   }
 }

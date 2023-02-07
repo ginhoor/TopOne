@@ -85,9 +85,11 @@ class _IndexScreenState extends State<IndexScreen>
   double get _adWidth => MediaQuery.of(context).size.width - (2 * _insets);
   setupAd() async {
     AppOpenAdManager appOpenAdManager = AppOpenAdManager()
-      ..loadAd(kDebugMode
-          ? ADService().TESTAppOpenUnitId
-          : ADService().appOpenUnitId);
+      ..loadAd(ADService().TESTAppOpenUnitId
+          // kDebugMode
+          //   ? ADService().TESTAppOpenUnitId
+          //   : ADService().appOpenUnitId
+          );
     _appLifecycleReactor =
         AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
     _appLifecycleReactor.listenToAppStateChanges();
@@ -97,8 +99,8 @@ class _IndexScreenState extends State<IndexScreen>
     AdSize size = AdSize.getInlineAdaptiveBannerAdSize(
         width, (width / 328.0 * 310.0).truncate());
 
-    adService = InlineADService(
-        kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId1,
+    adService = InlineADService(ADService().TESTBannerUnitId,
+        // kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId1,
         size: size, onAdLoaded: (p0) {
       setState(() {});
     });
