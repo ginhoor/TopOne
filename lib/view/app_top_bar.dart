@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/module/history/history_screen.dart';
 import 'package:top_one/module/settings/settings_screen.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
@@ -66,15 +67,26 @@ Widget generateAppTopBar(AnimationController animationController,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 22 + 6 - 6 * topBarOpacity,
                                   letterSpacing: 1.2,
-                                  color: FitnessAppTheme.darkerText,
+                                  color: FitnessAppTheme.nearlyBlack,
                                 ),
                               ),
                             ),
                           ),
                           IconButton(
+                            iconSize: 30,
                             icon: const Icon(Icons.settings),
+                            color: FitnessAppTheme.nearlyBlack,
                             onPressed: () {
                               AppNavigator.pushPage(const SettingsScreen());
+                            },
+                          ),
+                          IconButton(
+                            iconSize: 30,
+                            color: FitnessAppTheme.nearlyBlack,
+                            icon:
+                                const Icon(Icons.download_for_offline_rounded),
+                            onPressed: () {
+                              AppNavigator.pushPage(const HistoryScreen());
                             },
                           ),
                         ],

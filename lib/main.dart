@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:top_one/app/app.dart';
 import 'package:top_one/firebase_options.dart';
 import 'package:top_one/tool/logger.dart';
+import 'package:top_one/tool/shared_preferences_helper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +52,8 @@ void main() async {
       // kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
       );
   await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+
+  await SharedPreferencesHelper().setup();
 
   MobileAds.instance.initialize();
   runApp(

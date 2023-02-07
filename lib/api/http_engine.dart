@@ -1,4 +1,7 @@
+import 'dart:collection';
+
 import 'package:top_one/tool/http/base_http.dart';
+import 'package:top_one/tool/http/http_resp.dart';
 
 // var debugMode = true;
 var debugMode = false;
@@ -16,4 +19,6 @@ class HttpEngine extends BaseHttp {
   static final HttpEngine _instance = HttpEngine._internal();
 
   factory HttpEngine() => _instance;
+
+  HashMap<String, HttpResp> respCache = HashMap<String, HttpResp>();
 }

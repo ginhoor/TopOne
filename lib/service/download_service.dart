@@ -15,7 +15,6 @@ class DownloadService {
 
   bool hasGranted = false;
   DownloadService._internal();
-
   static final DownloadService _instance = DownloadService._internal();
   factory DownloadService() => _instance;
 

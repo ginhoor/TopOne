@@ -1,11 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/service/app_info_service.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/tool/store.dart';
+import 'package:top_one/view/app_nav_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -60,22 +59,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: FitnessAppTheme.nearlyWhite,
-        centerTitle: true,
-        title: const Text("about").tr(),
-        elevation: 1,
-        titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 17,
-          fontWeight: FontWeight.bold,
-        ),
-        leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-            onPressed: () => {AppNavigator.popPage()}),
-      ),
+      appBar: defaultAppNavbar(const Text("about").tr()),
       body: Container(
-        color: Color(0xf2f2f7),
+        color: const Color(0x00f2f2f7),
         child: ListView.builder(
           padding: EdgeInsets.only(
             bottom: 62 + MediaQuery.of(context).padding.bottom,

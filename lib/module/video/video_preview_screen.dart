@@ -10,6 +10,7 @@ import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPreviewScreen extends StatefulWidget {
@@ -152,35 +153,21 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                     ),
                   ),
                   onTap: () {
-                    showDialog<void>(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: const Text('defualt_alert_title').tr(),
-                            content: SingleChildScrollView(
-                              child: const Text("save_video").tr(),
-                            ),
-                            actions: [
-                              TextButton(
-                                child: const Text('save').tr(),
-                                onPressed: () async {
-                                  if (widget.localFilePath != null) {
-                                    await PhotoLibraryService()
-                                        .saveVideo(widget.localFilePath!);
-                                  }
-                                  AppNavigator.popPage();
-                                },
-                              ),
-                              TextButton(
-                                child: const Text('cancel').tr(),
-                                onPressed: () {
-                                  AppNavigator.popPage();
-                                },
-                              )
-                            ],
-                          );
-                        });
+                    showGHDialog(
+                      context,
+                      const Text('defualt_alert_title').tr(),
+                      const Text("save_video").tr(),
+                      TextButton(
+                        child: const Text('save').tr(),
+                        onPressed: () async {
+                          if (widget.localFilePath != null) {
+                            await PhotoLibraryService()
+                                .saveVideo(widget.localFilePath!);
+                          }
+                          AppNavigator.popPage();
+                        },
+                      ),
+                    );
                   },
                 ),
               ),

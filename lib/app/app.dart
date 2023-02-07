@@ -8,7 +8,7 @@ import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/module/index/index_screen.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/service/download_service.dart';
-import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/fitness_app_theme.dart';
 
 import 'app_vm.dart';
 
@@ -98,12 +98,12 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         // onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         // onUnknownRoute: (settings) => Routes.onUnknownRoute(settings),
         home: Container(
-          color: AppTheme.white,
+          color: FitnessAppTheme.background,
           child: const SafeArea(
             top: false,
             bottom: false,
             child: Scaffold(
-              backgroundColor: AppTheme.nearlyWhite,
+              backgroundColor: FitnessAppTheme.background,
               body: IndexScreen(),
             ),
           ),

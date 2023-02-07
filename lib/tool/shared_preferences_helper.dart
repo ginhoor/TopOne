@@ -5,51 +5,46 @@ class SharedPreferenceKeys {
 }
 
 class SharedPreferencesHelper {
-  static late SharedPreferencesHelper _instance;
+  SharedPreferencesHelper._internal();
+  static final SharedPreferencesHelper _instance =
+      SharedPreferencesHelper._internal();
+  factory SharedPreferencesHelper() => _instance;
 
-  SharedPreferencesHelper._internal() {
-    _instance = this;
-    init();
-  }
+  SharedPreferences? _sharedPreferences;
 
-  factory SharedPreferencesHelper() =>
-      _instance ?? SharedPreferencesHelper._internal();
-
-  late SharedPreferences _sharedPreferences;
-
-  Future init() async {
+  Future setup() async {
     _sharedPreferences = await SharedPreferences.getInstance();
   }
 
   void setBool(String key, bool value) {
-    _sharedPreferences.setBool(key, value);
+    _sharedPreferences?.setBool(key, value);
   }
 
   bool? getBool(String key) {
-    return _sharedPreferences.getBool(key);
+    return _sharedPreferences?.getBool(key);
   }
 
   void setString(String key, String value) {
-    _sharedPreferences.setString(key, value);
+    _sharedPreferences?.setString(key, value);
   }
 
   String? getString(String key) {
-    return _sharedPreferences.getString(key);
+    return _sharedPreferences?.getString(key);
   }
 
   void setInt(String key, int value) {
-    _sharedPreferences.setInt(key, value);
+    _sharedPreferences?.setInt(key, value);
   }
 
   int? getInt(String key) {
-    return _sharedPreferences.getInt(key);
+    return _sharedPreferences?.getInt(key);
   }
 
   void setDouble(String key, double value) {
-    _sharedPreferences.setDouble(key, value);
+    _sharedPreferences?.setDouble(key, value);
   }
 
   double? getDouble(String key) {
-    return _sharedPreferences.getDouble(key);
+    return _sharedPreferences?.getDouble(key);
   }
 }

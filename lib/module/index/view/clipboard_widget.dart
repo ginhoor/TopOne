@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
+import 'package:top_one/api/http_engine.dart';
 import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/tool/http/http_resp.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
@@ -94,9 +96,16 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
     }
     await EasyLoading.show(status: "chacking".tr());
     try {
-      var resp = await HttpApi().getTTResult(url);
+      var exist = HttpEngine().respCache[url];
+      HttpResp resp;
+      if (exist != null) {
+        resp = exist;
+      } else {
+        resp = await HttpApi().getTTResult(url);
+      }
       if (resp.data == null) throw Error();
       var result = TTResult.fromJson(resp.data);
+      HttpEngine().respCache[url] = resp;
       // logDebug(result.name);
       // logDebug(result.title);
       // logDebug(result.video);
@@ -132,7 +141,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
             Column(
               children: <Widget>[
                 generateTextFiled(),
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 generateActionBar(),
               ],
             ),
@@ -146,18 +155,20 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
       children: [
         Expanded(
           child: SizedBox(
-            height: 50,
+            height: 40,
             child: addShadows(
-              generateActionButton("paste", handlePasteAction),
+              generateActionButton("paste", handlePasteAction,
+                  FitnessAppTheme.nearlyWhite, FitnessAppTheme.grey),
             ),
           ),
         ),
         const SizedBox(width: 20),
         Expanded(
           child: SizedBox(
-            height: 50,
+            height: 40,
             child: addShadows(
-              generateActionButton("download", handleDownloadAction),
+              generateActionButton("download", handleDownloadAction,
+                  Colors.green.shade400, FitnessAppTheme.nearlyWhite),
             ),
           ),
         )
@@ -168,12 +179,12 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
   Widget generateTextFiled() {
     return addShadows(
       TextField(
-        maxLines: 5, //最多多少行
-        minLines: 3,
+        maxLines: 1, //最多多少行
+        minLines: 1,
         controller: _inputController,
         // focusNode: _inputFocusNode,
         cursorColor: FitnessAppTheme.nearlyBlack,
-        style: const TextStyle(fontSize: 16, color: Colors.black87),
+        style: const TextStyle(fontSize: 14, color: Colors.black87),
         decoration: InputDecoration(
           hintText: 'Type In Link To Start...',
           suffixIcon: IconButton(
@@ -184,7 +195,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
           filled: true,
           isCollapsed: true,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
           border: _outlineInputBorder,
           focusedBorder: _outlineInputBorder,
           enabledBorder: _outlineInputBorder,

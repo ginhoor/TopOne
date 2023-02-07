@@ -20,6 +20,7 @@ dependencies:
   uuid: ^3.0.7
   flutter_launcher_icons: ^0.11.0
   shared_preferences: ^2.0.17
+  crypto: ^3.0.2
 
   permission_handler: ^10.2.0
   package_info_plus: ^3.0.2
@@ -39,7 +40,8 @@ dependencies:
   firebase_crashlytics: ^3.0.11
   firebase_analytics: ^10.1.0
   firebase_app_check: ^0.1.1+8
-  google_mobile_ads: ^2.3.0
+  google_mobile_ads:
+    path: packages/google_mobile_ads
 
 dev_dependencies:
   flutter_test:

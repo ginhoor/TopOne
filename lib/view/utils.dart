@@ -45,12 +45,13 @@ Widget addShadows(Widget child) {
   );
 }
 
-Widget generateActionButton(String title, void Function() onTap) {
+Widget generateActionButton(String title, void Function() onTap,
+    Color backgroundColor, Color textColor) {
   return Center(
     child: Material(
       borderRadius: BorderRadius.circular(8.0),
       // 设置背景颜色 默认矩形
-      color: FitnessAppTheme.nearlyWhite,
+      color: backgroundColor,
       child: InkWell(
         customBorder: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
@@ -63,8 +64,8 @@ Widget generateActionButton(String title, void Function() onTap) {
           alignment: const Alignment(0, 0),
           child: Text(
             title,
-            style: const TextStyle(
-              color: FitnessAppTheme.nearlyBlack,
+            style: TextStyle(
+              color: textColor,
               fontSize: 16.0,
             ),
           ).tr(),

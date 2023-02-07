@@ -11,9 +11,9 @@ class HttpApi {
   Future<HttpResp> getTTResult(String url) async {
     try {
       String? token;
-      // token = "";
-      // return await HttpEngine()
-      //     .get("/GetResult", queryParameters: {"link": url});
+      token = "";
+      return await HttpEngine()
+          .get("/GetResult", queryParameters: {"link": url});
 
       token = await FirebaseAppCheck.instance.getToken();
       logDebug("FirebaseAppCheck token -> $token");
