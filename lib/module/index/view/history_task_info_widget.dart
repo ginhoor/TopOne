@@ -6,8 +6,8 @@ import 'package:top_one/model/downloads.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
 import 'package:top_one/tool/time.dart';
 
-class IndexTaskInfoWidget extends StatelessWidget {
-  const IndexTaskInfoWidget({
+class HistoryTaskInfoWidget extends StatelessWidget {
+  const HistoryTaskInfoWidget({
     Key? key,
     required this.data,
     this.onTap,
@@ -74,13 +74,13 @@ class IndexTaskInfoWidget extends StatelessWidget {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.only(
-                    left: 8, top: 4, right: 12, bottom: 4),
+                padding:
+                    const EdgeInsets.only(left: 8, top: 5, right: 8, bottom: 5),
                 child: Text(
                   data.metaData.title ?? "",
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.start,
-                  maxLines: 2,
+                  maxLines: 3,
                   style: const TextStyle(
                     fontFamily: FitnessAppTheme.fontName,
                     fontWeight: FontWeight.w500,
@@ -93,34 +93,42 @@ class IndexTaskInfoWidget extends StatelessWidget {
             ),
           ],
         ),
-        Row(
-          // crossAxisAlignment: CrossAxisAlignment.center,
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.access_time,
-                color: FitnessAppTheme.grey.withOpacity(0.5), size: 14),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8),
-                child: Text(
-                  timeFormatMDHMS(data.startTime),
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                    fontFamily: FitnessAppTheme.fontName,
-                    fontWeight: FontWeight.w500,
-                    fontSize: 14,
-                    letterSpacing: 0.0,
-                    color: FitnessAppTheme.grey.withOpacity(0.5),
+        Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 0),
+          child: Row(
+            // crossAxisAlignment: CrossAxisAlignment.center,
+            // mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.access_time,
+                color: FitnessAppTheme.grey.withOpacity(0.5),
+                size: 14,
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 8),
+                  child: Text(
+                    timeFormatMDHMS(data.startTime),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontFamily: FitnessAppTheme.fontName,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                      letterSpacing: 0.0,
+                      color: FitnessAppTheme.grey.withOpacity(0.5),
+                    ),
                   ),
                 ),
               ),
-            ),
-            _buildTrailing(data),
-          ],
+              _buildTrailing(data),
+            ],
+          ),
         ),
         if (data.status == DownloadTaskStatus.running ||
             data.status == DownloadTaskStatus.paused)
-          LinearProgressIndicator(value: data.progress / 100),
+          LinearProgressIndicator(
+            value: data.progress / 100,
+          ),
       ],
     );
   }
@@ -215,15 +223,16 @@ class IndexTaskInfoWidget extends StatelessWidget {
 
   Widget _buildBorder(BuildContext context, Widget content) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 0, bottom: 8),
+      padding: const EdgeInsets.only(left: 8, right: 8, top: 8, bottom: 8),
       child: Container(
         decoration: BoxDecoration(
-          color: FitnessAppTheme.background,
+          color: FitnessAppTheme.white,
           borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8.0),
-              bottomLeft: Radius.circular(8.0),
-              bottomRight: Radius.circular(8.0),
-              topRight: Radius.circular(68.0)),
+            topLeft: Radius.circular(8.0),
+            bottomLeft: Radius.circular(8.0),
+            bottomRight: Radius.circular(8.0),
+            topRight: Radius.circular(68.0),
+          ),
           boxShadow: <BoxShadow>[
             BoxShadow(
                 color: FitnessAppTheme.grey.withOpacity(0.2),
@@ -233,7 +242,7 @@ class IndexTaskInfoWidget extends StatelessWidget {
         ),
         child: Padding(
           padding:
-              const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 4),
+              const EdgeInsets.only(top: 8, left: 16, right: 16, bottom: 8),
           child: content,
         ),
       ),

@@ -93,8 +93,9 @@ class _IndexScreenState extends State<IndexScreen>
     _appLifecycleReactor.listenToAppStateChanges();
 
     // Get an inline adaptive size for the current orientation.
-    AdSize size = AdSize.getCurrentOrientationInlineAdaptiveBannerAdSize(
-        _adWidth.truncate());
+    int width = _adWidth.truncate();
+    AdSize size = AdSize.getInlineAdaptiveBannerAdSize(
+        width, (width / 328.0 * 310.0).truncate());
 
     adService = InlineADService(
         kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId1,
@@ -155,7 +156,7 @@ class _IndexScreenState extends State<IndexScreen>
         body: Stack(
           children: <Widget>[
             _buildContent(),
-            SizedBox(height: 200, child: _buildAppTopBar()),
+            _buildAppTopBar(),
           ],
         ),
       ),
@@ -189,7 +190,7 @@ class _IndexScreenState extends State<IndexScreen>
       padding: EdgeInsets.only(
         top: AppBar().preferredSize.height +
             MediaQuery.of(context).padding.top +
-            24,
+            15,
         bottom: 62 + MediaQuery.of(context).padding.bottom,
       ),
       child: IntrinsicHeight(

@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/history/history_screen_vm.dart';
-import 'package:top_one/module/index/view/index_task_info_widget.dart';
+import 'package:top_one/module/index/view/history_task_info_widget.dart';
 import 'package:top_one/module/video/video_preview_screen.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/banner_ad_service.dart';
@@ -83,8 +83,8 @@ class _HistoryScreenState extends State<HistoryScreen>
         backgroundColor: FitnessAppTheme.background,
         body: Stack(
           children: <Widget>[
-            adService?.adWidget() ?? Container(),
             _buildListView(),
+            adService?.adWidget() ?? Container(),
             SizedBox(height: MediaQuery.of(context).padding.bottom)
           ],
         ),
@@ -117,7 +117,7 @@ class _HistoryScreenState extends State<HistoryScreen>
   }
 
   Widget buildTaskItem(BuildContext context, TaskModel model) {
-    return IndexTaskInfoWidget(
+    return HistoryTaskInfoWidget(
       data: model,
       onTap: (model) async {
         AnalyticsService().logEvent(AnalyticsEvent.previewVideo);

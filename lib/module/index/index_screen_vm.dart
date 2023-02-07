@@ -11,10 +11,7 @@ import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/tool/logger.dart';
-import 'package:top_one/tool/shared_preferences_helper.dart';
-import 'package:top_one/tool/store.dart';
 import 'package:top_one/tool/string.dart';
-import 'package:top_one/tool/time.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
 
@@ -93,11 +90,6 @@ class IndexScreenVM extends ChangeNotifier {
       ..progress = progress;
     if (status == DownloadTaskStatus.complete) {
       AnalyticsService().logEvent(AnalyticsEvent.completeDownload);
-      const key = SharedPreferenceKeys.latest_rate_date;
-      if (SharedPreferencesHelper().getInt(key) == null) {
-        showRateView();
-        SharedPreferencesHelper().setInt(key, currentMilliseconds());
-      }
     }
     updateItemsVersion();
     notifyListeners();
