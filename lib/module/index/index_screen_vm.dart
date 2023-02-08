@@ -11,6 +11,7 @@ import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/tool/logger.dart';
+import 'package:top_one/tool/store.dart';
 import 'package:top_one/tool/string.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
@@ -90,6 +91,7 @@ class IndexScreenVM extends ChangeNotifier {
       ..progress = progress;
     if (status == DownloadTaskStatus.complete) {
       AnalyticsService().logEvent(AnalyticsEvent.completeDownload);
+      showRateView();
     }
     updateItemsVersion();
     notifyListeners();

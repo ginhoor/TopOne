@@ -10,9 +10,7 @@ import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/shared_preferences_helper.dart';
 import 'package:top_one/tool/store.dart';
-import 'package:top_one/tool/time.dart';
 import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
 
@@ -73,11 +71,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         setState(() {
           videoPlayerController.play();
         });
-        const key = SharedPreferenceKeys.latest_rate_date;
-        if (SharedPreferencesHelper().getInt(key) == null) {
-          showRateView();
-          SharedPreferencesHelper().setInt(key, currentMilliseconds());
-        }
+        showRateView();
       }
     });
   }
