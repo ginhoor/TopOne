@@ -10,6 +10,8 @@ import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/tool/logger.dart';
+import 'package:top_one/tool/shared_preferences_helper.dart';
 import 'package:top_one/tool/store.dart';
 import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
@@ -28,9 +30,11 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
   double progressValue = 0; //进度
   String labelProgress = ""; //tip内容
 
+  bool playEnd = false;
   @override
   void dispose() {
-    ADService().videoPlayINTAdService?.show((p0) => null);
+    ADService().videoPlayINTAdService.show((p0) => null);
+    videoPlayerController.removeListener(listen);
     super.dispose();
   }
 
@@ -49,23 +53,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
     }
     progressValue = 0.0;
     labelProgress = '00:00';
-    videoPlayerController.addListener(() {
-      if (!videoPlayerController.value.isPlaying) {
-        if (mounted) setState(() {});
-      }
-      int position = videoPlayerController.value.position.inMilliseconds;
-      int duration = videoPlayerController.value.duration.inMilliseconds;
-      setState(() {
-        progressValue = position / duration * 100;
-        if (progressValue.isNaN || progressValue.isInfinite) {
-          progressValue = 0.0;
-        }
-        labelProgress = DateUtil.formatDateMs(
-          progressValue.toInt(),
-          format: 'mm:ss',
-        );
-      });
-    });
+    videoPlayerController.addListener(listen);
     videoPlayerController.initialize().then((_) {
       if (mounted) {
         setState(() {
@@ -73,6 +61,32 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         });
         showRateView();
       }
+    });
+  }
+
+  void listen() {
+    if (!videoPlayerController.value.isPlaying) {
+      if (mounted) setState(() {});
+    } else {
+      playEnd = false;
+    }
+    int position = videoPlayerController.value.position.inMilliseconds;
+    int duration = videoPlayerController.value.duration.inMilliseconds;
+    if (position == duration && !playEnd) {
+      playEnd = true;
+      logDebug("播放完毕");
+      showCustomRateView(
+          context, SharedPreferenceKeys.latest_play_complete_rate_date);
+    }
+    setState(() {
+      progressValue = position / duration * 100;
+      if (progressValue.isNaN || progressValue.isInfinite) {
+        progressValue = 0.0;
+      }
+      labelProgress = DateUtil.formatDateMs(
+        progressValue.toInt(),
+        format: 'mm:ss',
+      );
     });
   }
 
@@ -158,7 +172,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                   ),
                 ),
                 onTap: () {
-                  showGHDialog(
+                  showMessageDialog(
                     context,
                     const Text('defualt_alert_title').tr(),
                     const Text("save_video").tr(),

@@ -27,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     staticCells.add(_buildTitleCell(
       "rate",
       onTap: () {
-        openStorePage();
+        showRateDialog(context);
       },
     ));
     staticCells.add(_buildTitleCell(

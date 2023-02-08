@@ -15,7 +15,6 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/tool/logger.dart';
 
 /// Utility class that manages loading and showing app open ads.
@@ -23,14 +22,18 @@ class AppOpenAdManager {
   /// Maximum duration allowed between loading and showing the ad.
   final Duration maxCacheDuration = const Duration(hours: 4);
 
+  String adUnitId;
+
   /// Keep track of load time so we don't show an expired ad.
   DateTime? _appOpenLoadTime;
 
   AppOpenAd? _appOpenAd;
   bool _isShowingAd = false;
 
+  AppOpenAdManager(this.adUnitId);
+
   /// Load an [AppOpenAd].
-  void loadAd(String adUnitId) {
+  void loadAd() {
     AppOpenAd.load(
       adUnitId: adUnitId,
       orientation: AppOpenAd.orientationPortrait,
@@ -60,7 +63,7 @@ class AppOpenAdManager {
   void showAdIfAvailable() {
     if (!isAdAvailable) {
       logDebug('Tried to show ad before available.');
-      loadAd(ADService().appOpenUnitId);
+      loadAd();
       return;
     }
     if (_isShowingAd) {
@@ -71,7 +74,7 @@ class AppOpenAdManager {
       logDebug('Maximum cache duration exceeded. Loading another ad.');
       _appOpenAd!.dispose();
       _appOpenAd = null;
-      loadAd(ADService().appOpenUnitId);
+      loadAd();
       return;
     }
     // Set the fullScreenContentCallback and show the ad.
@@ -91,7 +94,7 @@ class AppOpenAdManager {
         _isShowingAd = false;
         ad.dispose();
         _appOpenAd = null;
-        loadAd(ADService().appOpenUnitId);
+        loadAd();
       },
     );
     _appOpenAd!.show();

@@ -11,6 +11,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:top_one/app/app.dart';
 import 'package:top_one/firebase_options.dart';
+import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/tool/logger.dart';
 
 void main() async {
@@ -52,6 +53,7 @@ void main() async {
   // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   MobileAds.instance.initialize();
+  ADService().preloadAds();
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('zh')],

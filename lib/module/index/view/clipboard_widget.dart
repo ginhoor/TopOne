@@ -113,7 +113,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
                     });
                   }
                 }
-              }, Colors.green.shade400, FitnessAppTheme.nearlyWhite),
+              }, FitnessAppTheme.actionGreen, FitnessAppTheme.nearlyWhite),
             ),
           ),
         )

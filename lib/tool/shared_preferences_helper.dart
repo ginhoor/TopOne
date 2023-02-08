@@ -1,7 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferenceKeys {
-  static const String latest_rate_date = 'latest_rate_date';
+  static const String latest_download_complete_rate_date =
+      'latest_download_complete_rate_date';
+  static const String latest_play_complete_rate_date =
+      'latest_play_complete_rate_date';
 }
 
 class SharedPreferencesHelper {

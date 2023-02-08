@@ -59,15 +59,13 @@ class _HistoryScreenState extends State<HistoryScreen>
         await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
             MediaQuery.of(context).size.width.truncate());
     if (size == null) return;
-    adService = BannerADService(ADService().TESTBannerUnitId,
+    adService = BannerADService(ADService.TESTBannerUnitId,
         // adService = BannerADService(
         //     kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId2,
         size: size, onAdLoaded: (p0) {
-      setState(() {});
+      vm.setInlineadLoaded();
     });
     adService?.load();
-
-    ADService().historyINTAdService?.show((p0) => null);
   }
 
   setupDownloader() {
@@ -85,7 +83,14 @@ class _HistoryScreenState extends State<HistoryScreen>
         body: Stack(
           children: <Widget>[
             _buildListView(),
-            adService?.adWidget() ?? Container(),
+            Selector(
+              builder: (BuildContext context, bool inlineadLoaded, _) {
+                return adService?.adWidget() ?? Container();
+              },
+              selector: (BuildContext context, HistoryScreenVM vm) {
+                return vm.inlineadLoaded;
+              },
+            ),
             SizedBox(height: MediaQuery.of(context).padding.bottom)
           ],
         ),

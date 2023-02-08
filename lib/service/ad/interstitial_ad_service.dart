@@ -8,6 +8,7 @@ import 'package:top_one/tool/logger.dart';
 class InterstitialAdService {
   InterstitialAd? ad;
   String adUnitId;
+  bool showing = false;
 
   Function(InterstitialAd?)? onAdLoaded;
   Function(InterstitialAd?)? onAdClicked;
@@ -27,20 +28,17 @@ class InterstitialAdService {
   }
 
   void show(Function(InterstitialAd?)? completion) async {
-    if (!ADService().shouldShowInterstitialAd()) return;
+    if (!ADService().shouldShowInterstitialAd()) {
+      if (completion != null) completion(ad);
+      return;
+    }
     if (ad != null) {
-      ad!.show().then((value) {
-        ADService().updateLatestInterstitialAdShowTime();
-        if (completion != null) completion(ad!);
-      });
+      await ad!.show();
+      ADService().updateLatestInterstitialAdShowTime();
+      if (completion != null) completion(ad!);
     } else {
-      load((ad) {
-        if (ad != null) {
-          show(completion);
-        } else {
-          if (completion != null) completion(ad);
-        }
-      });
+      load((ad) {});
+      if (completion != null) completion(null);
     }
   }
 
@@ -57,16 +55,20 @@ class InterstitialAdService {
         onAdLoaded: (InterstitialAd ad) {
           ad.fullScreenContentCallback = FullScreenContentCallback(
               // Called when the ad showed the full screen content.
-              onAdShowedFullScreenContent: (ad) {},
+              onAdShowedFullScreenContent: (ad) {
+                showing = true;
+              },
               // Called when an impression occurs on the ad.
               onAdImpression: (ad) {},
               // Called when the ad failed to show full screen content.
               onAdFailedToShowFullScreenContent: (ad, err) {
+                showing = false;
                 ad.dispose();
                 this.ad = null;
               },
               // Called when the ad dismissed full screen content.
               onAdDismissedFullScreenContent: (ad) {
+                showing = false;
                 ad.dispose();
                 this.ad = null;
                 load((p0) => null);

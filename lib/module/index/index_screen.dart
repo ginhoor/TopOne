@@ -19,7 +19,6 @@ import 'package:top_one/module/video/video_preview_screen.dart';
 import 'package:top_one/service/ad/Inline_ad_service.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
-import 'package:top_one/service/ad/app_open_ad_manager.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+metadata.dart';
@@ -84,14 +83,8 @@ class _IndexScreenState extends State<IndexScreen>
   static const _insets = 16.0;
   double get _adWidth => MediaQuery.of(context).size.width - (2 * _insets);
   setupAd() async {
-    AppOpenAdManager appOpenAdManager = AppOpenAdManager()
-      ..loadAd(ADService().TESTAppOpenUnitId
-          // kDebugMode
-          //   ? ADService().TESTAppOpenUnitId
-          //   : ADService().appOpenUnitId
-          );
     _appLifecycleReactor =
-        AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
+        AppLifecycleReactor(appOpenAdManager: ADService().appOpenAdManager);
     _appLifecycleReactor.listenToAppStateChanges();
 
     // Get an inline adaptive size for the current orientation.
@@ -99,10 +92,10 @@ class _IndexScreenState extends State<IndexScreen>
     AdSize size = AdSize.getInlineAdaptiveBannerAdSize(
         width, (width / 328.0 * 310.0).truncate());
 
-    adService = InlineADService(ADService().TESTBannerUnitId,
+    adService = InlineADService(ADService.TESTBannerUnitId,
         // kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId1,
         size: size, onAdLoaded: (p0) {
-      setState(() {});
+      vm.setInlineadLoaded();
     });
     adService?.load();
   }
@@ -133,7 +126,7 @@ class _IndexScreenState extends State<IndexScreen>
       var success = await vm.createDownloadTask(result);
       await EasyLoading.dismiss();
       if (success) {
-        ADService().indexINTAdService?.show((p0) => null);
+        ADService().indexINTAdService.show((p0) => null);
         return true;
       } else {
         if (mounted) {
@@ -175,8 +168,10 @@ class _IndexScreenState extends State<IndexScreen>
           tapSettings: () {
             AppNavigator.pushPage(const SettingsScreen());
           },
-          tapDownloadList: () {
-            AppNavigator.pushPage(const HistoryScreen());
+          tapDownloadList: () async {
+            ADService().historyINTAdService.show((p0) async {
+              AppNavigator.pushPage(const HistoryScreen());
+            });
           },
         );
       },
@@ -218,7 +213,14 @@ class _IndexScreenState extends State<IndexScreen>
                 return vm.itemsVersion;
               },
             ),
-            adService?.adWidget() ?? Container(),
+            Selector(
+              builder: (BuildContext context, bool inlineadLoaded, _) {
+                return adService?.adWidget() ?? Container();
+              },
+              selector: (BuildContext context, IndexScreenVM vm) {
+                return vm.inlineadLoaded;
+              },
+            ),
           ],
         ),
       ),

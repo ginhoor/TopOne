@@ -11,6 +11,7 @@ import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/tool/logger.dart';
+import 'package:top_one/tool/shared_preferences_helper.dart';
 import 'package:top_one/tool/store.dart';
 import 'package:top_one/tool/string.dart';
 
@@ -27,6 +28,13 @@ class IndexScreenVM extends ChangeNotifier {
   String itemsVersion = "";
   void updateItemsVersion() {
     itemsVersion = generateRandomString(5);
+  }
+
+  bool inlineadLoaded = false;
+  void setInlineadLoaded() {
+    if (inlineadLoaded) return;
+    inlineadLoaded = true;
+    notifyListeners();
   }
 
   // TaskModel? getItem(String taskId) {
@@ -91,7 +99,8 @@ class IndexScreenVM extends ChangeNotifier {
       ..progress = progress;
     if (status == DownloadTaskStatus.complete) {
       AnalyticsService().logEvent(AnalyticsEvent.completeDownload);
-      showRateView();
+      showCustomRateView(
+          null, SharedPreferenceKeys.latest_download_complete_rate_date);
     }
     updateItemsVersion();
     notifyListeners();

@@ -27,6 +27,14 @@ class HistoryScreenVM extends ChangeNotifier {
     return items.firstWhereOrNull((item) => item.taskId == taskId);
   }
 
+  bool inlineadLoaded = false;
+  void setInlineadLoaded() {
+    if (inlineadLoaded) return;
+    inlineadLoaded = true;
+    updateItemsVersion();
+    notifyListeners();
+  }
+
 /**
  * CREATE TABLE `task` (
   `id`  INTEGER PRIMARY KEY AUTOINCREMENT,

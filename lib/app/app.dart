@@ -6,7 +6,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/module/index/index_screen.dart';
-import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
@@ -21,6 +20,8 @@ class App extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AppState();
 }
+
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
 class _AppState extends State<App> with WidgetsBindingObserver {
   final AppVM _appVM = AppVM();
@@ -64,6 +65,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     return MultiProvider(
       providers: [ChangeNotifierProvider.value(value: _appVM)],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
@@ -96,7 +98,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   Future<void> initAppModule() async {
     DownloadService().setupDirs();
     await AppInfoService().init();
-    ADService().preloadAds();
     await SharedPreferencesHelper().setup();
     _appVM.init();
   }

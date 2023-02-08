@@ -6,6 +6,8 @@ class FitnessAppTheme {
   static const Color white = Color(0xFFFFFFFF);
   static const Color background = Color(0xFFF2F3F8);
 
+  static Color actionGreen = Colors.green.shade400;
+
   static const Color nearlyLightBlue = Color(0xFFE8EDFE);
   static const Color nearlyDarkBlue = Color(0xFF2633C5);
   static const Color nearlyBlue = Color(0xFF00B6F0);
