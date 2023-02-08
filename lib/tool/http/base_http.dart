@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/tool/logger.dart';
 
 import 'http_resp.dart';
@@ -65,18 +66,8 @@ class BaseHttp {
 
   static Map<String, dynamic> getDefaultHeader() {
     return {
-      // 'shortversion': Utils().appVersion,
-      // 'system': Utils().sysInfo.flag,
-      // 'version': Utils().appVersion,
-      // 'sysversion': Utils().sysInfo.systemVersion,
-      // 'package': Utils().sysInfo.packageName,
-      // 'lang': 'zh-CN',
-      // 'user_agent': '',
-      // 'network': '',
-      // 'devicemodel': Utils().sysInfo.device,
-      // 'devicebrand': Uri.encodeFull(Utils().sysInfo.brand),
-      // 'platform': Utils().deviceType.toLowerCase(),
-      // 'passport': UserManager().currentUserid() ?? '',
+      'os': AppInfoService().sysInfo.os,
+      'version': AppInfoService().appVersion,
     };
   }
 
@@ -156,7 +147,7 @@ class BaseHttp {
       }
       return resp;
     } else {
-      return HttpResp(code: 99999);
+      return HttpResp.requestError();
     }
   }
 
@@ -198,7 +189,7 @@ class BaseHttp {
       );
       return handleResponse(response, path, showErr);
     } catch (e) {
-      return HttpResp(code: 99999);
+      return HttpResp.requestError();
     }
 
     // try {

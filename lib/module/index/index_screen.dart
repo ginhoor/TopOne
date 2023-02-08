@@ -142,7 +142,7 @@ class _IndexScreenState extends State<IndexScreen>
         return false;
       }
     } catch (e) {
-      logDebug(e);
+      logDebug("handleDownloadAction", e);
       await EasyLoading.dismiss();
       showToast(context, const Text("create_task_failed_error").tr());
       return false;

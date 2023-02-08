@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:easy_localization/easy_localization.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
@@ -40,17 +39,17 @@ void main() async {
   // Pass all uncaught "fatal" errors from the framework to Crashlytics
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
-  await FirebaseAppCheck.instance.activate(
-      webRecaptchaSiteKey: 'recaptcha-v3-site-key',
-      // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
-      // your preferred provider. Choose from:
-      // 1. debug provider
-      // 2. safety net provider
-      // 3. play integrity provider
-      androidProvider: AndroidProvider.playIntegrity
-      // kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
-      );
-  await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
+  // await FirebaseAppCheck.instance.activate(
+  //     webRecaptchaSiteKey: 'recaptcha-v3-site-key',
+  //     // Default provider for Android is the Play Integrity provider. You can use the "AndroidProvider" enum to choose
+  //     // your preferred provider. Choose from:
+  //     // 1. debug provider
+  //     // 2. safety net provider
+  //     // 3. play integrity provider
+  //     androidProvider: AndroidProvider.playIntegrity
+  //     // kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+  //     );
+  // await FirebaseAppCheck.instance.setTokenAutoRefreshEnabled(true);
 
   MobileAds.instance.initialize();
   runApp(

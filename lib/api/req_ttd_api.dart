@@ -1,7 +1,7 @@
-import 'package:firebase_app_check/firebase_app_check.dart';
+import 'dart:convert';
+
 import 'package:top_one/api/http_engine.dart';
 import 'package:top_one/tool/http/http_resp.dart';
-import 'package:top_one/tool/logger.dart';
 
 class HttpApi {
   static final HttpApi _httpService = HttpApi._instance();
@@ -14,18 +14,16 @@ class HttpApi {
       return exist;
     }
     try {
-      String? token;
-      token = "";
-      return await HttpEngine()
-          .get("/GetResult", queryParameters: {"link": url});
-
-      token = await FirebaseAppCheck.instance.getToken();
-      logDebug("FirebaseAppCheck token -> $token");
-      if (token == null || token == "") return HttpResp.fromMap({});
-      Map<String, dynamic>? headerData = {"X-Firebase-Appcheck": token};
-
-      return await HttpEngine().get("/GetV2",
-          headerData: headerData, queryParameters: {"link": url});
+      var path = "/GetV3";
+      Map<String, dynamic> params = {"link": url};
+      var sign = HttpEngine().getAPISign(path, params);
+      params = {
+        "sign": sign.signString,
+        "params": sign.paramsJson,
+        "timestamp": sign.timestamp
+      };
+      var paramsJSON = json.encode(params);
+      return await HttpEngine().post(path, data: paramsJSON);
     } catch (e) {
       return HttpResp.unknowError();
     }

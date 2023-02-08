@@ -15,6 +15,14 @@ class HttpResp {
     );
   }
 
+  static HttpResp requestError() {
+    return HttpResp(
+      code: 90000,
+      message: '请求错误',
+      data: null,
+    );
+  }
+
   factory HttpResp.fromMap(Map<String, dynamic> srcJson, {String? result}) {
     return HttpResp(
       code: srcJson['Code'] ?? srcJson['code'] ?? 99999,

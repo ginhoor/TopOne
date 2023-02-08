@@ -12,7 +12,6 @@ class SysInfo {
   String systemVersion;
   String packageName;
   String shortVer;
-  late String flag;
 
   SysInfo.iOS({
     required this.systemVersion,
@@ -22,7 +21,6 @@ class SysInfo {
     required this.shortVer,
   }) {
     os = 'iOS';
-    flag = 'ios_flutter';
   }
 
   SysInfo.android({
@@ -33,7 +31,6 @@ class SysInfo {
     required this.shortVer,
   }) {
     os = 'Android';
-    flag = 'android_flutter';
   }
 }
 
@@ -46,7 +43,7 @@ class AppInfoService {
 
   late SysInfo sysInfo;
   AppInfoService._instance() {
-    _appVersion = '1.0.0';
+    _appVersion = '0.0.0';
   }
 
   Future<void> init() async {
