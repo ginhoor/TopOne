@@ -8,13 +8,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.12"
-  android_path_provider:
-    dependency: "direct main"
-    description:
-      name: android_path_provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.3.0"
   archive:
     dependency: transitive
     description:

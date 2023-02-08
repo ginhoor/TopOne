@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:android_path_provider/android_path_provider.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -43,7 +42,9 @@ class DownloadService {
     String externalStorageDirPath = "";
     if (Platform.isAndroid) {
       try {
-        externalStorageDirPath = await AndroidPathProvider.downloadsPath;
+        final directory = await getApplicationDocumentsDirectory();
+        externalStorageDirPath = directory.path;
+        // externalStorageDirPath = await AndroidPathProvider.downloadsPath;
       } catch (err, st) {
         logDebug('failed to get downloads path: $err, $st');
 
