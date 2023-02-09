@@ -3,27 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:top_one/app/app.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/app/app_preferences.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/tool/time.dart';
 
 final InAppReview inAppReview = InAppReview.instance;
 
 void showCustomRateView(BuildContext? context, String key) {
-  // if (SharedPreferencesHelper().getInt(key) != null) return;
+  if (AppPreference().getInt(key) != null) return;
   BuildContext? showContext =
       context ?? navigatorKey.currentState?.overlay?.context;
-
   if (showContext != null) {
-    showRateDialog(
-      showContext,
-    );
+    showRateDialog(showContext);
+    AppPreference().setInt(key, currentMilliseconds());
   }
-  // SharedPreferencesHelper().setInt(key, currentMilliseconds());
 }
 
 void showRateView() async {
-  if (await inAppReview.isAvailable()) {
-    inAppReview.requestReview();
-  }
+  if (await inAppReview.isAvailable()) inAppReview.requestReview();
 }
 
 void openStorePage() async {

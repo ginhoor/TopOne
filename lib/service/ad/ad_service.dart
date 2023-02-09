@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
 import 'package:top_one/service/ad/interstitial_ad_service.dart';
 import 'package:top_one/tool/logger.dart';
@@ -69,7 +70,7 @@ class ADService {
 
   AppOpenAdManager appOpenAdManager =
       AppOpenAdManager(ADService.TESTAppOpenUnitId);
-
+  AppLifecycleReactor? appLifecycleReactor;
   int latestInterstitialAdShowTime = 0;
   updateLatestInterstitialAdShowTime() {
     latestInterstitialAdShowTime = currentTimestamp();
@@ -100,26 +101,20 @@ class ADService {
     //   : ADService().interstitialUnitId3
   );
 
+  bool hasInterstitialAdServiceShowing() {
+    return indexINTAdService.showing ||
+        historyINTAdService.showing ||
+        videoPlayINTAdService.showing;
+  }
+
   preloadAds() {
     indexINTAdService.load(null);
     historyINTAdService.load(null);
     videoPlayINTAdService.load(null);
+
+    var reactor = AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
+    reactor.listenToAppStateChanges();
+    appLifecycleReactor = reactor;
     appOpenAdManager.loadAd();
-
-    // historyINTAdService =
-    //     InterstitialAdService(ADService().TESTInterstitialVideoUnitId
-    //         // kDebugMode
-    //         //   ? ADService().TESTInterstitialVideoUnitId
-    //         //   : ADService().interstitialUnitId2
-    //         )
-    //       ..load(null);
-
-    // videoPlayINTAdService =
-    //     InterstitialAdService(ADService().TESTInterstitialVideoUnitId
-    //         // kDebugMode
-    //         //   ? ADService().TESTInterstitialVideoUnitId
-    //         //   : ADService().interstitialUnitId3
-    //         )
-    //       ..load(null);
   }
 }

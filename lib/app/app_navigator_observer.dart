@@ -6,16 +6,30 @@ class AppNavigator {
   }
 
   static Future<void> pushPage(Widget screen) async {
-    await pushRoute(
-      PageRouteBuilder(pageBuilder: (BuildContext context,
-          Animation<double> animation, Animation<double> secondaryAnimation) {
-        return FadeTransition(opacity: animation, child: screen);
-      }),
-    );
+    await pushRoute(buildRouter(screen));
+  }
+
+  static PageRouteBuilder buildRouter(Widget screen) {
+    return PageRouteBuilder(pageBuilder: (BuildContext context,
+        Animation<double> animation, Animation<double> secondaryAnimation) {
+      return FadeTransition(opacity: animation, child: screen);
+    });
   }
 
   static void popPage() {
     AppNavigatorObserver().navigator!.pop();
+  }
+
+  static Future<dynamic> pushReplacementNamed(String routeName) async {
+    return await AppNavigatorObserver()
+        .navigator!
+        .pushReplacementNamed(routeName);
+  }
+
+  static Future<dynamic> pushReplacement(Widget screen) async {
+    return await AppNavigatorObserver()
+        .navigator!
+        .pushReplacement(buildRouter(screen));
   }
 }
 

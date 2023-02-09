@@ -8,7 +8,7 @@ class AppVM extends ChangeNotifier {
 
     // _imStatus = IMEngine().imStatus.imStatus;
     // _unread = TopicManager().unread;
-    // _showHomeCode = SharedPreferencesHelper().getBool(SharedPreferenceKeys.HOME_SHOW_CODE);
+    // _showHomeCode = AppPreference().getBool(AppPreferenceKey.HOME_SHOW_CODE);
     // _imStatusSubscription = IMEngine().imStatus.imStatusStream.stream.listen(_onIMStatusChanged);
     // _unreadSubscription = TopicManager().unreadStream.stream.listen(_onUnreadChanged);
 

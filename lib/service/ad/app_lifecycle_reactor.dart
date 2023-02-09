@@ -15,6 +15,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
 import 'package:top_one/tool/logger.dart';
 
@@ -33,7 +34,9 @@ class AppLifecycleReactor {
   void _onAppStateChanged(AppState appState) {
     logDebug('New AppState state: $appState');
     if (appState == AppState.foreground) {
-      appOpenAdManager.showAdIfAvailable();
+      if (!ADService().hasInterstitialAdServiceShowing()) {
+        appOpenAdManager.showAdIfAvailable();
+      }
     }
   }
 }

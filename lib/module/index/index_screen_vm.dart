@@ -4,14 +4,17 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:top_one/api/http_engine.dart';
+import 'package:top_one/api/req_ttd_api.dart';
+import 'package:top_one/app/app_preferences.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
+import 'package:top_one/tool/http/http_resp.dart';
 import 'package:top_one/tool/logger.dart';
-import 'package:top_one/tool/shared_preferences_helper.dart';
 import 'package:top_one/tool/store.dart';
 import 'package:top_one/tool/string.dart';
 
@@ -37,14 +40,16 @@ class IndexScreenVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  // TaskModel? getItem(String taskId) {
-  //   return items.firstWhereOrNull((item) => item.taskId == taskId);
-  // }
+  Future<TTResult> getTTResult(String url) async {
+    HttpResp resp = await HttpApi().getTTResult(url);
+    if (resp.data == null) throw Error();
+    var result = TTResult.fromJson(resp.data);
+    if (result.video == null) throw Error();
+    HttpEngine().respCache[url] = resp;
+    return result;
+  }
 
   Future<DownloadTask?> findCompletedTask(String taskId) async {
-    // var item = getItem(taskId);
-    // if (item == null) return null;
-    // if (item.status != DownloadTaskStatus.complete) return null;
     return DownloadService().findCompletedTask(taskId);
   }
 
@@ -100,7 +105,7 @@ class IndexScreenVM extends ChangeNotifier {
     if (status == DownloadTaskStatus.complete) {
       AnalyticsService().logEvent(AnalyticsEvent.completeDownload);
       showCustomRateView(
-          null, SharedPreferenceKeys.latest_download_complete_rate_date);
+          null, AppPreferenceKey.latest_download_complete_rate_date);
     }
     updateItemsVersion();
     notifyListeners();

@@ -6,11 +6,8 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
-import 'package:top_one/api/http_engine.dart';
-import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/downloads.dart';
-import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/history/history_screen.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/module/index/view/index_task_info_widget.dart';
@@ -18,13 +15,11 @@ import 'package:top_one/module/settings/settings_screen.dart';
 import 'package:top_one/module/video/video_preview_screen.dart';
 import 'package:top_one/service/ad/Inline_ad_service.dart';
 import 'package:top_one/service/ad/ad_service.dart';
-import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+metadata.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/http/http_resp.dart';
 import 'package:top_one/tool/logger.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
@@ -42,14 +37,11 @@ class _IndexScreenState extends State<IndexScreen>
     with TickerProviderStateMixin {
   var vm = IndexScreenVM();
   late Animation<double> topBarAnimation;
-  List<Widget> topCells = [];
-  List<Widget> bottomCells = [];
 
   // 进入页面后的动效时长
   late AnimationController animationController;
   final scrollController = ScrollController();
 
-  late AppLifecycleReactor _appLifecycleReactor;
   InlineADService? adService;
 
   @override
@@ -83,10 +75,6 @@ class _IndexScreenState extends State<IndexScreen>
   static const _insets = 16.0;
   double get _adWidth => MediaQuery.of(context).size.width - (2 * _insets);
   setupAd() async {
-    _appLifecycleReactor =
-        AppLifecycleReactor(appOpenAdManager: ADService().appOpenAdManager);
-    _appLifecycleReactor.listenToAppStateChanges();
-
     // Get an inline adaptive size for the current orientation.
     int width = _adWidth.truncate();
     AdSize size = AdSize.getInlineAdaptiveBannerAdSize(
@@ -112,17 +100,7 @@ class _IndexScreenState extends State<IndexScreen>
     }
     await EasyLoading.show(status: "chacking".tr());
     try {
-      HttpResp resp = await HttpApi().getTTResult(url);
-      if (resp.data == null) throw Error();
-      var result = TTResult.fromJson(resp.data);
-      HttpEngine().respCache[url] = resp;
-      // logDebug(result.name);
-      // logDebug(result.title);
-      // logDebug(result.video);
-      // logDebug(result.bgm);
-      // logDebug(result.avatar);
-      // logDebug(result.img);
-      if (result.video == null) throw Error();
+      var result = await vm.getTTResult(url);
       var success = await vm.createDownloadTask(result);
       await EasyLoading.dismiss();
       if (success) {
