@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/color.dart';
 
 final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
   gapPadding: 5,
@@ -70,36 +69,6 @@ Widget generateActionButton(String title, void Function() onTap,
             ),
           ).tr(),
         ),
-      ),
-    ),
-  );
-}
-
-Widget createProgress(Animation<double> animation) {
-  var radius = const Radius.circular(4.0);
-  return Padding(
-    padding: const EdgeInsets.only(top: 4),
-    child: Container(
-      height: 4,
-      width: 70,
-      decoration: BoxDecoration(
-        color: HexColor('#87A0E5').withOpacity(0.2),
-        borderRadius: BorderRadius.all(radius),
-      ),
-      child: Row(
-        children: <Widget>[
-          Container(
-            width: ((70 / 1.2) * animation.value),
-            height: 4,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(colors: [
-                HexColor('#87A0E5'),
-                HexColor('#87A0E5').withOpacity(0.5),
-              ]),
-              borderRadius: BorderRadius.all(radius),
-            ),
-          )
-        ],
       ),
     ),
   );

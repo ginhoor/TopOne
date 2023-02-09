@@ -1,9 +1,9 @@
 import 'dart:io';
 
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
 import 'package:top_one/service/ad/interstitial_ad_service.dart';
-import 'package:top_one/tool/logger.dart';
 import 'package:top_one/tool/time.dart';
 
 class ADService {
@@ -111,7 +111,6 @@ class ADService {
     indexINTAdService.load(null);
     historyINTAdService.load(null);
     videoPlayINTAdService.load(null);
-
     var reactor = AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
     reactor.listenToAppStateChanges();
     appLifecycleReactor = reactor;

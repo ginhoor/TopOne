@@ -8,6 +8,7 @@ import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preferences.dart';
 import 'package:top_one/app/routes.dart';
 import 'package:top_one/module/splash/splash_screen.dart';
+import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
@@ -30,12 +31,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    // if (AuditHelper().isAuditMode) {
-    //   checkLoadProcess();
-    // } else {
-    initAppModule().then((value) {
-      // checkLoadProcess();
-    });
+    initAppModule();
   }
 
   @override
@@ -87,7 +83,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             child: Scaffold(
               backgroundColor: FitnessAppTheme.background,
               body: SplashScreen(),
-              // IndexScreen(),
             ),
           ),
         ),
@@ -96,10 +91,10 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     );
   }
 
-  Future<void> initAppModule() async {
+  static Future<void> initAppModule() async {
+    ADService().preloadAds();
     DownloadService().setupDirs();
     await AppInfoService().init();
     await AppPreference().setup();
-    _appVM.init();
   }
 }
