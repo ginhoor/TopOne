@@ -12,7 +12,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:top_one/app/app.dart';
 import 'package:top_one/app/logger.dart';
 import 'package:top_one/firebase_options.dart';
-import 'package:top_one/service/ad/ad_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +36,6 @@ void main() async {
   );
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
   MobileAds.instance.initialize();
-  ADService().preloadAds();
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('zh')],

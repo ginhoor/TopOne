@@ -15,7 +15,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:top_one/tool/logger.dart';
+import 'package:top_one/app/logger.dart';
 
 /// Utility class that manages loading and showing app open ads.
 class AppOpenAdManager {

@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/service/app_info_service.dart';
-import 'package:top_one/tool/logger.dart';
-import 'package:top_one/tool/store.dart';
+import 'package:top_one/tool/store_kit.dart';
 import 'package:top_one/view/app_nav_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 

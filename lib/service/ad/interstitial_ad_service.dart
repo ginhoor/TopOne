@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/service/ad/ad_service.dart';
-import 'package:top_one/tool/logger.dart';
 
 class InterstitialAdService {
   InterstitialAd? ad;

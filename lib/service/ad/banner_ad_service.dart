@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:top_one/tool/logger.dart';
+import 'package:top_one/app/logger.dart';
 
 class BannerADService {
   BannerAd? ad;

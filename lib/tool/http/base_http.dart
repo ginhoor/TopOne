@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/service/app_info_service.dart';
-import 'package:top_one/tool/logger.dart';
 
 import 'http_resp.dart';
 

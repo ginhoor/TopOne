@@ -7,6 +7,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/history/history_screen.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
@@ -20,7 +21,6 @@ import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+metadata.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/logger.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
 

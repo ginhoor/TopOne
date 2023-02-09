@@ -7,12 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preferences.dart';
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/logger.dart';
-import 'package:top_one/tool/store.dart';
+import 'package:top_one/tool/store_kit.dart';
 import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
 

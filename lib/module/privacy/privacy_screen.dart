@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preferences.dart';
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/app/routes.dart';
 import 'package:top_one/theme/fitness_app_theme.dart';
-import 'package:top_one/tool/logger.dart';
 import 'package:top_one/tool/time.dart';
 import 'package:top_one/view/toast.dart';
 

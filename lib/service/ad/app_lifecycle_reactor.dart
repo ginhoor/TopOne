@@ -15,9 +15,9 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:top_one/app/logger.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
-import 'package:top_one/tool/logger.dart';
 
 /// Listens for app foreground events and shows app open ads.
 class AppLifecycleReactor {

@@ -4,7 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:top_one/tool/logger.dart';
+import 'package:top_one/app/logger.dart';
 
 class DownloadService {
   // static const String BASE_URL_PROD = 'https://imweb.bianfeng.com';
