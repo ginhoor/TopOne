@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 
 final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
   gapPadding: 5,
@@ -29,13 +29,13 @@ Widget addShadows(Widget child) {
   return Container(
     //阴影
     decoration: BoxDecoration(
-      color: FitnessAppTheme.white,
+      color: AppTheme.white,
       borderRadius: const BorderRadius.all(
         Radius.circular(8.0),
       ),
       boxShadow: <BoxShadow>[
         BoxShadow(
-            color: FitnessAppTheme.grey.withOpacity(0.2),
+            color: AppTheme.grey.withOpacity(0.2),
             offset: const Offset(1.1, 1.1),
             blurRadius: 10.0),
       ],
@@ -44,8 +44,8 @@ Widget addShadows(Widget child) {
   );
 }
 
-Widget generateActionButton(String title, void Function() onTap,
-    Color backgroundColor, Color textColor) {
+Widget generateActionButton(String title, Color backgroundColor,
+    Color textColor, void Function() onTap) {
   return Center(
     child: Material(
       borderRadius: BorderRadius.circular(8.0),

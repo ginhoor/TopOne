@@ -11,7 +11,7 @@ import 'package:top_one/module/splash/splash_screen.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/service/download_service.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 
 import 'app_vm.dart';
 
@@ -76,12 +76,12 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         onUnknownRoute: (settings) => Routes.onUnknownRoute(),
         home: Container(
-          color: FitnessAppTheme.background,
+          color: AppTheme.background,
           child: const SafeArea(
             top: false,
             bottom: false,
             child: Scaffold(
-              backgroundColor: FitnessAppTheme.background,
+              backgroundColor: AppTheme.background,
               body: SplashScreen(),
             ),
           ),

@@ -1,11 +1,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:top_one/app/logger.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/tool/store_kit.dart';
+import 'package:top_one/tool/web.dart';
 import 'package:top_one/view/app_nav_bar.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -32,28 +31,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ));
     staticCells.add(_buildTitleCell(
       "privacy_policy",
-      onTap: () {
-        const url = "https://gfrtopone.github.io/privacy-policy.html";
-        _launchInBrowser(url);
-      },
+      onTap: () => launchInBrowser(kPrivacyPolicyURL),
     ));
     staticCells.add(_buildTitleCell(
       "terms_of_use",
-      onTap: () {
-        const url = "https://gfrtopone.github.io/terms-of-service.html";
-        _launchInBrowser(url);
-      },
+      onTap: () => launchInBrowser(kTermsOfServiceURL),
     ));
     staticCells.add(_buildAppCell());
-  }
-
-  Future<void> _launchInBrowser(String url) async {
-    var uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      logError("Cannot Launch Url");
-    }
   }
 
   @override

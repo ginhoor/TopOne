@@ -4,7 +4,7 @@ import 'package:in_app_review/in_app_review.dart';
 import 'package:top_one/app/app.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preferences.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/tool/time.dart';
 
 final InAppReview inAppReview = InAppReview.instance;
@@ -55,8 +55,7 @@ Future<void> showRateDialog(BuildContext context) async {
                 children: [
                   const Text(
                     "rate_title",
-                    style: TextStyle(
-                        color: FitnessAppTheme.nearlyBlack, fontSize: 17),
+                    style: TextStyle(color: AppTheme.nearlyBlack, fontSize: 17),
                   ).tr(),
                   const SizedBox(height: 10),
                   SizedBox(
@@ -80,16 +79,15 @@ Future<void> showRateDialog(BuildContext context) async {
                       style: ButtonStyle(backgroundColor:
                           MaterialStateProperty.resolveWith((states) {
                         if (states.contains(MaterialState.pressed)) {
-                          return FitnessAppTheme.actionGreen;
+                          return AppTheme.actionGreen;
                         } else if (states.contains(MaterialState.disabled)) {
-                          return FitnessAppTheme.actionGreen;
+                          return AppTheme.actionGreen;
                         }
-                        return FitnessAppTheme.actionGreen;
+                        return AppTheme.actionGreen;
                       })),
                       child: const Text(
                         'rate_now',
-                        style: TextStyle(
-                            color: FitnessAppTheme.white, fontSize: 17),
+                        style: TextStyle(color: AppTheme.white, fontSize: 17),
                       ).tr(),
                       onPressed: () {
                         openStorePage();

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:introduction_screen/introduction_screen.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preferences.dart';
 import 'package:top_one/app/routes.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/view/app_title_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -29,23 +28,28 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var model = PageViewModel(
-      title: "Title of custom body page",
-      bodyWidget: Container(),
-      footer: Container(),
-      image: const Center(child: Icon(Icons.android)),
-    );
-    return IntroductionScreen(
-      pages: [model],
-      showSkipButton: false,
-      showNextButton: false,
-      showDoneButton: false,
-      skipOrBackFlex: 0,
-      dotsFlex: 0,
-      nextFlex: 0,
-      freeze: true,
-      isProgress: false,
-      globalBackgroundColor: FitnessAppTheme.background,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          ClipRRect(
+            borderRadius: BorderRadius.all(Radius.circular(30.0)),
+            child: Image(
+              image: ResizeImage(
+                ExactAssetImage('assets/icon/ttd_icon.png'),
+                width: 150,
+                height: 150,
+                allowUpscaling: true,
+              ),
+            ),
+          ),
+          SizedBox(height: 40),
+          Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: AppTitleLogo(),
+          )
+        ],
+      ),
     );
   }
 }

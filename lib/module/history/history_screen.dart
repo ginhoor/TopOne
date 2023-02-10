@@ -14,7 +14,7 @@ import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/banner_ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/view/app_nav_bar.dart';
 import 'package:top_one/view/toast.dart';
 
@@ -79,7 +79,7 @@ class _HistoryScreenState extends State<HistoryScreen>
       value: vm,
       child: Scaffold(
         appBar: defaultAppNavbar(const Text("download").tr()),
-        backgroundColor: FitnessAppTheme.background,
+        backgroundColor: AppTheme.background,
         body: Stack(
           children: <Widget>[
             _buildListView(),

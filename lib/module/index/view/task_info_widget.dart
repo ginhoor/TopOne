@@ -3,7 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:top_one/model/downloads.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/tool/time.dart';
 
 class TaskInfoWidget extends StatelessWidget {
@@ -80,11 +80,11 @@ class TaskInfoWidget extends StatelessWidget {
                   data.metaData.title ?? "",
                   textAlign: TextAlign.start,
                   style: const TextStyle(
-                    fontFamily: FitnessAppTheme.fontName,
+                    fontFamily: AppTheme.fontName,
                     fontWeight: FontWeight.w500,
                     fontSize: 14,
                     letterSpacing: 0.0,
-                    color: FitnessAppTheme.darkText,
+                    color: AppTheme.darkText,
                   ),
                 ),
               ),
@@ -99,7 +99,7 @@ class TaskInfoWidget extends StatelessWidget {
             children: [
               Icon(
                 Icons.access_time,
-                color: FitnessAppTheme.grey.withOpacity(0.5),
+                color: AppTheme.grey.withOpacity(0.5),
                 size: 14,
               ),
               Expanded(
@@ -111,11 +111,11 @@ class TaskInfoWidget extends StatelessWidget {
                     timeFormatMDHMS(data.startTime),
                     textAlign: TextAlign.left,
                     style: TextStyle(
-                      fontFamily: FitnessAppTheme.fontName,
+                      fontFamily: AppTheme.fontName,
                       fontWeight: FontWeight.w500,
                       fontSize: 14,
                       letterSpacing: 0.0,
-                      color: FitnessAppTheme.grey.withOpacity(0.5),
+                      color: AppTheme.grey.withOpacity(0.5),
                     ),
                   ),
                 ),
@@ -226,7 +226,7 @@ class TaskInfoWidget extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: FitnessAppTheme.white,
+          color: AppTheme.white,
           borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(8.0),
               bottomLeft: Radius.circular(8.0),
@@ -234,7 +234,7 @@ class TaskInfoWidget extends StatelessWidget {
               topRight: Radius.circular(68.0)),
           boxShadow: <BoxShadow>[
             BoxShadow(
-                color: FitnessAppTheme.grey.withOpacity(0.2),
+                color: AppTheme.grey.withOpacity(0.2),
                 offset: const Offset(1.1, 1.1),
                 blurRadius: 10.0),
           ],

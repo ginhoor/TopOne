@@ -11,7 +11,7 @@ import 'package:top_one/app/logger.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/tool/store_kit.dart';
 import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
@@ -96,7 +96,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
       top: false,
       bottom: false,
       child: Scaffold(
-        backgroundColor: FitnessAppTheme.background,
+        backgroundColor: AppTheme.background,
         body: Stack(
           children: <Widget>[
             Center(
@@ -122,7 +122,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                   child: videoPlayerController.value.isPlaying
                       ? null
                       : const Icon(Icons.play_arrow,
-                          size: 140, color: FitnessAppTheme.nearlyWhite),
+                          size: 140, color: AppTheme.nearlyWhite),
                 ),
                 onTap: () {
                   setState(() {
@@ -145,7 +145,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                       width: 50,
                       height: 50,
                       child: Icon(Icons.arrow_back,
-                          size: 30, color: FitnessAppTheme.nearlyWhite),
+                          size: 30, color: AppTheme.nearlyWhite),
                     ),
                   ),
                 ),
@@ -167,7 +167,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                       width: 50,
                       height: 50,
                       child: Icon(Icons.save_alt,
-                          size: 30, color: FitnessAppTheme.nearlyWhite),
+                          size: 30, color: AppTheme.nearlyWhite),
                     ),
                   ),
                 ),
@@ -256,8 +256,8 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
 
   Widget _buildVideoSlider() {
     return Slider(
-        activeColor: FitnessAppTheme.nearlyWhite,
-        inactiveColor: FitnessAppTheme.dismissibleBackground,
+        activeColor: AppTheme.nearlyWhite,
+        inactiveColor: AppTheme.dismissibleBackground,
         value: progressValue,
         label: labelProgress,
         divisions: 100,

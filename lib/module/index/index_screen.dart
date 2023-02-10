@@ -20,7 +20,7 @@ import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+metadata.dart';
 import 'package:top_one/service/download_service.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
 
@@ -125,7 +125,7 @@ class _IndexScreenState extends State<IndexScreen>
     return ChangeNotifierProvider.value(
       value: vm,
       child: Scaffold(
-        backgroundColor: FitnessAppTheme.background,
+        backgroundColor: AppTheme.background,
         body: Stack(
           children: <Widget>[
             _buildContent(),

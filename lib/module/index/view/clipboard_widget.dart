@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
-import 'package:top_one/theme/fitness_app_theme.dart';
+import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/view/utils.dart';
 
 class ClipboardWidget extends StatefulWidget {
@@ -93,8 +93,8 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
           child: SizedBox(
             height: 40,
             child: addShadows(
-              generateActionButton("paste", handlePasteAction,
-                  FitnessAppTheme.nearlyWhite, FitnessAppTheme.grey),
+              generateActionButton("paste", AppTheme.nearlyWhite, AppTheme.grey,
+                  handlePasteAction),
             ),
           ),
         ),
@@ -103,7 +103,9 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
           child: SizedBox(
             height: 40,
             child: addShadows(
-              generateActionButton("download", () async {
+              generateActionButton(
+                  "download", AppTheme.actionGreen, AppTheme.nearlyWhite,
+                  () async {
                 if (widget.handleDownload != null) {
                   var success =
                       await widget.handleDownload!(_inputController.text);
@@ -113,7 +115,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
                     });
                   }
                 }
-              }, FitnessAppTheme.actionGreen, FitnessAppTheme.nearlyWhite),
+              }),
             ),
           ),
         )
@@ -128,7 +130,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
         minLines: 1,
         controller: _inputController,
         // focusNode: _inputFocusNode,
-        cursorColor: FitnessAppTheme.nearlyBlack,
+        cursorColor: AppTheme.nearlyBlack,
         style: const TextStyle(fontSize: 14, color: Colors.black87),
         decoration: InputDecoration(
           hintText: 'Type In Link To Start...',

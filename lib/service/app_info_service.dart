@@ -5,6 +5,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 String appName = "Top One";
 
+const kPrivacyPolicyURL = "https://gfrtopone.github.io/privacy-policy.html";
+const kTermsOfServiceURL = "https://gfrtopone.github.io/terms-of-service.html";
+
 class SysInfo {
   late String os;
   String brand;
