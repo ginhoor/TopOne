@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'package:gh_tool_package/log/logger.dart';
 // ignore_for_file: public_member_api_docs
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:top_one/app/logger.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
 

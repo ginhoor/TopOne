@@ -5,12 +5,12 @@ import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:top_one/app/logger.dart';
+import 'package:gh_tool_package/extension/string.dart';
+import 'package:gh_tool_package/log/logger.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
-import 'package:top_one/tool/string.dart';
 
 const _isolatePortServerName = "history_downloader_send_port";
 

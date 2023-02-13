@@ -7,10 +7,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:gh_tool_package/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:top_one/app/app.dart';
-import 'package:top_one/app/logger.dart';
 import 'package:top_one/firebase_options.dart';
 
 void main() async {

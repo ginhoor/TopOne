@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:gh_tool_package/config/app_preference.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/app/app_preferences.dart';
+import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/app/routes.dart';
 import 'package:top_one/view/app_title_logo.dart';
 

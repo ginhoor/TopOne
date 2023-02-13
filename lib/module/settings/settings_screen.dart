@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:gh_tool_package/system/web.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/tool/store_kit.dart';
-import 'package:top_one/tool/web.dart';
 import 'package:top_one/view/app_nav_bar.dart';
 
 class SettingsScreen extends StatefulWidget {

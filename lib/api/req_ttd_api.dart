@@ -1,7 +1,7 @@
 import 'dart:convert';
 
+import 'package:gh_tool_package/http/http_resp.dart';
 import 'package:top_one/api/http_engine.dart';
-import 'package:top_one/tool/http/http_resp.dart';
 
 class HttpApi {
   static final HttpApi _httpService = HttpApi._instance();

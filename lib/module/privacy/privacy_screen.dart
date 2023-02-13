@@ -1,13 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:gh_tool_package/config/app_preference.dart';
+import 'package:gh_tool_package/extension/time.dart';
+import 'package:gh_tool_package/system/web.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/app/app_preferences.dart';
+import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/app/routes.dart';
 import 'package:top_one/service/app_info_service.dart';
 import 'package:top_one/theme/app_theme.dart';
-import 'package:top_one/tool/time.dart';
-import 'package:top_one/tool/web.dart';
 import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
 

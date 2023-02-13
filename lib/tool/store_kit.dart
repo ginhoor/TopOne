@@ -1,11 +1,11 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:gh_tool_package/config/app_preference.dart';
+import 'package:gh_tool_package/extension/time.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:top_one/app/app.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/app/app_preferences.dart';
 import 'package:top_one/theme/app_theme.dart';
-import 'package:top_one/tool/time.dart';
 
 final InAppReview inAppReview = InAppReview.instance;
 

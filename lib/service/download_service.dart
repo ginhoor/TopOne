@@ -1,17 +1,12 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:gh_tool_package/log/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:top_one/app/logger.dart';
 
 class DownloadService {
-  // static const String BASE_URL_PROD = 'https://imweb.bianfeng.com';
-  // static const String BASE_URL_DEV = 'https://imweb-dev.daqun.team';
-  // static const String KNOWLEDGE_ENTRANCE =
-  //     "https://daqun-miniapp.imeete.com/think_tank/#/mobile/search";
-
   bool hasGranted = false;
   DownloadService._internal();
   static final DownloadService _instance = DownloadService._internal();

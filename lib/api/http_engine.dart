@@ -2,10 +2,10 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:gh_tool_package/extension/time.dart';
+import 'package:gh_tool_package/http/base_http.dart';
+import 'package:gh_tool_package/http/http_resp.dart';
 import 'package:top_one/service/app_info_service.dart';
-import 'package:top_one/tool/http/base_http.dart';
-import 'package:top_one/tool/http/http_resp.dart';
-import 'package:top_one/tool/time.dart';
 
 // var debugMode = true;
 var debugMode = false;
@@ -30,11 +30,15 @@ class HttpEngine extends BaseHttp {
 
   HttpEngine._internal() {
     String url = debugMode ? BASE_URL_DEV : BASE_URL_PROD;
+
     init(baseURL: url);
+    commonHeader = {
+      'os': AppInfoService().sysInfo.os,
+      'version': AppInfoService().appVersion,
+    };
   }
 
   static final HttpEngine _instance = HttpEngine._internal();
-
   factory HttpEngine() => _instance;
 
   HashMap<String, HttpResp> respCache = HashMap<String, HttpResp>();

@@ -1,10 +1,11 @@
 import 'dart:io';
 
-import 'package:top_one/app/logger.dart';
+import 'package:flutter/foundation.dart';
+import 'package:gh_tool_package/extension/time.dart';
+import 'package:gh_tool_package/log/logger.dart';
 import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
 import 'package:top_one/service/ad/interstitial_ad_service.dart';
-import 'package:top_one/tool/time.dart';
 
 class ADService {
   ADService._internal();
@@ -82,24 +83,15 @@ class ADService {
     return offset > 60;
   }
 
-  InterstitialAdService indexINTAdService = InterstitialAdService(
-    TESTInterstitialVideoUnitId,
-    // kDebugMode
-    //   ? ADService().TESTInterstitialVideoUnitId
-    //   : ADService().interstitialUnitId1
-  );
-  InterstitialAdService historyINTAdService = InterstitialAdService(
-    TESTInterstitialVideoUnitId,
-    // kDebugMode
-    //   ? ADService().TESTInterstitialVideoUnitId
-    //   : ADService().interstitialUnitId2
-  );
-  InterstitialAdService videoPlayINTAdService = InterstitialAdService(
-    TESTInterstitialVideoUnitId,
-    // kDebugMode
-    //   ? ADService().TESTInterstitialVideoUnitId
-    //   : ADService().interstitialUnitId3
-  );
+  InterstitialAdService indexINTAdService = InterstitialAdService(kDebugMode
+      ? ADService.TESTInterstitialVideoUnitId
+      : ADService.interstitialUnitId1);
+  InterstitialAdService historyINTAdService = InterstitialAdService(kDebugMode
+      ? ADService.TESTInterstitialVideoUnitId
+      : ADService.interstitialUnitId2);
+  InterstitialAdService videoPlayINTAdService = InterstitialAdService(kDebugMode
+      ? ADService.TESTInterstitialVideoUnitId
+      : ADService.interstitialUnitId3);
 
   bool hasInterstitialAdServiceShowing() {
     return indexINTAdService.showing ||

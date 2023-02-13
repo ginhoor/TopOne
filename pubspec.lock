@@ -336,6 +336,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  gh_tool_package:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "4ecf20faff7e8d8b5399baa7248457c8ed890320"
+      url: "https://github.com/ginhoor/GHToolPackage.git"
+    source: git
+    version: "0.0.1"
   google_mobile_ads:
     dependency: "direct main"
     description:
@@ -638,7 +647,7 @@ packages:
     source: hosted
     version: "0.27.7"
   shared_preferences:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: shared_preferences
       url: "https://pub.dartlang.org"

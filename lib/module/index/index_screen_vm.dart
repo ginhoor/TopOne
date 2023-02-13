@@ -4,19 +4,19 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gh_tool_package/extension/string.dart';
+import 'package:gh_tool_package/http/http_resp.dart';
+import 'package:gh_tool_package/log/logger.dart';
 import 'package:top_one/api/http_engine.dart';
 import 'package:top_one/api/req_ttd_api.dart';
-import 'package:top_one/app/app_preferences.dart';
-import 'package:top_one/app/logger.dart';
+import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
-import 'package:top_one/tool/http/http_resp.dart';
 import 'package:top_one/tool/store_kit.dart';
-import 'package:top_one/tool/string.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
 
