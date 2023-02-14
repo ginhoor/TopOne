@@ -11,10 +11,10 @@ dependencies:
     sdk: flutter
 
   gh_tool_package:
-    path: /Users/ginhoor/Workspace/Flutter/gh_tool_package
-    # git:
-    #   url: https://github.com/ginhoor/GHToolPackage.git
-    #   ref: "main"
+    # path: /Users/ginhoor/Workspace/Flutter/gh_tool_package
+    git:
+      url: https://github.com/ginhoor/GHToolPackage.git
+      ref: "main"
 
   provider: ^6.0.5
   logger: ^1.1.0
