@@ -12,14 +12,12 @@ extension Metadata on DownloadService {
   Future<List<TaskModel>> loadTasks() async {
     var existTasks = await FlutterDownloader.loadTasksWithRawQuery(
         query: "SELECT * FROM task ORDER BY time_created DESC");
-    if (existTasks == null || existTasks.isEmpty) {
-      return [];
-    }
+    if (existTasks == null || existTasks.isEmpty) return [];
+
     List<TaskModel> models = [];
     for (var task in existTasks) {
       var taskId = task.taskId;
       var metaData = await TTResultDatasource().query(taskId);
-      // var metaData = await DownloadService().queryMetaData(taskId);
       if (metaData == null) {
         deleteDownloadTask(taskId);
         continue;
@@ -58,7 +56,6 @@ extension Metadata on DownloadService {
     if (taskId == null) return null;
     AnalyticsService().logEvent(AnalyticsEvent.createDownload);
     final model = TaskModel(metaData: result, taskId: taskId);
-    // DownloadService().saveMetaData(model.taskId, result);
     TTResultDatasource().save(taskId, result);
     return model;
   }
@@ -85,7 +82,6 @@ extension Metadata on DownloadService {
   deleteDownloadTask(String taskId) async {
     await FlutterDownloader.remove(taskId: taskId, shouldDeleteContent: true);
     await TTResultDatasource().delete(taskId);
-    // DownloadService().deleteMetaData(taskId);
     AnalyticsService().logEvent(AnalyticsEvent.deleteDownload);
   }
 }

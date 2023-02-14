@@ -28,7 +28,7 @@ class DownloadService {
 
   Future<void> setupDirs() async {
     await prepareSaveDir();
-    await prepareMetaSaveDir();
+    // await prepareMetaSaveDir();
   }
 
   Future<void> prepareSaveDir() async {
@@ -37,13 +37,6 @@ class DownloadService {
     var localPath = await getSavedDirPath();
     final savedDir = Directory(localPath);
     logDebug('get downloads path: $savedDir');
-    if (!savedDir.existsSync()) await savedDir.create();
-  }
-
-  Future<void> prepareMetaSaveDir() async {
-    var localPath = await getMetaDataDirPath();
-    final savedDir = Directory(localPath);
-    logDebug('get meta data path: $savedDir');
     if (!savedDir.existsSync()) await savedDir.create();
   }
 
@@ -70,18 +63,6 @@ class DownloadService {
   Future<String> getSavedDirPath() async {
     var savedDirPath =
         path.join(await getExternalStorageDirPath(), 'Downloads');
-    var dir = Directory(savedDirPath);
-    try {
-      bool exists = await dir.exists();
-      if (!exists) await dir.create();
-    } catch (e) {
-      logError(e.toString());
-    }
-    return savedDirPath;
-  }
-
-  Future<String> getMetaDataDirPath() async {
-    var savedDirPath = path.join(await getExternalStorageDirPath(), 'MetaData');
     var dir = Directory(savedDirPath);
     try {
       bool exists = await dir.exists();
