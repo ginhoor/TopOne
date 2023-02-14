@@ -32,73 +32,69 @@ void openStorePage() async {
 }
 
 Future<void> showRateDialog(BuildContext context) async {
+  Widget getStartIcon() {
+    return const Expanded(
+      child: Icon(
+        Icons.star,
+        size: 35,
+        color: Colors.amber,
+      ),
+    );
+  }
+
   return showDialog<void>(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
         return AlertDialog(
-          content: LayoutBuilder(builder: (context, constraints) {
-            Widget getStartIcon() {
-              return const Expanded(
-                child: Icon(
-                  Icons.star,
-                  size: 35,
-                  color: Colors.amber,
+          content: SizedBox(
+            height: 140,
+            child: Column(
+              children: [
+                const Text(
+                  "rate_title",
+                  style: TextStyle(color: AppTheme.nearlyBlack, fontSize: 17),
+                ).tr(),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 40,
+                  child: Row(
+                    children: [
+                      getStartIcon(),
+                      getStartIcon(),
+                      getStartIcon(),
+                      getStartIcon(),
+                      getStartIcon(),
+                    ],
+                  ),
                 ),
-              );
-            }
-
-            return SizedBox(
-              width: constraints.maxWidth,
-              height: 140,
-              child: Column(
-                children: [
-                  const Text(
-                    "rate_title",
-                    style: TextStyle(color: AppTheme.nearlyBlack, fontSize: 17),
-                  ).tr(),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: constraints.maxWidth,
-                    height: 40,
-                    child: Row(
-                      children: [
-                        getStartIcon(),
-                        getStartIcon(),
-                        getStartIcon(),
-                        getStartIcon(),
-                        getStartIcon(),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 40,
-                    width: constraints.maxWidth,
-                    child: TextButton(
-                      style: ButtonStyle(backgroundColor:
-                          MaterialStateProperty.resolveWith((states) {
-                        if (states.contains(MaterialState.pressed)) {
-                          return AppTheme.actionGreen;
-                        } else if (states.contains(MaterialState.disabled)) {
-                          return AppTheme.actionGreen;
-                        }
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 40,
+                  child: TextButton(
+                    style: ButtonStyle(backgroundColor:
+                        MaterialStateProperty.resolveWith((states) {
+                      if (states.contains(MaterialState.pressed)) {
                         return AppTheme.actionGreen;
-                      })),
-                      child: const Text(
-                        'rate_now',
-                        style: TextStyle(color: AppTheme.white, fontSize: 17),
-                      ).tr(),
-                      onPressed: () {
-                        openStorePage();
-                        AppNavigator.popPage();
-                      },
-                    ),
+                      } else if (states.contains(MaterialState.disabled)) {
+                        return AppTheme.actionGreen;
+                      }
+                      return AppTheme.actionGreen;
+                    })),
+                    child: const Text(
+                      'rate_now',
+                      style: TextStyle(color: AppTheme.white, fontSize: 17),
+                    ).tr(),
+                    onPressed: () {
+                      AppNavigator.popPage();
+                      Future.delayed(const Duration(milliseconds: 300))
+                          .then((value) => openStorePage());
+                    },
                   ),
-                ],
-              ),
-            );
-          }),
+                ),
+              ],
+            ),
+          ),
         );
       });
 }

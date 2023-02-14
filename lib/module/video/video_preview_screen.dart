@@ -59,7 +59,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         setState(() {
           videoPlayerController.play();
         });
-        showRateView();
+        showRateDialog(context);
       }
     });
   }
