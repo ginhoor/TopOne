@@ -24,7 +24,6 @@ class IndexScreenVM extends ChangeNotifier {
 
   TaskModel? currentTask;
 
-  // List<TaskModel> items = [];
   String itemsVersion = "";
   void updateItemsVersion() {
     itemsVersion = generateRandomString(5);
