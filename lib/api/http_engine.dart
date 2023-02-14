@@ -1,10 +1,9 @@
-import 'dart:collection';
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:gh_tool_package/http/base_http.dart';
-import 'package:gh_tool_package/http/http_resp.dart';
+import 'package:top_one/data/hive_storage.dart';
 import 'package:top_one/service/app_info_service.dart';
 
 // var debugMode = true;
@@ -30,7 +29,6 @@ class HttpEngine extends BaseHttp {
 
   HttpEngine._internal() {
     String url = debugMode ? BASE_URL_DEV : BASE_URL_PROD;
-
     init(baseURL: url);
     commonHeader = {
       'os': AppInfoService().sysInfo.os,
@@ -41,7 +39,12 @@ class HttpEngine extends BaseHttp {
   static final HttpEngine _instance = HttpEngine._internal();
   factory HttpEngine() => _instance;
 
-  HashMap<String, HttpResp> respCache = HashMap<String, HttpResp>();
+  HiveStorage respCache = HiveStorage();
+
+  static setup() async {
+    HttpEngine().respCache.init("http_resp");
+    HttpEngine().respCache.clear();
+  }
 
   APISign getAPISign(String path, Map<String, dynamic> params) {
     final timestamp = currentTimestamp();

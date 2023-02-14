@@ -25,7 +25,7 @@ class TaskInfo {
     taskId = data['task_id'];
     type = data['type'];
     if (data['metaData'] != null) {
-      metaData = TTResult.fromJson(json.decode(data['metaData']));
+      metaData = TTResult().fromJson(json.decode(data['metaData']));
     }
   }
   Map<String, dynamic> toJson() {

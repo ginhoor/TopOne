@@ -5,10 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gh_tool_package/extension/string.dart';
-import 'package:gh_tool_package/http/http_resp.dart';
 import 'package:gh_tool_package/log/logger.dart';
-import 'package:top_one/api/http_engine.dart';
-import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
@@ -38,15 +35,6 @@ class IndexScreenVM extends ChangeNotifier {
     if (inlineadLoaded) return;
     inlineadLoaded = true;
     notifyListeners();
-  }
-
-  Future<TTResult> getTTResult(String url) async {
-    HttpResp resp = await HttpApi().getTTResult(url);
-    if (resp.data == null) throw Error();
-    var result = TTResult.fromJson(resp.data);
-    if (result.video == null) throw Error();
-    HttpEngine().respCache[url] = resp;
-    return result;
   }
 
   Future<DownloadTask?> findCompletedTask(String taskId) async {

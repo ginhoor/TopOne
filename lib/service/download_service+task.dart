@@ -1,7 +1,7 @@
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:top_one/data/tt_result_datasource.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
-import 'package:top_one/service/download_service+metadata.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,7 +18,8 @@ extension Metadata on DownloadService {
     List<TaskModel> models = [];
     for (var task in existTasks) {
       var taskId = task.taskId;
-      var metaData = await DownloadService().queryMetaData(taskId);
+      var metaData = await TTResultDatasource().query(taskId);
+      // var metaData = await DownloadService().queryMetaData(taskId);
       if (metaData == null) {
         deleteDownloadTask(taskId);
         continue;
@@ -57,7 +58,8 @@ extension Metadata on DownloadService {
     if (taskId == null) return null;
     AnalyticsService().logEvent(AnalyticsEvent.createDownload);
     final model = TaskModel(metaData: result, taskId: taskId);
-    DownloadService().saveMetaData(model.taskId, result);
+    // DownloadService().saveMetaData(model.taskId, result);
+    TTResultDatasource().save(taskId, result);
     return model;
   }
 
@@ -82,7 +84,8 @@ extension Metadata on DownloadService {
 
   deleteDownloadTask(String taskId) async {
     await FlutterDownloader.remove(taskId: taskId, shouldDeleteContent: true);
-    DownloadService().deleteMetaData(taskId);
+    await TTResultDatasource().delete(taskId);
+    // DownloadService().deleteMetaData(taskId);
     AnalyticsService().logEvent(AnalyticsEvent.deleteDownload);
   }
 }

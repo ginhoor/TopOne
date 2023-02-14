@@ -8,13 +8,10 @@ class Routes {
   static const privacyScreenRoute = "privacy_screen";
 
   static Route onGenerateRoute(RouteSettings settings) {
-    // final pathElements = settings.name?.split('/');
     if (settings.name == null) return onUnknownRoute();
+    // final pathElements = settings.name?.split('/');
     Uri uri = Uri.parse(settings.name!);
     String route = uri.path;
-    if (route == '') {
-      return onUnknownRoute();
-    }
     switch (route) {
       case indexScreenRoute:
         return AppNavigator.buildRouter(const IndexScreen());

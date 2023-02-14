@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gh_tool_package/config/app_preference.dart';
 import 'package:provider/provider.dart';
+import 'package:top_one/api/http_engine.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/routes.dart';
+import 'package:top_one/data/tt_result_datasource.dart';
 import 'package:top_one/module/splash/splash_screen.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/app_info_service.dart';
@@ -71,7 +73,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
           AppNavigatorObserver(),
           AppNavigatorObserver.routeObserver,
         ],
-        // theme: AppTheme.defaultLightTheme,
         debugShowCheckedModeBanner: false,
         onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         onUnknownRoute: (settings) => Routes.onUnknownRoute(),
@@ -94,7 +95,10 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   static Future<void> initAppModule() async {
     ADService().preloadAds();
     DownloadService().setupDirs();
+
     await AppInfoService().init();
     await AppPreference().setup();
+    await TTResultDatasource.setup();
+    await HttpEngine.setup();
   }
 }

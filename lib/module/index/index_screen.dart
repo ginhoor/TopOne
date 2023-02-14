@@ -7,8 +7,10 @@ import 'package:gh_tool_package/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/model/downloads.dart';
+import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/history/history_screen.dart';
 import 'package:top_one/module/index/index_screen_vm.dart';
 import 'package:top_one/module/index/view/index_task_info_widget.dart';
@@ -18,8 +20,6 @@ import 'package:top_one/service/ad/Inline_ad_service.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
-import 'package:top_one/service/download_service+metadata.dart';
-import 'package:top_one/service/download_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
@@ -92,15 +92,13 @@ class _IndexScreenState extends State<IndexScreen>
     if (text.isEmpty) return false;
     AnalyticsService().logEvent(AnalyticsEvent.tapDownload);
     var url = text;
-    if (!DownloadService().verifyURL(url)) {
-      if (mounted) {
-        showToast(context, const Text("url_invaild_error").tr());
-      }
+    if (!TTResult.verifyURL(url)) {
+      if (mounted) showToast(context, const Text("url_invaild_error").tr());
       return false;
     }
     await EasyLoading.show(status: "chacking".tr());
     try {
-      var result = await vm.getTTResult(url);
+      var result = await HttpApi().getTTResult(url);
       var success = await vm.createDownloadTask(result);
       await EasyLoading.dismiss();
       if (success) {

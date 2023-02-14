@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:gh_tool_package/log/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -11,6 +12,19 @@ class DownloadService {
   DownloadService._internal();
   static final DownloadService _instance = DownloadService._internal();
   factory DownloadService() => _instance;
+
+  static ensureInitialized() async {
+    if (Platform.isIOS) {
+      getApplicationDocumentsDirectory().then((value) => logDebug(value));
+      var dir = await getApplicationSupportDirectory();
+      if (!dir.existsSync()) {
+        await dir.create();
+      }
+      await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
+    } else {
+      await FlutterDownloader.initialize(debug: true, ignoreSsl: true);
+    }
+  }
 
   Future<void> setupDirs() async {
     await prepareSaveDir();
