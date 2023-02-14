@@ -28,7 +28,6 @@ class DownloadService {
 
   Future<void> setupDirs() async {
     await prepareSaveDir();
-    // await prepareMetaSaveDir();
   }
 
   Future<void> prepareSaveDir() async {
