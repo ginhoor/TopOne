@@ -36,12 +36,18 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     initAppModule();
   }
 
+  static Future<void> initAppModule() async {
+    ADService().preloadAds();
+    DownloadService().setupDirs();
+
+    await AppInfoService().init();
+    await AppPreference().setup();
+    await TTResultDatasource.setup();
+    await HttpEngine.setup();
+  }
+
   @override
   void dispose() {
-    // if (_logoPageTimer != null && _logoPageTimer.isActive) {
-    // _logoPageTimer.cancel();
-    // }
-    // WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
@@ -90,15 +96,5 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         builder: EasyLoading.init(),
       ),
     );
-  }
-
-  static Future<void> initAppModule() async {
-    ADService().preloadAds();
-    DownloadService().setupDirs();
-
-    await AppInfoService().init();
-    await AppPreference().setup();
-    await TTResultDatasource.setup();
-    await HttpEngine.setup();
   }
 }
