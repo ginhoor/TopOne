@@ -37,7 +37,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               children: [
                 // Videos Downloader for TickTok
                 Text(
-                  "Welcome to",
+                  "welcome_to".tr(),
                   style: TextStyle(
                       color: AppTheme.nearlyBlack,
                       fontSize: 30,
@@ -49,7 +49,6 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
-                      // Videos Downloader for TickTok
                       Text(
                         "Videos Downloader for TickTok",
                         style: TextStyle(
@@ -66,7 +65,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           ),
           Positioned(
             bottom: MediaQuery.of(context).padding.bottom + 40 + 10 + 100,
-            height: 80,
+            height: 100,
             width: MediaQuery.of(context).size.width,
             child: Padding(
               padding: const EdgeInsets.only(left: 40, right: 40),
