@@ -35,22 +35,21 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Videos Downloader for TickTok
                 Text(
                   "welcome_to".tr(),
-                  style: TextStyle(
+                  style: const TextStyle(
                       color: AppTheme.nearlyBlack,
                       fontSize: 30,
                       fontWeight: FontWeight.w300),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Padding(
-                  padding: EdgeInsets.only(left: 4),
+                  padding: const EdgeInsets.only(left: 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
-                        "Videos Downloader for TickTok",
+                        "Videos Downloader for TckTok",
                         style: TextStyle(
                             color: AppTheme.nearlyBlack,
                             fontSize: 17,

@@ -10,7 +10,7 @@
     <application
     android:usesCleartextTraffic="true"
     android:requestLegacyExternalStorage="true"
-    android:label="Videos Downloader for TT"
+    android:label="Download for TT no watermark"
     android:name="${applicationName}"
     android:icon="@mipmap/ic_launcher">
         <meta-data

@@ -28,6 +28,10 @@ class InterstitialAdService {
   }
 
   void show(Function(InterstitialAd?)? completion) async {
+    if (disableAD) {
+      if (completion != null) completion(null);
+      return;
+    }
     if (!ADService().shouldShowInterstitialAd()) {
       if (completion != null) completion(ad);
       return;

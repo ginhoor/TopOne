@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:gh_tool_package/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:top_one/service/ad/ad_service.dart';
 
 class BannerADService {
   BannerAd? ad;
@@ -30,6 +31,9 @@ class BannerADService {
   }
 
   Widget adWidget() {
+    if (disableAD) {
+      return Container();
+    }
     if (ad != null) {
       return SizedBox(
           width: (ad!.size.width).toDouble(),

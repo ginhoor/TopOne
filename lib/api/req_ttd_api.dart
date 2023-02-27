@@ -10,10 +10,10 @@ class HttpApi {
   HttpApi._instance();
 
   Future<TTResult> getTTResult(String url) async {
-    var exist = HttpEngine().respCache.getValue(url);
-    if (exist != null) {
-      return TTResult().fromJson(Map<String, dynamic>.from(exist));
-    }
+    // var exist = HttpEngine().respCache.getValue(url);
+    // if (exist != null) {
+    //   return TTResult().fromJson(Map<String, dynamic>.from(exist));
+    // }
     try {
       var path = "/GetV3";
       Map<String, dynamic> params = {"link": url};
@@ -28,7 +28,7 @@ class HttpApi {
       if (resp.data == null) throw Error();
       var result = TTResult().fromJson(resp.data);
       if (result.video == null) throw Error();
-      HttpEngine().respCache.setValue(url, resp.data);
+      // HttpEngine().respCache.setValue(url, resp.data);
       return result;
     } catch (e) {
       throw HttpResp.unknowError();

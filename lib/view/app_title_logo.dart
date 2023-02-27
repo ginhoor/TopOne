@@ -10,7 +10,6 @@ class AppTitleLogo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
-        // Videos Downloader for TickTok
         Text(
           "Videos",
           style: TextStyle(
@@ -28,7 +27,7 @@ class AppTitleLogo extends StatelessWidget {
               height: 1.5),
         ),
         Text(
-          "for TickTok",
+          "for TikTok",
           style: TextStyle(
               color: AppTheme.nearlyBlack,
               fontSize: 25,

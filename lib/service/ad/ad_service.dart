@@ -7,6 +7,9 @@ import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
 import 'package:top_one/service/ad/interstitial_ad_service.dart';
 
+// bool disableAD = true;
+bool disableAD = false;
+
 class ADService {
   ADService._internal();
   static final ADService _instance = ADService._internal();

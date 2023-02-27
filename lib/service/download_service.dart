@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -12,6 +13,8 @@ class DownloadService {
   DownloadService._internal();
   static final DownloadService _instance = DownloadService._internal();
   factory DownloadService() => _instance;
+
+  final port = ReceivePort();
 
   static ensureInitialized() async {
     if (Platform.isIOS) {

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:gh_tool_package/log/logger.dart';
@@ -10,10 +9,8 @@ import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
-import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/tool/store_kit.dart';
-import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPreviewScreen extends StatefulWidget {
@@ -59,7 +56,6 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
         setState(() {
           videoPlayerController.play();
         });
-        showRateDialog(context);
       }
     });
   }
@@ -155,41 +151,41 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                 },
               ),
             ),
-            Positioned(
-              right: 16,
-              top: (MediaQuery.of(context).padding.top) + 16,
-              child: GestureDetector(
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(25.0)),
-                  child: Container(
-                    color: Colors.black26,
-                    child: const SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: Icon(Icons.save_alt,
-                          size: 30, color: AppTheme.nearlyWhite),
-                    ),
-                  ),
-                ),
-                onTap: () {
-                  showMessageDialog(
-                    context,
-                    const Text('defualt_alert_title').tr(),
-                    const Text("save_video").tr(),
-                    TextButton(
-                      child: const Text('save').tr(),
-                      onPressed: () async {
-                        if (widget.localFilePath != null) {
-                          await PhotoLibraryService()
-                              .saveVideo(widget.localFilePath!);
-                        }
-                        AppNavigator.popPage();
-                      },
-                    ),
-                  );
-                },
-              ),
-            ),
+            // Positioned(
+            //   right: 16,
+            //   top: (MediaQuery.of(context).padding.top) + 16,
+            //   child: GestureDetector(
+            //     child: ClipRRect(
+            //       borderRadius: const BorderRadius.all(Radius.circular(25.0)),
+            //       child: Container(
+            //         color: Colors.black26,
+            //         child: const SizedBox(
+            //           width: 50,
+            //           height: 50,
+            //           child: Icon(Icons.save_alt,
+            //               size: 30, color: AppTheme.nearlyWhite),
+            //         ),
+            //       ),
+            //     ),
+            //     onTap: () {
+            //       showMessageDialog(
+            //         context,
+            //         const Text('defualt_alert_title').tr(),
+            //         const Text("save_video").tr(),
+            //         TextButton(
+            //           child: const Text('save').tr(),
+            //           onPressed: () async {
+            //             if (widget.localFilePath != null) {
+            //               await PhotoLibraryService()
+            //                   .saveVideo(widget.localFilePath!);
+            //             }
+            //             AppNavigator.popPage();
+            //           },
+            //         ),
+            //       );
+            //     },
+            //   ),
+            // ),
             Positioned(
               bottom: 155,
               left: 20,

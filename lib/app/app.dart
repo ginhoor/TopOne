@@ -25,7 +25,7 @@ class App extends StatefulWidget {
   State<StatefulWidget> createState() => _AppState();
 }
 
-final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class _AppState extends State<App> with WidgetsBindingObserver {
   final AppVM _appVM = AppVM();
@@ -37,7 +37,9 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   }
 
   static Future<void> initAppModule() async {
-    ADService().preloadAds();
+    if (!disableAD) {
+      ADService().preloadAds();
+    }
     DownloadService().setupDirs();
 
     await AppInfoService().init();

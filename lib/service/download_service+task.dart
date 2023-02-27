@@ -8,6 +8,8 @@ import 'package:uuid/uuid.dart';
 import 'analytics/analytics_event.dart';
 import 'analytics/analytics_service.dart';
 
+const _isolatePortServerName = "download_service_send_port";
+
 extension Metadata on DownloadService {
   Future<List<TaskModel>> loadTasks() async {
     var existTasks = await FlutterDownloader.loadTasksWithRawQuery(
@@ -43,6 +45,7 @@ extension Metadata on DownloadService {
   Future<TaskModel?> createDownloadTask(TTResult result) async {
     if (result.video == null) return null;
     var savedDir = await DownloadService().getSavedDirPath();
+    // print("video-->${result.video}");
     final taskId = await FlutterDownloader.enqueue(
       url: result.video!,
       fileName: '${const Uuid().v1()}.mp4',
