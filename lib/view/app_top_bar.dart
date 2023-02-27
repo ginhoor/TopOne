@@ -6,12 +6,16 @@ class AppTopBar extends StatelessWidget {
   final AnimationController animationController;
   final Animation<double> animation;
   final double topBarOpacity;
+  final bool hasNewHistory;
 
   final Function() tapSettings;
   final Function() tapDownloadList;
 
   const AppTopBar(this.animationController, this.animation, this.topBarOpacity,
-      {required this.tapSettings, required this.tapDownloadList, super.key});
+      {required this.tapSettings,
+      required this.tapDownloadList,
+      required this.hasNewHistory,
+      super.key});
   @override
   Widget build(BuildContext context) {
     return generateAppTopBar(animationController, animation, topBarOpacity);
@@ -75,12 +79,48 @@ class AppTopBar extends StatelessWidget {
                                 icon: const Icon(Icons.settings),
                                 color: AppTheme.nearlyBlack,
                                 onPressed: tapSettings),
-                            IconButton(
-                                iconSize: 30,
-                                color: AppTheme.nearlyBlack,
-                                icon: const Icon(
-                                    Icons.download_for_offline_rounded),
-                                onPressed: tapDownloadList),
+                            hasNewHistory
+                                ? Stack(
+                                    children: [
+                                      IconButton(
+                                        iconSize: 30,
+                                        color: AppTheme.nearlyBlack,
+                                        icon: const Icon(
+                                            Icons.download_for_offline_rounded),
+                                        onPressed: tapDownloadList,
+                                      ),
+                                      Positioned(
+                                        top: 5,
+                                        right: 2,
+                                        child: Container(
+                                          padding: EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          constraints: const BoxConstraints(
+                                            minWidth: 10,
+                                            minHeight: 10,
+                                          ),
+                                          // child: Text(
+                                          //   '1',
+                                          //   style: TextStyle(
+                                          //     color: Colors.white,
+                                          //     fontSize: 10,
+                                          //   ),
+                                          //   textAlign: TextAlign.center,
+                                          // ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : IconButton(
+                                    iconSize: 30,
+                                    color: AppTheme.nearlyBlack,
+                                    icon: const Icon(
+                                        Icons.download_for_offline_rounded),
+                                    onPressed: tapDownloadList),
                           ],
                         ),
                       )

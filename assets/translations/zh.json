@@ -30,6 +30,6 @@
     "privacy_subtile_2": "并且确认过我们的",
     "privacy_policy": "隐私政策",
     "storage_permission_error": "授予存储权限以继续",
-    "url_invaild_error": "无效链接，请检查后再showToast试",
+    "url_invaild_error": "无效链接，请检查后再试",
     "create_task_failed_error": "创建任务失败"
 }

@@ -3,12 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gh_tool_package/config/app_preference.dart';
 import 'package:gh_tool_package/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/history/history_screen.dart';
@@ -96,7 +98,7 @@ class _IndexScreenState extends State<IndexScreen>
       if (mounted) showToast(context, const Text("url_invaild_error").tr());
       return false;
     }
-    await EasyLoading.show(status: "chacking".tr());
+    await EasyLoading.show(status: "chacking".tr(), dismissOnTap: false);
     try {
       var result = await HttpApi().getTTResult(url);
       var success = await vm.createDownloadTask(result);
@@ -142,19 +144,24 @@ class _IndexScreenState extends State<IndexScreen>
         return AppTopBar(
           animationController,
           topBarAnimation,
-          topBarOpacity,
+          vm.topBarOpacity,
+          hasNewHistory:
+              AppPreference().getInt(AppPreferenceKey.has_new_history_date) !=
+                  null,
           tapSettings: () {
             AppNavigator.pushPage(const SettingsScreen());
           },
           tapDownloadList: () async {
             ADService().historyINTAdService.show((p0) async {
               AppNavigator.pushPage(const HistoryScreen());
+              AppPreference().remove(AppPreferenceKey.has_new_history_date);
+              vm.updateTopBarDataVersion();
             });
           },
         );
       },
       selector: (BuildContext context, IndexScreenVM vm) {
-        return vm.topBarOpacity;
+        return vm.topBarDataVersion;
       },
     );
   }

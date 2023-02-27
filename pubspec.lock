@@ -432,7 +432,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "4ecf20faff7e8d8b5399baa7248457c8ed890320"
+      resolved-ref: e7b24caad2db1b25f594caa9d1b66fb30fac0b9a
       url: "https://github.com/ginhoor/GHToolPackage.git"
     source: git
     version: "0.0.1"

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
@@ -39,17 +40,23 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
     if (state == AppLifecycleState.resumed) {
-      // 自动读取剪贴板
-      handlePasteAction();
+      // 自动读取剪贴板，自动开始下载
+      var result = await getClipboardData();
+      if (result == null) return;
+      var url = result.text!;
+      if (TTResult.verifyURL(url)) {
+        if (widget.handleDownload != null) {
+          widget.handleDownload!(url).then((value) => {clearClipboard()});
+        }
+      }
     }
   }
 
-//复制
-  copyText(text) {
-    Clipboard.setData(ClipboardData(text: text));
+  clearClipboard() {
+    Clipboard.setData(const ClipboardData(text: ""));
   }
 
 //读取剪切板 返回
@@ -57,7 +64,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
     return await Clipboard.getData(Clipboard.kTextPlain);
   }
 
-  handlePasteAction() async {
+  Future<void> handlePasteAction() async {
     AnalyticsService().logEvent(AnalyticsEvent.pasteUrl);
     var result = await getClipboardData();
     if (result != null) {
@@ -65,6 +72,17 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
       setState(() {
         _inputController.text = text;
       });
+    }
+  }
+
+  Future<void> handleDownloadAction() async {
+    if (widget.handleDownload != null) {
+      var success = await widget.handleDownload!(_inputController.text);
+      if (success) {
+        setState(() {
+          _inputController.text = "";
+        });
+      }
     }
   }
 
@@ -103,19 +121,8 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
           child: SizedBox(
             height: 40,
             child: addShadows(
-              generateActionButton(
-                  "download", AppTheme.actionGreen, AppTheme.nearlyWhite,
-                  () async {
-                if (widget.handleDownload != null) {
-                  var success =
-                      await widget.handleDownload!(_inputController.text);
-                  if (success) {
-                    setState(() {
-                      _inputController.text = "";
-                    });
-                  }
-                }
-              }),
+              generateActionButton("download", AppTheme.actionGreen,
+                  AppTheme.nearlyWhite, handleDownloadAction),
             ),
           ),
         )

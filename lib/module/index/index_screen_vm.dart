@@ -4,7 +4,9 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:gh_tool_package/config/app_preference.dart';
 import 'package:gh_tool_package/extension/string.dart';
+import 'package:gh_tool_package/extension/time.dart';
 import 'package:gh_tool_package/log/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_preference.dart';
@@ -25,6 +27,11 @@ class IndexScreenVM extends ChangeNotifier {
   final _port = ReceivePort();
 
   TaskModel? currentTask;
+
+  String topBarDataVersion = "";
+  void updateTopBarDataVersion() {
+    topBarDataVersion = generateRandomString(5);
+  }
 
   String itemsVersion = "";
   void updateItemsVersion() {
@@ -56,7 +63,7 @@ class IndexScreenVM extends ChangeNotifier {
   }
 
   resumeDownloadTask(String taskId) async {
-    await EasyLoading.show();
+    await EasyLoading.show(dismissOnTap: false);
     final newTaskId = await FlutterDownloader.resume(taskId: taskId);
     if (newTaskId == null) {
       await EasyLoading.dismiss();
@@ -68,7 +75,7 @@ class IndexScreenVM extends ChangeNotifier {
   }
 
   retryDownloadTask(String taskId) async {
-    await EasyLoading.show();
+    await EasyLoading.show(dismissOnTap: false);
     final newTaskId = await FlutterDownloader.retry(taskId: taskId);
     if (newTaskId == null) {
       await EasyLoading.dismiss();
@@ -100,6 +107,10 @@ class IndexScreenVM extends ChangeNotifier {
       });
       showCustomRateView(
           null, AppPreferenceKey.latest_download_complete_rate_date);
+      // 记录红标
+      AppPreference()
+          .setInt(AppPreferenceKey.has_new_history_date, currentMilliseconds());
+      updateTopBarDataVersion();
     }
     updateItemsVersion();
     notifyListeners();
@@ -107,11 +118,12 @@ class IndexScreenVM extends ChangeNotifier {
 
   updateTopBarOpacity(double topBarOpacity) {
     this.topBarOpacity = topBarOpacity;
+    updateTopBarDataVersion();
     notifyListeners();
   }
 
   deleteDownloadTask(String taskId) async {
-    await EasyLoading.show();
+    await EasyLoading.show(dismissOnTap: false);
     await DownloadService().deleteDownloadTask(taskId);
     if (currentTask != null) currentTask = null;
     updateItemsVersion();

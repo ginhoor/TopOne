@@ -51,7 +51,7 @@ class HistoryScreenVM extends ChangeNotifier {
   `time_created`  INTEGER DEFAULT 0
 ); */
   loadTasks() async {
-    await EasyLoading.show();
+    await EasyLoading.show(dismissOnTap: false);
     items = await DownloadService().loadTasks();
     updateItemsVersion();
     notifyListeners();
@@ -79,7 +79,7 @@ class HistoryScreenVM extends ChangeNotifier {
   }
 
   resumeDownloadTask(String taskId) async {
-    await EasyLoading.show();
+    await EasyLoading.show(dismissOnTap: false);
     final newTaskId = await DownloadService().resumeDownloadTask(taskId);
     if (newTaskId != null) {
       _updateTaskId(taskId, newTaskId);
@@ -88,7 +88,7 @@ class HistoryScreenVM extends ChangeNotifier {
   }
 
   retryDownloadTask(String taskId) async {
-    await EasyLoading.show();
+    await EasyLoading.show(dismissOnTap: false);
     final newTaskId = await DownloadService().retryDownloadTask(taskId);
     if (newTaskId != null) {
       _updateTaskId(taskId, newTaskId);
@@ -115,7 +115,7 @@ class HistoryScreenVM extends ChangeNotifier {
   }
 
   deleteDownloadTask(String taskId) async {
-    await EasyLoading.show();
+    await EasyLoading.show(dismissOnTap: false);
     await DownloadService().deleteDownloadTask(taskId);
     var item = getItem(taskId);
     if (item != null) items.remove(item);
