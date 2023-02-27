@@ -80,8 +80,8 @@ class _IndexScreenState extends State<IndexScreen>
     AdSize size = AdSize.getInlineAdaptiveBannerAdSize(
         width, (width / 328.0 * 310.0).truncate());
 
-    adService = InlineADService(ADService.TESTBannerUnitId,
-        // kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId1,
+    adService = InlineADService(
+        kDebugMode ? ADService.TESTBannerUnitId : ADService.bannderUnitId1,
         size: size, onAdLoaded: (p0) {
       vm.setInlineadLoaded();
     });

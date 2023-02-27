@@ -59,9 +59,8 @@ class _HistoryScreenState extends State<HistoryScreen>
         await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
             MediaQuery.of(context).size.width.truncate());
     if (size == null) return;
-    adService = BannerADService(ADService.TESTBannerUnitId,
-        // adService = BannerADService(
-        //     kDebugMode ? ADService().TESTBannerUnitId : ADService().bannderUnitId2,
+    adService = BannerADService(
+        kDebugMode ? ADService.TESTBannerUnitId : ADService.bannderUnitId2,
         size: size, onAdLoaded: (p0) {
       vm.setInlineadLoaded();
     });
