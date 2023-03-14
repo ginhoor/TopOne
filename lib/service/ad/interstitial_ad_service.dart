@@ -28,7 +28,7 @@ class InterstitialAdService {
   }
 
   void show(Function(InterstitialAd?)? completion) async {
-    if (disableAD) {
+    if (!ADService().enable) {
       if (completion != null) completion(null);
       return;
     }

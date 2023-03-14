@@ -55,7 +55,7 @@ class TTResultDatasource {
     await box?.deleteAll(taskIds);
   }
 
-  clear(List<String> taskIds) async {
+  clear() async {
     await box?.clear();
   }
 }

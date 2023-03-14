@@ -32,10 +32,7 @@ class InlineADService {
   }
 
   Widget adWidget() {
-    if (disableAD) {
-      return Container();
-    }
-
+    if (!ADService().enable) return Container();
     if (ad != null && resultSize != null) {
       return SizedBox(
           width: resultSize!.width.toDouble(),

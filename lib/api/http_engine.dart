@@ -39,11 +39,11 @@ class HttpEngine extends BaseHttp {
   static final HttpEngine _instance = HttpEngine._internal();
   factory HttpEngine() => _instance;
 
-  HiveStorage respCache = HiveStorage();
+  // HiveStorage respCache = HiveStorage();
 
   static setup() async {
-    HttpEngine().respCache.init("http_resp");
-    HttpEngine().respCache.clear();
+    // HttpEngine().respCache.init("http_resp");
+    // HttpEngine().respCache.clear();
   }
 
   APISign getAPISign(String path, Map<String, dynamic> params) {

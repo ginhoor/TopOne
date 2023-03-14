@@ -31,9 +31,7 @@ class BannerADService {
   }
 
   Widget adWidget() {
-    if (disableAD) {
-      return Container();
-    }
+    if (!ADService().enable) return Container();
     if (ad != null) {
       return SizedBox(
           width: (ad!.size.width).toDouble(),

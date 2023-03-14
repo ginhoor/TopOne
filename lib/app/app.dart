@@ -2,12 +2,17 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gh_tool_package/config/app_preference.dart';
+import 'package:gh_tool_package/log/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:top_one/api/http_engine.dart';
+import 'package:top_one/api/req_config_api.dart';
+import 'package:top_one/api/req_ttd_api.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/routes.dart';
+import 'package:top_one/data/global_config_datasource.dart';
 import 'package:top_one/data/tt_result_datasource.dart';
 import 'package:top_one/module/splash/splash_screen.dart';
 import 'package:top_one/service/ad/ad_service.dart';
@@ -37,15 +42,30 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   }
 
   static Future<void> initAppModule() async {
-    if (!disableAD) {
-      ADService().preloadAds();
-    }
     DownloadService().setupDirs();
-
     await AppInfoService().init();
     await AppPreference().setup();
     await TTResultDatasource.setup();
+    await GlobalConfigDatasource.setup();
     await HttpEngine.setup();
+
+    if (ADService().forceEnable) {
+      ADService().enable = true;
+      ADService().preloadAds();
+    } else {
+      HttpApi().getGlobalConfig().then((value) async {
+        await GlobalConfigDatasource().save(value);
+        var config = await GlobalConfigDatasource().get();
+        // logDebug("[dd]");
+        // logDebug("[dd] ${config.adVer}");
+        // logDebug(value.adVer, config.adVer!);
+        if (config.adVer != null &&
+            AppInfoService().appVersion.compareTo(config.adVer!) <= 0) {
+          ADService().enable = true;
+          ADService().preloadAds();
+        }
+      });
+    }
   }
 
   @override
