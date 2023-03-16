@@ -56,11 +56,12 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       HttpApi().getGlobalConfig().then((value) async {
         await GlobalConfigDatasource().save(value);
         var config = await GlobalConfigDatasource().get();
-        // logDebug("[dd]");
-        // logDebug("[dd] ${config.adVer}");
-        // logDebug(value.adVer, config.adVer!);
-        if (config.adVer != null &&
-            AppInfoService().appVersion.compareTo(config.adVer!) <= 0) {
+
+        var adEnable = config.adVer != null &&
+            AppInfoService().appVersion.compareTo(config.adVer!) < 0;
+        logDebug(
+            "global remote: ${value.adVer} local adVer: ${config.adVer} adEnable: $adEnable");
+        if (adEnable) {
           ADService().enable = true;
           ADService().preloadAds();
         }
