@@ -3,8 +3,8 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 class AnalyticsService {
   AnalyticsService._internal();
 
-  static final AnalyticsService _instance = AnalyticsService._internal();
-  factory AnalyticsService() => _instance;
+  static final AnalyticsService instance = AnalyticsService._internal();
+  factory AnalyticsService() => instance;
 
   final FirebaseAnalytics manager = FirebaseAnalytics.instance;
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import 'package:gh_tool_package/log/logger.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 // ignore_for_file: public_member_api_docs
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';

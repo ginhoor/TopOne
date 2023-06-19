@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:top_one/service/app_info_service.dart';
+import 'package:top_one/app/app_module/app_info_module.dart';
 import 'package:top_one/theme/app_theme.dart';
 
 class AppTopBar extends StatelessWidget {
@@ -12,17 +12,14 @@ class AppTopBar extends StatelessWidget {
   final Function() tapDownloadList;
 
   const AppTopBar(this.animationController, this.animation, this.topBarOpacity,
-      {required this.tapSettings,
-      required this.tapDownloadList,
-      required this.hasNewHistory,
-      super.key});
+      {required this.tapSettings, required this.tapDownloadList, required this.hasNewHistory, super.key});
   @override
   Widget build(BuildContext context) {
     return generateAppTopBar(animationController, animation, topBarOpacity);
   }
 
-  Widget generateAppTopBar(AnimationController animationController,
-      Animation<double> topBarAnimation, double topBarOpacity) {
+  Widget generateAppTopBar(
+      AnimationController animationController, Animation<double> topBarAnimation, double topBarOpacity) {
     return Column(
       children: <Widget>[
         AnimatedBuilder(
@@ -31,8 +28,7 @@ class AppTopBar extends StatelessWidget {
             return FadeTransition(
               opacity: topBarAnimation,
               child: Transform(
-                transform: Matrix4.translationValues(
-                    0.0, 30 * (1.0 - topBarAnimation.value), 0.0),
+                transform: Matrix4.translationValues(0.0, 30 * (1.0 - topBarAnimation.value), 0.0),
                 child: Container(
                   decoration: BoxDecoration(
                     color: AppTheme.white.withOpacity(topBarOpacity),
@@ -51,10 +47,7 @@ class AppTopBar extends StatelessWidget {
                       SizedBox(height: MediaQuery.of(context).padding.top),
                       Padding(
                         padding: EdgeInsets.only(
-                            left: 16,
-                            right: 16,
-                            top: 16 - 8.0 * topBarOpacity,
-                            bottom: 12 - 8.0 * topBarOpacity),
+                            left: 16, right: 16, top: 16 - 8.0 * topBarOpacity, bottom: 12 - 8.0 * topBarOpacity),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -85,8 +78,7 @@ class AppTopBar extends StatelessWidget {
                                       IconButton(
                                         iconSize: 30,
                                         color: AppTheme.nearlyBlack,
-                                        icon: const Icon(
-                                            Icons.download_for_offline_rounded),
+                                        icon: const Icon(Icons.download_for_offline_rounded),
                                         onPressed: tapDownloadList,
                                       ),
                                       Positioned(
@@ -96,8 +88,7 @@ class AppTopBar extends StatelessWidget {
                                           padding: EdgeInsets.all(2),
                                           decoration: BoxDecoration(
                                             color: Colors.red,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
+                                            borderRadius: BorderRadius.circular(10),
                                           ),
                                           constraints: const BoxConstraints(
                                             minWidth: 10,
@@ -118,8 +109,7 @@ class AppTopBar extends StatelessWidget {
                                 : IconButton(
                                     iconSize: 30,
                                     color: AppTheme.nearlyBlack,
-                                    icon: const Icon(
-                                        Icons.download_for_offline_rounded),
+                                    icon: const Icon(Icons.download_for_offline_rounded),
                                     onPressed: tapDownloadList),
                           ],
                         ),

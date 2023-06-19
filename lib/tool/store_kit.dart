@@ -1,6 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:gh_tool_package/config/app_preference.dart';
+import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:top_one/app/app.dart';
@@ -10,12 +10,11 @@ import 'package:top_one/theme/app_theme.dart';
 final InAppReview inAppReview = InAppReview.instance;
 
 void showCustomRateView(BuildContext? context, String key) {
-  if (AppPreference().getInt(key) != null) return;
-  BuildContext? showContext =
-      context ?? navigatorKey.currentState?.overlay?.context;
+  if (AppPreference.instance.getInt(key) != null) return;
+  BuildContext? showContext = context ?? navigatorKey.currentState?.overlay?.context;
   if (showContext != null) {
     showRateDialog(showContext);
-    AppPreference().setInt(key, currentMilliseconds());
+    AppPreference.instance.setInt(key, currentMilliseconds());
   }
 }
 
@@ -27,8 +26,7 @@ void openStorePage() async {
   final InAppReview inAppReview = InAppReview.instance;
   var appStoreId = "";
   var microsoftStoreId = "";
-  inAppReview.openStoreListing(
-      appStoreId: appStoreId, microsoftStoreId: microsoftStoreId);
+  inAppReview.openStoreListing(appStoreId: appStoreId, microsoftStoreId: microsoftStoreId);
 }
 
 Future<void> showRateDialog(BuildContext context) async {
@@ -72,8 +70,7 @@ Future<void> showRateDialog(BuildContext context) async {
                 SizedBox(
                   height: 40,
                   child: TextButton(
-                    style: ButtonStyle(backgroundColor:
-                        MaterialStateProperty.resolveWith((states) {
+                    style: ButtonStyle(backgroundColor: MaterialStateProperty.resolveWith((states) {
                       if (states.contains(MaterialState.pressed)) {
                         return AppTheme.actionGreen;
                       } else if (states.contains(MaterialState.disabled)) {
@@ -87,8 +84,7 @@ Future<void> showRateDialog(BuildContext context) async {
                     ).tr(),
                     onPressed: () {
                       AppNavigator.popPage();
-                      Future.delayed(const Duration(milliseconds: 300))
-                          .then((value) => openStorePage());
+                      Future.delayed(const Duration(milliseconds: 300)).then((value) => openStorePage());
                     },
                   ),
                 ),

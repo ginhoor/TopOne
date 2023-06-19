@@ -1,25 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/module/index/index_screen.dart';
-import 'package:top_one/module/privacy/privacy_screen.dart';
+import 'package:flutter_tool_kit/interface/page_route_handler_interface.dart';
+import 'package:top_one/module/history/history_page+route.dart';
 
 class Routes {
-  static const indexScreenRoute = "index_screen";
-  static const privacyScreenRoute = "privacy_screen";
-
   static Route onGenerateRoute(RouteSettings settings) {
-    if (settings.name == null) return onUnknownRoute();
-    // final pathElements = settings.name?.split('/');
-    Uri uri = Uri.parse(settings.name!);
-    String route = uri.path;
-    switch (route) {
-      case indexScreenRoute:
-        return AppNavigator.buildRouter(const IndexScreen());
-      case privacyScreenRoute:
-        return AppNavigator.buildRouter(const PrivacyScreen());
-      default:
-        return onUnknownRoute();
+    List<PageRouteHandler> handlers = [
+      HistoryPageRouteHandler.instance,
+      // SplashPageRouteHandler.instance,
+      // SettingsPageRouteHandler.instance,
+      // AboutPageRouteHandler.instance,
+      // RemoveObjectsPageRouteHandler.instance,
+      // DebugPageRouteHandler.instance,
+      // LaunchGuidePageRouteHandler.instance,
+    ];
+
+    for (var handler in handlers) {
+      Route? route;
+      route = handler.generateRoute(settings);
+      if (route != null) return route;
     }
+
+    return onUnknownRoute();
+    // if (settings.name == null) return onUnknownRoute();
+    // // final pathElements = settings.name?.split('/');
+    // Uri uri = Uri.parse(settings.name!);
+    // String route = uri.path;
+    // switch (route) {
+    //   case IndexPageRoute:
+    //     return AppNavigator.buildRouter(const IndexPage());
+    //   case PrivacyLaunchPageRoute:
+    //     return AppNavigator.buildRouter(const PrivacyLaunchPage());
+    //   default:
+    //     return onUnknownRoute();
+    // }
   }
 
   static Route onUnknownRoute() {

@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:common_utils/common_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:gh_tool_package/log/logger.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/model/tt_result.dart';
@@ -13,16 +12,15 @@ import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/tool/store_kit.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoPreviewScreen extends StatefulWidget {
+class VideoPreviewPage extends StatefulWidget {
   final TTResult metaData;
   final String? localFilePath;
-  const VideoPreviewScreen(
-      {super.key, required this.metaData, this.localFilePath});
+  const VideoPreviewPage({super.key, required this.metaData, this.localFilePath});
   @override
-  State<VideoPreviewScreen> createState() => _VideoPreviewScreenState();
+  State<VideoPreviewPage> createState() => _VideoPreviewPageState();
 }
 
-class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
+class _VideoPreviewPageState extends State<VideoPreviewPage> {
   late VideoPlayerController videoPlayerController;
   double progressValue = 0; //进度
   String labelProgress = ""; //tip内容
@@ -32,6 +30,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
   void dispose() {
     ADService().videoPlayINTAdService.show((p0) => null);
     videoPlayerController.removeListener(listen);
+    videoPlayerController.dispose();
     super.dispose();
   }
 
@@ -43,8 +42,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
       var file = File(localFilePath);
       videoPlayerController = VideoPlayerController.file(file);
     } else if (widget.metaData.video != null) {
-      videoPlayerController =
-          VideoPlayerController.network(widget.metaData.video!);
+      videoPlayerController = VideoPlayerController.network(widget.metaData.video!);
     } else {
       videoPlayerController = VideoPlayerController.asset("");
     }
@@ -71,8 +69,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
     if (position == duration && !playEnd) {
       playEnd = true;
       logDebug("播放完毕");
-      showCustomRateView(
-          context, AppPreferenceKey.latest_play_complete_rate_date);
+      showCustomRateView(context, AppPreferenceKey.latest_play_complete_rate_date);
     }
     setState(() {
       progressValue = position / duration * 100;
@@ -117,8 +114,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                   color: Colors.transparent,
                   child: videoPlayerController.value.isPlaying
                       ? null
-                      : const Icon(Icons.play_arrow,
-                          size: 140, color: AppTheme.nearlyWhite),
+                      : const Icon(Icons.play_arrow, size: 140, color: AppTheme.nearlyWhite),
                 ),
                 onTap: () {
                   setState(() {
@@ -140,13 +136,12 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
                     child: const SizedBox(
                       width: 50,
                       height: 50,
-                      child: Icon(Icons.arrow_back,
-                          size: 30, color: AppTheme.nearlyWhite),
+                      child: Icon(Icons.arrow_back, size: 30, color: AppTheme.nearlyWhite),
                     ),
                   ),
                 ),
                 onTap: () {
-                  if (mounted) videoPlayerController.dispose();
+                  videoPlayerController.pause();
                   AppNavigator.popPage();
                 },
               ),
@@ -210,10 +205,7 @@ class _VideoPreviewScreenState extends State<VideoPreviewScreen> {
               height: 130,
               child: Container(
                 color: Colors.black38,
-                child: Padding(
-                    padding:
-                        const EdgeInsets.only(top: 16, left: 16, right: 16),
-                    child: _buildVideoInfo()),
+                child: Padding(padding: const EdgeInsets.only(top: 16, left: 16, right: 16), child: _buildVideoInfo()),
               ),
             ),
             // SizedBox(

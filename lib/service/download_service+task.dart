@@ -1,4 +1,5 @@
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_tool_kit/extension/time.dart';
 import 'package:top_one/data/tt_result_datasource.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
@@ -12,8 +13,8 @@ const _isolatePortServerName = "download_service_send_port";
 
 extension Metadata on DownloadService {
   Future<List<TaskModel>> loadTasks() async {
-    var existTasks = await FlutterDownloader.loadTasksWithRawQuery(
-        query: "SELECT * FROM task ORDER BY time_created DESC");
+    var existTasks =
+        await FlutterDownloader.loadTasksWithRawQuery(query: "SELECT * FROM task ORDER BY time_created DESC");
     if (existTasks == null || existTasks.isEmpty) return [];
 
     List<TaskModel> models = [];
@@ -26,6 +27,7 @@ extension Metadata on DownloadService {
       }
       var model = TaskModel(
           metaData: metaData,
+          startTime: currentMilliseconds,
           taskId: taskId,
           progress: task.progress,
           status: task.status);
@@ -36,29 +38,26 @@ extension Metadata on DownloadService {
   }
 
   Future<DownloadTask?> findCompletedTask(String taskId) async {
-    var results = await FlutterDownloader.loadTasksWithRawQuery(
-        query: "SELECT * FROM task WHERE task_id == '$taskId'");
+    var results = await FlutterDownloader.loadTasksWithRawQuery(query: "SELECT * FROM task WHERE task_id == '$taskId'");
     if (results != null && results.isEmpty) return null;
     return results!.first;
   }
 
   Future<TaskModel?> createDownloadTask(TTResult result) async {
     if (result.video == null) return null;
-    var savedDir = await DownloadService().getSavedDirPath();
+    var savedDir = await DownloadService.instance.getSavedDirPath();
     // print("video-->${result.video}");
     final taskId = await FlutterDownloader.enqueue(
       url: result.video!,
       fileName: '${const Uuid().v1()}.mp4',
       headers: {}, // optional: header send with url (auth token etc)
       savedDir: savedDir,
-      showNotification:
-          true, // show download progress in status bar (for Android)
-      openFileFromNotification:
-          false, // click on notification to open downloaded file (for Android)
+      showNotification: true, // show download progress in status bar (for Android)
+      openFileFromNotification: false, // click on notification to open downloaded file (for Android)
     );
     if (taskId == null) return null;
     AnalyticsService().logEvent(AnalyticsEvent.createDownload);
-    final model = TaskModel(metaData: result, taskId: taskId);
+    final model = TaskModel(metaData: result, startTime: currentMilliseconds, taskId: taskId);
     TTResultDatasource().save(taskId, result);
     return model;
   }

@@ -3,21 +3,21 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:gh_tool_package/config/app_preference.dart';
-import 'package:gh_tool_package/log/logger.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tool_kit/config/app_preference.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
-import 'package:provider/provider.dart';
-import 'package:top_one/api/req_ttd_api.dart';
+import 'package:top_one/api/ttd_request.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
-import 'package:top_one/module/history/history_screen.dart';
-import 'package:top_one/module/index/index_screen_vm.dart';
+import 'package:top_one/module/history/history_page+route.dart';
+import 'package:top_one/module/index/index_page_vm.dart';
 import 'package:top_one/module/index/view/index_task_info_widget.dart';
-import 'package:top_one/module/settings/settings_screen.dart';
-import 'package:top_one/module/video/video_preview_screen.dart';
+import 'package:top_one/module/settings/settings_page+route.dart';
+import 'package:top_one/module/video/video_preview_page+route.dart';
 import 'package:top_one/service/ad/Inline_ad_service.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
@@ -28,16 +28,15 @@ import 'package:top_one/view/toast.dart';
 
 import 'view/clipboard_widget.dart';
 
-class IndexScreen extends StatefulWidget {
-  const IndexScreen({Key? key}) : super(key: key);
+class IndexPage extends ConsumerStatefulWidget {
+  const IndexPage({Key? key}) : super(key: key);
 
   @override
-  _IndexScreenState createState() => _IndexScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _IndexPageState();
 }
 
-class _IndexScreenState extends State<IndexScreen>
-    with TickerProviderStateMixin {
-  var vm = IndexScreenVM();
+class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateMixin {
+  final provider = ChangeNotifierProvider<IndexPageVM>((ref) => IndexPageVM());
   late Animation<double> topBarAnimation;
 
   // 进入页面后的动效时长
@@ -54,14 +53,11 @@ class _IndexScreenState extends State<IndexScreen>
 
   @override
   void initState() {
-    animationController = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
-
+    animationController = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this);
     topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(
-            parent: animationController,
-            curve: const Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
+        CurvedAnimation(parent: animationController, curve: const Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
     scrollController.addListener(_handleTopBarWhenScroll);
+    var vm = ref.read(provider);
     vm.bindBackgroundIsolate();
     vm.registerDownloaderCallback();
     animationController.forward();
@@ -79,13 +75,11 @@ class _IndexScreenState extends State<IndexScreen>
   setupAd() async {
     // Get an inline adaptive size for the current orientation.
     int width = _adWidth.truncate();
-    AdSize size = AdSize.getInlineAdaptiveBannerAdSize(
-        width, (width / 328.0 * 310.0).truncate());
+    AdSize size = AdSize.getInlineAdaptiveBannerAdSize(width, (width / 328.0 * 310.0).truncate());
 
-    adService = InlineADService(
-        kDebugMode ? ADService.TESTBannerUnitId : ADService.bannderUnitId1,
-        size: size, onAdLoaded: (p0) {
-      vm.setInlineadLoaded();
+    adService = InlineADService(kDebugMode ? ADService.TESTBannerUnitId : ADService.bannderUnitId1, size: size,
+        onAdLoaded: (p0) {
+      ref.read(provider).setInlineadLoaded();
     });
     adService?.load();
   }
@@ -94,14 +88,22 @@ class _IndexScreenState extends State<IndexScreen>
     if (text.isEmpty) return false;
     AnalyticsService().logEvent(AnalyticsEvent.tapDownload);
     var url = text;
+    if (url.endsWith('/')) url = url.substring(0, url.length - 1);
     if (!TTResult.verifyURL(url)) {
       if (mounted) showToast(context, const Text("url_invaild_error").tr());
       return false;
     }
     await EasyLoading.show(status: "chacking".tr(), dismissOnTap: false);
     try {
-      var result = await HttpApi().getTTResult(url);
-      var success = await vm.createDownloadTask(result);
+      var result = await TDDResultRequest().requestResult(url);
+      if (result == null) {
+        await EasyLoading.dismiss();
+        if (mounted) {
+          showToast(context, const Text("create_task_failed_error").tr());
+        }
+        return false;
+      }
+      var success = await ref.read(provider).createDownloadTask(result);
       await EasyLoading.dismiss();
       if (success) {
         ADService().indexINTAdService.show((p0) => null);
@@ -124,44 +126,35 @@ class _IndexScreenState extends State<IndexScreen>
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider.value(
-      value: vm,
-      child: Scaffold(
-        backgroundColor: AppTheme.background,
-        body: Stack(
-          children: <Widget>[
-            _buildContent(),
-            _buildAppTopBar(),
-          ],
-        ),
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: Stack(
+        children: <Widget>[
+          _buildContent(),
+          _buildAppTopBar(),
+        ],
       ),
     );
   }
 
   Widget _buildAppTopBar() {
-    return Selector(
-      builder: (context, topBarOpacity, _) {
+    return Consumer(
+      builder: (context, ref, child) {
+        var topBarOpacity = ref.watch(provider).topBarOpacity;
         return AppTopBar(
           animationController,
           topBarAnimation,
-          vm.topBarOpacity,
-          hasNewHistory:
-              AppPreference().getInt(AppPreferenceKey.has_new_history_date) !=
-                  null,
-          tapSettings: () {
-            AppNavigator.pushPage(const SettingsScreen());
-          },
+          topBarOpacity,
+          hasNewHistory: AppPreference.instance.getInt(AppPreferenceKey.has_new_history_date) != null,
+          tapSettings: () => AppNavigator.pushRoute(SettingsPageRouteHandler.instance.page()),
           tapDownloadList: () async {
             ADService().historyINTAdService.show((p0) async {
-              AppNavigator.pushPage(const HistoryScreen());
-              AppPreference().remove(AppPreferenceKey.has_new_history_date);
-              vm.updateTopBarDataVersion();
+              AppNavigator.pushRoute(HistoryPageRouteHandler.instance.page());
+              AppPreference.instance.remove(AppPreferenceKey.has_new_history_date);
+              ref.read(provider).updateTopBarDataVersion();
             });
           },
         );
-      },
-      selector: (BuildContext context, IndexScreenVM vm) {
-        return vm.topBarDataVersion;
       },
     );
   }
@@ -170,9 +163,7 @@ class _IndexScreenState extends State<IndexScreen>
     return SingleChildScrollView(
       controller: scrollController,
       padding: EdgeInsets.only(
-        top: AppBar().preferredSize.height +
-            MediaQuery.of(context).padding.top +
-            15,
+        top: AppBar().preferredSize.height + MediaQuery.of(context).padding.top + 15,
         bottom: 62 + MediaQuery.of(context).padding.bottom,
       ),
       child: IntrinsicHeight(
@@ -182,28 +173,23 @@ class _IndexScreenState extends State<IndexScreen>
               animation: Tween<double>(begin: 0.0, end: 1.0).animate(
                 CurvedAnimation(
                   parent: animationController,
-                  curve: const Interval((1 / 9) * 1, 1.0,
-                      curve: Curves.fastOutSlowIn),
+                  curve: const Interval((1 / 9) * 1, 1.0, curve: Curves.fastOutSlowIn),
                 ),
               ),
               animationController: animationController,
               handleDownload: handleDownloadAction,
             ),
-            Selector(
-              builder: (BuildContext context, String version, _) {
-                if (vm.currentTask == null) return Container();
-                return buildTaskItem(context, vm.currentTask!);
-              },
-              selector: (BuildContext context, IndexScreenVM vm) {
-                return vm.itemsVersion;
+            Consumer(
+              builder: (context, ref, child) {
+                var task = ref.watch(provider).currentTask;
+                if (task == null) return Container();
+                return buildTaskItem(context, task);
               },
             ),
-            Selector(
-              builder: (BuildContext context, bool inlineadLoaded, _) {
+            Consumer(
+              builder: (context, ref, child) {
+                var _ = ref.watch(provider).inlineadLoaded;
                 return adService?.adWidget() ?? Container();
-              },
-              selector: (BuildContext context, IndexScreenVM vm) {
-                return vm.inlineadLoaded;
               },
             ),
           ],
@@ -215,41 +201,45 @@ class _IndexScreenState extends State<IndexScreen>
   Widget buildTaskItem(BuildContext context, TaskModel model) {
     return IndexTaskInfoWidget(
       data: model,
-      onTap: (model) async {
+      onTap: (_) async {
         AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
-        var exist = await vm.findCompletedTask(model.taskId);
+        var task = ref.read(provider).currentTask;
+        if (task == null) return;
+        var exist = await ref.read(provider).findCompletedTask(task.taskId);
         if (exist == null) {
           if (!mounted) return;
           showToast(context, const Text('open_file_error').tr());
           return;
         }
-        var metaData = model.metaData;
+        var metaData = task.metaData;
         var filePath = path.join(exist.savedDir, exist.filename);
-        AppNavigator.pushPage(VideoPreviewScreen(
-          metaData: metaData,
-          localFilePath: filePath,
-        ));
+        AppNavigator.pushRoute(VideoPreviewPageRouteHandler.instance.page(metaData, filePath));
       },
-      onActionTap: (model) async {
-        if (model.status == DownloadTaskStatus.undefined) {
-        } else if (model.status == DownloadTaskStatus.running) {
-          await vm.pauseDownloadTask(model.taskId);
-        } else if (model.status == DownloadTaskStatus.paused) {
-          await vm.resumeDownloadTask(model.taskId);
-        } else if (model.status == DownloadTaskStatus.complete ||
-            model.status == DownloadTaskStatus.canceled) {
-          await vm.deleteDownloadTask(model.taskId);
-        } else if (model.status == DownloadTaskStatus.failed) {
-          await vm.retryDownloadTask(model.taskId);
+      onActionTap: (_) async {
+        var vm = ref.read(provider);
+        var task = vm.currentTask;
+        if (task == null) return;
+        if (task.status == DownloadTaskStatus.undefined) {
+        } else if (task.status == DownloadTaskStatus.running) {
+          await vm.pauseDownloadTask(task.taskId);
+        } else if (task.status == DownloadTaskStatus.paused) {
+          await vm.resumeDownloadTask(task.taskId);
+        } else if (task.status == DownloadTaskStatus.complete || task.status == DownloadTaskStatus.canceled) {
+          await vm.deleteDownloadTask(task.taskId);
+        } else if (task.status == DownloadTaskStatus.failed) {
+          await vm.retryDownloadTask(task.taskId);
         }
       },
-      onCancel: (model) {
-        vm.deleteDownloadTask(model.taskId);
+      onCancel: (_) async {
+        var task = ref.read(provider).currentTask;
+        if (task == null) return;
+        await ref.read(provider).deleteDownloadTask(task.taskId);
       },
     );
   }
 
   void _handleTopBarWhenScroll() {
+    var vm = ref.read(provider);
     if (scrollController.offset >= 24) {
       if (vm.topBarOpacity != 1.0) vm.updateTopBarOpacity(1.0);
     } else if (scrollController.offset <= 24 && scrollController.offset >= 0) {

@@ -8,17 +8,16 @@ class GlobalConfigDatasource {
   BoxCollection? col;
   GlobalConfigDatasource._internal();
 
-  static final GlobalConfigDatasource _instance =
-      GlobalConfigDatasource._internal();
-  factory GlobalConfigDatasource() => _instance;
+  static final GlobalConfigDatasource instance = GlobalConfigDatasource._internal();
+  factory GlobalConfigDatasource() => instance;
 
   static Future<bool> setup() async {
     var col = HiveDatasource().collection;
     if (col == null) return false;
-    _instance.col = col;
+    instance.col = col;
     // Open your boxes. Optional: Give it a type.
     final box = await col.openBox<GlobalConfig>(GlobalConfigDatasource.boxName);
-    _instance.box = box;
+    instance.box = box;
     return true;
   }
 
@@ -37,8 +36,7 @@ class GlobalConfigDatasource {
 
   Future<GlobalConfig> get() async {
     var exist = await box?.get("default");
-    var defaultConfig =
-        GlobalConfig().fromJson({"version": 0, "ad_ver": "0.0.0"});
+    var defaultConfig = GlobalConfig().fromJson({"version": 0, "ad_ver": "0.0.0"});
     return exist ?? defaultConfig;
   }
 

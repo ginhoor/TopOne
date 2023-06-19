@@ -1,138 +1,84 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 
 class AppNavigator {
-  static Future<T?> pushRoute<T extends Object?>(Route<T> route) async {
-    return AppNavigatorObserver().navigator!.push(route);
+  static final AppNavigator instance = AppNavigator._instance();
+  factory AppNavigator() => instance;
+  AppNavigator._instance();
+
+  static NavigatorState get navigator {
+    return AppNavigatorObserver().navigator!;
   }
 
-  static Future<void> pushPage(Widget screen) async {
-    await pushRoute(buildRouter(screen));
-  }
+  static PageRouteBuilder buildRouter(RouteSettings settings, Widget page) {
+    return PageRouteBuilder(
+      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+        final begin = Offset(1.0, 0.0);
+        final end = Offset.zero;
+        final curve = Curves.ease;
 
-  static PageRouteBuilder buildRouter(Widget screen) {
-    return PageRouteBuilder(pageBuilder: (BuildContext context,
-        Animation<double> animation, Animation<double> secondaryAnimation) {
-      return FadeTransition(opacity: animation, child: screen);
-    });
+        final tween = Tween(begin: begin, end: end);
+        final curvedAnimation = CurvedAnimation(parent: animation, curve: curve);
+
+        return SlideTransition(
+          position: tween.animate(curvedAnimation),
+          child: page,
+        );
+        //  return FadeTransition(opacity: animation, child: page);
+      },
+      settings: settings,
+    );
   }
 
   static void popPage() {
-    AppNavigatorObserver().navigator!.pop();
+    navigator.pop();
+  }
+
+  static Future<void> pushPage(RouteSettings settings, Widget page) async {
+    await pushRoute(buildRouter(settings, page));
+  }
+
+  static Future<T?> pushRoute<T extends Object?>(Route<T> route) async {
+    return navigator.push(route);
+  }
+
+  static Future<void> pushByNamed(BuildContext context, String routePath, {Object? arguments}) async {
+    await Navigator.pushNamed(context, routePath, arguments: arguments);
   }
 
   static Future<dynamic> pushReplacementNamed(String routeName) async {
-    return await AppNavigatorObserver()
-        .navigator!
-        .pushReplacementNamed(routeName);
+    return await navigator.pushReplacementNamed(routeName);
   }
 
-  static Future<dynamic> pushReplacement(Widget screen) async {
-    return await AppNavigatorObserver()
-        .navigator!
-        .pushReplacement(buildRouter(screen));
+  static Future<dynamic> pushReplacement(RouteSettings settings, Widget page) async {
+    return await navigator.pushReplacement(buildRouter(settings, page));
+  }
+
+  static Future<T?> pushReplacementRoute<T extends Object?>(Route<T> route) async {
+    return await navigator.pushReplacement(route);
   }
 }
 
 class AppNavigatorObserver extends NavigatorObserver {
   AppNavigatorObserver._internal();
-
-  static final AppNavigatorObserver _instance =
-      AppNavigatorObserver._internal();
-
+  static final AppNavigatorObserver _instance = AppNavigatorObserver._internal();
   factory AppNavigatorObserver() => _instance;
-
-  static final RouteObserver<PageRoute> routeObserver =
-      RouteObserver<PageRoute>();
-
-  Map<String, int> pageTime = {};
-  // String currentPageChains = '';
-  // String currentTabPageName = '';
 
   @override
   void didPush(Route route, Route<dynamic>? previousRoute) {
+    logDebug('[nav] didPush route.settings : ${route.settings}');
     super.didPush(route, previousRoute);
+  }
 
-    // if (route == null) {
-    //   currentPageChains += '/unknown_page';
-    //   return;
-    // }
-
-    // if (route.settings.name == '/') {
-    //   currentPageChains = 'root';
-    // } else {
-    //   currentPageChains += '/${route.settings.name}';
-    // }
-
-    // pageTime[currentPageChains] = currentTimestamp();
-
-    // logDebug(
-    //     '[AppNavigatorObserver]didPush: $currentPageChains, $currentTabPageName');
+  @override
+  void didReplace({Route? newRoute, Route? oldRoute}) {
+    logDebug('[nav] didReplace newRoute.settings: ${newRoute?.settings}, oldRoute.settings: ${oldRoute?.settings}');
+    super.didReplace(newRoute: newRoute, oldRoute: oldRoute);
   }
 
   @override
   void didPop(Route route, Route<dynamic>? previousRoute) {
+    logDebug('[nav] didPop route.settings : ${route.settings}');
     super.didPop(route, previousRoute);
-    // String pageName = '/${route.settings.name}';
-
-    // String before = currentPageChains;
-    // if (!currentPageChains.endsWith(pageName)) return;
-
-    // currentPageChains = currentPageChains.substring(
-    //     0, currentPageChains.length - pageName.length);
-
-    // logDebug(
-    //     '[AppNavigatorObserver]didPop: $pageName, $currentPageChains, $currentTabPageName');
-
-    // if (pageName == '/unknown_page' || pageName == 'HomePage') return;
-
-    // if (pageTime[before] != null) {
-    //   int duration = currentTimestamp() - pageTime[before]!;
-
-    // EventModel eventModel = EventManager().makePageEvent(
-    //     pageName.substring(1, pageName.length), duration, before);
-    // if (eventModel != null) {
-    //   reportEventLog(eventModel);
-    // }
-    // }
-  }
-
-  /// NOTE: 切换.
-  void onSwitchTabPage(String tabPageName) {
-    // if (currentTabPageName != '' && currentPageChains.endsWith('/HomePage')) {
-    //   EventModel eventModel = EventManager().makePageEvent('HomePage/$tabPageName', 0, currentPageChains);
-    //   if (eventModel != null) {
-    //     reportEventLog(eventModel);
-    //   }
-    // }
-
-    // pageTime[getPageName()] = Utils.currentTimestamp();
-
-    // currentTabPageName = tabPageName;
-  }
-
-  // String getPageName() {
-  // if (currentPageChains.endsWith('/HomePage') && currentTabPageName != '') {
-  //   return 'HomePage/$currentTabPageName';
-  // } else {
-  //   return currentPageChains;
-  // }
-  // }
-
-  void onAppPaused(bool pause) {
-    // List<String> pages = currentPageChains.split('/');
-    // String pageName = pages.last;
-    // if (pageName == 'HomePage' || pageTime[pageName] == null) {
-    //   return;
-    // }
-    // int duration = currentTimestamp() - pageTime[currentPageChains]!;
-    // if (pause) {
-    //   // EventModel eventModel =
-    //   //     EventManager().makePageEvent(pageName, duration, currentPageChains);
-    //   // if (eventModel != null) {
-    //   //   reportEventLog(eventModel);
-    //   // }
-    // } else {
-    //   pageTime[currentPageChains] = currentTimestamp();
-    // }
   }
 }

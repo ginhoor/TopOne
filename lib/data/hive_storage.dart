@@ -1,4 +1,4 @@
-import 'package:gh_tool_package/log/logger.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class HiveStorage {

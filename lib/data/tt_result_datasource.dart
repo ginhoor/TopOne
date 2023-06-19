@@ -8,16 +8,16 @@ class TTResultDatasource {
   BoxCollection? col;
   TTResultDatasource._internal();
 
-  static final TTResultDatasource _instance = TTResultDatasource._internal();
-  factory TTResultDatasource() => _instance;
+  static final TTResultDatasource instance = TTResultDatasource._internal();
+  factory TTResultDatasource() => instance;
 
   static Future<bool> setup() async {
     var col = HiveDatasource().collection;
     if (col == null) return false;
-    _instance.col = col;
+    instance.col = col;
     // Open your boxes. Optional: Give it a type.
     final box = await col.openBox<TTResult>(TTResultDatasource.boxName);
-    _instance.box = box;
+    instance.box = box;
     return true;
   }
 

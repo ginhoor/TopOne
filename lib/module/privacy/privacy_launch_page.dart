@@ -1,29 +1,28 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:gh_tool_package/config/app_preference.dart';
+import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:gh_tool_package/system/web.dart';
+import 'package:top_one/app/app_module/app_info_module.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
-import 'package:top_one/app/routes.dart';
-import 'package:top_one/service/app_info_service.dart';
+import 'package:top_one/module/index/index_page+route.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/view/toast.dart';
 import 'package:top_one/view/utils.dart';
 
-class PrivacyScreen extends StatefulWidget {
-  const PrivacyScreen({super.key});
+class PrivacyLaunchPage extends StatefulWidget {
+  const PrivacyLaunchPage({super.key});
 
   @override
-  State<PrivacyScreen> createState() => _PrivacyScreenState();
+  State<PrivacyLaunchPage> createState() => _PrivacyLaunchPageState();
 }
 
-class _PrivacyScreenState extends State<PrivacyScreen> {
+class _PrivacyLaunchPageState extends State<PrivacyLaunchPage> {
   @override
   Widget build(BuildContext context) {
-    var subtitleStyle = const TextStyle(
-        color: AppTheme.nearlyBlack, fontSize: 15, fontWeight: FontWeight.w300);
+    var subtitleStyle = const TextStyle(color: AppTheme.nearlyBlack, fontSize: 15, fontWeight: FontWeight.w300);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -37,24 +36,18 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               children: [
                 Text(
                   "welcome_to".tr(),
-                  style: const TextStyle(
-                      color: AppTheme.nearlyBlack,
-                      fontSize: 30,
-                      fontWeight: FontWeight.w300),
+                  style: const TextStyle(color: AppTheme.nearlyBlack, fontSize: 30, fontWeight: FontWeight.w300),
                 ),
                 const SizedBox(height: 10),
                 Padding(
-                  padding: const EdgeInsets.only(left: 4),
+                  padding: EdgeInsets.only(left: 4),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        "Videos Downloader for TckTok",
+                        "Videos Downloader for TikTok",
                         style: TextStyle(
-                            color: AppTheme.nearlyBlack,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500,
-                            height: 1.5),
+                            color: AppTheme.nearlyBlack, fontSize: 17, fontWeight: FontWeight.w500, height: 1.5),
                       ),
                     ],
                   ),
@@ -80,22 +73,18 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                         text: "privacy_subtile_1".tr(),
                       ),
                       TextSpan(
-                        style:
-                            subtitleStyle.copyWith(color: AppTheme.actionGreen),
-                        text: " " + "terms_of_use".tr() + " ",
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () => launchInBrowser(kTermsOfServiceURL),
+                        style: subtitleStyle.copyWith(color: AppTheme.actionGreen),
+                        text: " ${"terms_of_use".tr()} ",
+                        recognizer: TapGestureRecognizer()..onTap = () => launchInBrowser(kTermsOfServiceURL),
                       ),
                       TextSpan(
                         style: subtitleStyle,
                         text: "privacy_subtile_2".tr(),
                       ),
                       TextSpan(
-                        style:
-                            subtitleStyle.copyWith(color: AppTheme.actionGreen),
-                        text: " " + "privacy_policy".tr(),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () => launchInBrowser(kPrivacyPolicyURL),
+                        style: subtitleStyle.copyWith(color: AppTheme.actionGreen),
+                        text: " ${"privacy_policy".tr()}",
+                        recognizer: TapGestureRecognizer()..onTap = () => launchInBrowser(kPrivacyPolicyURL),
                       ),
                     ],
                   ),
@@ -114,21 +103,16 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                   children: [
                     SizedBox(
                       height: 60,
-                      child: generateActionButton("continue",
-                          AppTheme.actionGreen, AppTheme.nearlyWhite, () async {
-                        AppNavigator.pushReplacementNamed(
-                            Routes.indexScreenRoute);
-                        AppPreference().setInt(
-                            AppPreferenceKey.latest_agree_privacy_date,
-                            currentTimestamp());
+                      child: generateActionButton("continue", AppTheme.actionGreen, AppTheme.nearlyWhite, () async {
+                        var page = IndexPageRouteHandler.instance.page();
+                        AppNavigator.pushReplacementRoute(page);
+                        AppPreference.instance.setInt(AppPreferenceKey.latest_agree_privacy_date, currentTimestamp());
                       }),
                     ),
                     SizedBox(
                       height: 40,
-                      child: generateActionButton(
-                          "later", Colors.transparent, AppTheme.nearlyBlack,
-                          () async {
-                        showToast(context, Text("privacy_skip_tips").tr());
+                      child: generateActionButton("later", Colors.transparent, AppTheme.nearlyBlack, () async {
+                        showToast(context, const Text("privacy_skip_tips").tr());
                       }),
                     ),
                   ],

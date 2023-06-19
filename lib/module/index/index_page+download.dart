@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:top_one/module/index/index_screen.dart';
+import 'package:top_one/module/index/index_page.dart';
 import 'package:top_one/service/download_service.dart';
 
-extension HandleDownload on IndexScreen {
+extension HandleDownload on IndexPage {
   Widget buildNoPermissionWarning() {
     return Center(
       child: Column(
@@ -20,8 +20,8 @@ extension HandleDownload on IndexScreen {
           const SizedBox(height: 32),
           TextButton(
             onPressed: () async {
-              final hasGranted = await DownloadService().checkPermission();
-              if (hasGranted) await DownloadService().setupDirs();
+              final hasGranted = await DownloadService.instance.checkPermission();
+              if (hasGranted) await DownloadService.instance.setupDirs();
             },
             child: const Text(
               'Retry',

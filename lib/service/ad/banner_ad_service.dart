@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:gh_tool_package/log/logger.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 
@@ -16,11 +16,8 @@ class BannerADService {
 
   StreamSubscription<ConnectivityResult>? networksOB;
 
-  BannerADService(this.adUnitId,
-      {this.onAdLoaded, this.size = AdSize.mediumRectangle}) {
-    networksOB = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+  BannerADService(this.adUnitId, {this.onAdLoaded, this.size = AdSize.mediumRectangle}) {
+    networksOB = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       if (result != ConnectivityResult.none) {
         if (ad == null) {
           retryCount = 0;
@@ -34,9 +31,7 @@ class BannerADService {
     if (!ADService().enable) return Container();
     if (ad != null) {
       return SizedBox(
-          width: (ad!.size.width).toDouble(),
-          height: (ad!.size.height).toDouble(),
-          child: AdWidget(ad: ad!));
+          width: (ad!.size.width).toDouble(), height: (ad!.size.height).toDouble(), child: AdWidget(ad: ad!));
     } else {
       return Container();
     }

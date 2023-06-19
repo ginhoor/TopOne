@@ -3,7 +3,7 @@ import 'dart:isolate';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:gh_tool_package/log/logger.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,8 +11,8 @@ import 'package:permission_handler/permission_handler.dart';
 class DownloadService {
   bool hasGranted = false;
   DownloadService._internal();
-  static final DownloadService _instance = DownloadService._internal();
-  factory DownloadService() => _instance;
+  static final DownloadService instance = DownloadService._internal();
+  factory DownloadService() => instance;
 
   final port = ReceivePort();
 
@@ -56,15 +56,13 @@ class DownloadService {
         externalStorageDirPath = directory?.path ?? "";
       }
     } else if (Platform.isIOS) {
-      externalStorageDirPath =
-          (await getApplicationDocumentsDirectory()).absolute.path;
+      externalStorageDirPath = (await getApplicationDocumentsDirectory()).absolute.path;
     }
     return externalStorageDirPath;
   }
 
   Future<String> getSavedDirPath() async {
-    var savedDirPath =
-        path.join(await getExternalStorageDirPath(), 'Downloads');
+    var savedDirPath = path.join(await getExternalStorageDirPath(), 'Downloads');
     var dir = Directory(savedDirPath);
     try {
       bool exists = await dir.exists();

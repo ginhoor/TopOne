@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:gh_tool_package/config/app_preference.dart';
+import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
-import 'package:top_one/app/routes.dart';
+import 'package:top_one/module/index/index_page+route.dart';
+import 'package:top_one/module/privacy/privacy_launch_page+route.dart';
 import 'package:top_one/view/app_title_logo.dart';
 
-class SplashScreen extends StatefulWidget {
-  const SplashScreen({super.key});
+class SplashPage extends StatefulWidget {
+  const SplashPage({super.key});
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  State<SplashPage> createState() => _SplashPageState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashPageState extends State<SplashPage> {
   Duration splashWaitDuration = const Duration(seconds: 2);
   late String nextScreenRoute;
   @override
   void initState() {
     super.initState();
-    if (AppPreference().getInt(AppPreferenceKey.latest_agree_privacy_date) ==
-        null) {
-      nextScreenRoute = Routes.privacyScreenRoute;
-    } else {
-      nextScreenRoute = Routes.indexScreenRoute;
-    }
-    Future.delayed(splashWaitDuration)
-        .then((value) => {AppNavigator.pushReplacementNamed(nextScreenRoute)});
+    Future.delayed(splashWaitDuration).then((value) {
+      if (AppPreference.instance.getInt(AppPreferenceKey.latest_agree_privacy_date) == null) {
+        var page = PrivacyLaunchPageRouteHandler.instance.page();
+        AppNavigator.pushReplacementRoute(page);
+      } else {
+        var page = IndexPageRouteHandler.instance.page();
+        AppNavigator.pushReplacementRoute(page);
+      }
+    });
   }
 
   @override

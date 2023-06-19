@@ -2,29 +2,23 @@ import 'dart:async';
 
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:gh_tool_package/config/app_preference.dart';
-import 'package:gh_tool_package/log/logger.dart';
-import 'package:provider/provider.dart';
-import 'package:top_one/api/http_engine.dart';
-import 'package:top_one/api/req_config_api.dart';
-import 'package:top_one/api/req_ttd_api.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
+import 'package:flutter_tool_kit/manager/file_manager.dart';
+import 'package:top_one/app/app_module/app_info_module.dart';
+import 'package:top_one/app/app_module/datasource_module.dart';
+import 'package:top_one/app/app_module/network_module.dart';
+import 'package:top_one/app/app_module/preference_module.dart';
+import 'package:top_one/app/app_module/resource_module.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/routes.dart';
-import 'package:top_one/data/global_config_datasource.dart';
-import 'package:top_one/data/tt_result_datasource.dart';
-import 'package:top_one/module/splash/splash_screen.dart';
-import 'package:top_one/service/ad/ad_service.dart';
-import 'package:top_one/service/app_info_service.dart';
-import 'package:top_one/service/download_service.dart';
+import 'package:top_one/module/splash/splash_page.dart';
 import 'package:top_one/theme/app_theme.dart';
-
-import 'app_vm.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
-// const App({required Key key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AppState();
@@ -33,75 +27,66 @@ class App extends StatefulWidget {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class _AppState extends State<App> with WidgetsBindingObserver {
-  final AppVM _appVM = AppVM();
-
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addObserver(this);
     initAppModule();
   }
 
   static Future<void> initAppModule() async {
-    DownloadService().setupDirs();
-    await AppInfoService().init();
-    await AppPreference().setup();
-    await TTResultDatasource.setup();
-    await GlobalConfigDatasource.setup();
-    await HttpEngine.setup();
+    await AppInfoModule.instance.loadModule();
+    await ResourceModule.instance.loadModule();
+    await PreferenceModule.instance.loadModule();
+    await DatasourceModule.instance.loadModule();
+    await NetworkModule.instance.loadModule();
 
-    if (ADService().forceEnable) {
-      ADService().enable = true;
-      ADService().preloadAds();
-    } else {
-      HttpApi().getGlobalConfig().then((value) async {
-        await GlobalConfigDatasource().save(value);
-        var config = await GlobalConfigDatasource().get();
-
-        var adEnable = config.adVer != null &&
-            AppInfoService().appVersion.compareTo(config.adVer!) < 0;
-        logDebug(
-            "global remote: ${value.adVer} local adVer: ${config.adVer} adEnable: $adEnable");
-        if (adEnable) {
-          ADService().enable = true;
-          ADService().preloadAds();
-        }
-      });
-    }
+    FileManager.getDocumentsDirPath().then((value) {
+      logDebug("document: $value");
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
     switch (state) {
       case AppLifecycleState.inactive:
+        logDebug("Switch AppLifecycleState.inactive");
         break;
       case AppLifecycleState.resumed:
+        logDebug("Switch AppLifecycleState.resumed");
         break;
       case AppLifecycleState.paused:
+        logDebug("Switch AppLifecycleState.paused");
         break;
       case AppLifecycleState.detached:
+        logDebug("Switch AppLifecycleState.detached");
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [ChangeNotifierProvider.value(value: _appVM)],
+    // 强制展示顶部底部安全区域
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
+    SystemChrome.setSystemUIOverlayStyle(
+        const SystemUiOverlayStyle(statusBarColor: Colors.transparent, statusBarBrightness: Brightness.dark));
+
+    return ProviderScope(
       child: MaterialApp(
         navigatorKey: navigatorKey,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
         title: appName,
-        navigatorObservers: [
-          AppNavigatorObserver(),
-          AppNavigatorObserver.routeObserver,
-        ],
+        navigatorObservers: [AppNavigatorObserver()],
         debugShowCheckedModeBanner: false,
         onGenerateRoute: (settings) => Routes.onGenerateRoute(settings),
         onUnknownRoute: (settings) => Routes.onUnknownRoute(),
@@ -112,7 +97,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             bottom: false,
             child: Scaffold(
               backgroundColor: AppTheme.background,
-              body: SplashScreen(),
+              body: SplashPage(),
             ),
           ),
         ),

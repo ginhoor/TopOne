@@ -2,18 +2,18 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gh_tool_package/system/web.dart';
-import 'package:top_one/service/app_info_service.dart';
+import 'package:top_one/app/app_module/app_info_module.dart';
 import 'package:top_one/tool/store_kit.dart';
 import 'package:top_one/view/app_nav_bar.dart';
 
-class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
+  State<SettingsPage> createState() => _SettingsPageState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsPageState extends State<SettingsPage> {
   List<Widget> staticCells = [];
 
   @override
@@ -61,8 +61,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _buildAppCell() {
-    String version =
-        '${AppInfoService().appVersion}(${AppInfoService().sysInfo.shortVer})';
+    String version = '${AppInfoModule.instance.appVersion}(${AppInfoModule.instance.sysInfo?.shortVer})';
     if (kDebugMode) version += 'Debug';
 
     return Padding(
@@ -91,8 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildTitleCell(String title,
-      {String? value, void Function()? onTap}) {
+  Widget _buildTitleCell(String title, {String? value, void Function()? onTap}) {
     return GestureDetector(
         onTap: onTap,
         child: Padding(

@@ -64,5 +64,7 @@
 	<string>app needs permission to your media library in order to save photos and videos to your device.</string>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-3945813041461839~8809512861</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
 </dict>
 </plist>

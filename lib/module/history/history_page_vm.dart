@@ -1,12 +1,10 @@
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:collection/collection.dart' show IterableExtension;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:gh_tool_package/extension/string.dart';
-import 'package:gh_tool_package/log/logger.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/download_service+task.dart';
@@ -14,24 +12,32 @@ import 'package:top_one/service/download_service.dart';
 
 const _isolatePortServerName = "history_downloader_send_port";
 
-class HistoryScreenVM extends ChangeNotifier {
+class TaskModelWhereResult {
+  int index;
+  TaskModel item;
+  TaskModelWhereResult({required this.index, required this.item});
+}
+
+class HistoryPageVM extends ChangeNotifier {
   final _port = ReceivePort();
 
   List<TaskModel> items = [];
-  String itemsVersion = "";
-  void updateItemsVersion() {
-    itemsVersion = generateRandomString(5);
-  }
+  // TaskModel? getItem(String taskId) {
+  //   return items.firstWhereOrNull((item) => item.taskId == taskId);
+  // }
 
-  TaskModel? getItem(String taskId) {
-    return items.firstWhereOrNull((item) => item.taskId == taskId);
+  TaskModelWhereResult? findItem(String taskId) {
+    for (int i = 0; i < items.length; i++) {
+      var item = items[i];
+      if (item.taskId == taskId) return TaskModelWhereResult(index: i, item: item);
+    }
+    return null;
   }
 
   bool inlineadLoaded = false;
   void setInlineadLoaded() {
     if (inlineadLoaded) return;
     inlineadLoaded = true;
-    updateItemsVersion();
     notifyListeners();
   }
 
@@ -52,93 +58,94 @@ class HistoryScreenVM extends ChangeNotifier {
 ); */
   loadTasks() async {
     await EasyLoading.show(dismissOnTap: false);
-    items = await DownloadService().loadTasks();
-    updateItemsVersion();
+    items = await DownloadService.instance.loadTasks();
     notifyListeners();
     await EasyLoading.dismiss();
   }
 
   Future<DownloadTask?> findCompletedTask(String taskId) async {
-    var item = getItem(taskId);
-    if (item == null) return null;
+    var match = findItem(taskId);
+    if (match == null) return null;
+    var item = match.item;
     if (item.status != DownloadTaskStatus.complete) return null;
-    return DownloadService().findCompletedTask(taskId);
+    return DownloadService.instance.findCompletedTask(taskId);
   }
 
   Future<bool> createDownloadTask(TTResult result) async {
-    final model = await DownloadService().createDownloadTask(result);
+    final model = await DownloadService.instance.createDownloadTask(result);
     if (model == null) return false;
     items.insert(0, model);
-    updateItemsVersion();
     notifyListeners();
     return true;
   }
 
-  pauseDownloadTask(String taskId) async {
-    await DownloadService().pauseDownloadTask(taskId);
+  Future<void> pauseDownloadTask(String taskId) async {
+    await DownloadService.instance.pauseDownloadTask(taskId);
   }
 
-  resumeDownloadTask(String taskId) async {
+  Future<void> resumeDownloadTask(String taskId) async {
     await EasyLoading.show(dismissOnTap: false);
-    final newTaskId = await DownloadService().resumeDownloadTask(taskId);
+    final newTaskId = await DownloadService.instance.resumeDownloadTask(taskId);
+    if (newTaskId != null) _updateTaskId(taskId, newTaskId);
+    await EasyLoading.dismiss();
+  }
+
+  Future<void> retryDownloadTask(String taskId) async {
+    await EasyLoading.show(dismissOnTap: false);
+    final newTaskId = await DownloadService.instance.retryDownloadTask(taskId);
     if (newTaskId != null) {
       _updateTaskId(taskId, newTaskId);
     }
     await EasyLoading.dismiss();
   }
 
-  retryDownloadTask(String taskId) async {
+  void _updateTaskId(String taskId, String newTaskId) {
+    var match = findItem(taskId);
+    if (match == null) return;
+    var item = match.item;
+    var newItem = match.item.copyWith();
+    newItem.taskId = newTaskId;
+    items.remove(item);
+    items.insert(match.index, newItem);
+    notifyListeners();
+  }
+
+  void _updateDownloadInfo(String taskId, DownloadTaskStatus status, int progress) {
+    var match = findItem(taskId);
+    if (match == null) return;
+    var item = match.item;
+    var newItem = match.item.copyWith();
+    newItem.status = status;
+    newItem.progress = progress;
+    items.remove(item);
+    items.insert(match.index, newItem);
+    notifyListeners();
+  }
+
+  Future<void> deleteDownloadTask(String taskId) async {
     await EasyLoading.show(dismissOnTap: false);
-    final newTaskId = await DownloadService().retryDownloadTask(taskId);
-    if (newTaskId != null) {
-      _updateTaskId(taskId, newTaskId);
-    }
+    await DownloadService.instance.deleteDownloadTask(taskId);
+    var match = findItem(taskId);
+    if (match == null) return;
+    var item = match.item;
+    items.remove(item);
+    notifyListeners();
     await EasyLoading.dismiss();
   }
 
-  _updateTaskId(String taskId, String newTaskId) {
-    var item = getItem(taskId);
-    if (item == null) return;
-    item.taskId = newTaskId;
-    updateItemsVersion();
-    notifyListeners();
-  }
-
-  _updateDownloadInfo(String taskId, DownloadTaskStatus status, int progress) {
-    var item = getItem(taskId);
-    if (item == null) return;
-    item
-      ..status = status
-      ..progress = progress;
-    updateItemsVersion();
-    notifyListeners();
-  }
-
-  deleteDownloadTask(String taskId) async {
-    await EasyLoading.show(dismissOnTap: false);
-    await DownloadService().deleteDownloadTask(taskId);
-    var item = getItem(taskId);
-    if (item != null) items.remove(item);
-    updateItemsVersion();
-    notifyListeners();
-    await EasyLoading.dismiss();
-  }
-
-  registerDownloaderCallback() {
+  void registerDownloaderCallback() {
     FlutterDownloader.registerCallback(downloadCallback, step: 1);
   }
 
   @pragma('vm:entry-point')
-  static downloadCallback(String id, DownloadTaskStatus status, int progress) {
+  static void downloadCallback(String id, int status, int progress) {
     logDebug('Callback on background isolate: '
         'task ($id) is in status ($status) and process ($progress)');
-    IsolateNameServer.lookupPortByName(_isolatePortServerName)
-        ?.send([id, status, progress]);
+    IsolateNameServer.lookupPortByName(_isolatePortServerName)?.send([id, status, progress]);
   }
 
-  bindBackgroundIsolate() {
-    final isSuccess = IsolateNameServer.registerPortWithName(
-        _port.sendPort, _isolatePortServerName);
+  void bindBackgroundIsolate() {
+    final isSuccess = IsolateNameServer.registerPortWithName(_port.sendPort, _isolatePortServerName);
     if (!isSuccess) {
       unbindBackgroundIsolate();
       bindBackgroundIsolate();
@@ -146,7 +153,9 @@ class HistoryScreenVM extends ChangeNotifier {
     }
     _port.listen((dynamic data) {
       final taskId = (data as List<dynamic>)[0] as String;
-      final status = data[1] as DownloadTaskStatus;
+      final statusValue = data[1] as int;
+      final status = DownloadTaskStatus(statusValue);
+
       final progress = data[2] as int;
       logDebug('Callback on UI isolate: '
           'task ($taskId) is in status ($status) and process ($progress)');
@@ -154,7 +163,7 @@ class HistoryScreenVM extends ChangeNotifier {
     });
   }
 
-  unbindBackgroundIsolate() {
+  void unbindBackgroundIsolate() {
     IsolateNameServer.removePortNameMapping(_isolatePortServerName);
   }
 }

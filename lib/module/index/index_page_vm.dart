@@ -4,10 +4,10 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:gh_tool_package/config/app_preference.dart';
+import 'package:flutter_tool_kit/config/app_preference.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:gh_tool_package/extension/string.dart';
 import 'package:gh_tool_package/extension/time.dart';
-import 'package:gh_tool_package/log/logger.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/model/downloads.dart';
@@ -21,7 +21,7 @@ import 'package:top_one/tool/store_kit.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
 
-class IndexScreenVM extends ChangeNotifier {
+class IndexPageVM extends ChangeNotifier {
   double topBarOpacity = 0.0;
 
   final _port = ReceivePort();
@@ -33,11 +33,6 @@ class IndexScreenVM extends ChangeNotifier {
     topBarDataVersion = generateRandomString(5);
   }
 
-  String itemsVersion = "";
-  void updateItemsVersion() {
-    itemsVersion = generateRandomString(5);
-  }
-
   bool inlineadLoaded = false;
   void setInlineadLoaded() {
     if (inlineadLoaded) return;
@@ -46,23 +41,22 @@ class IndexScreenVM extends ChangeNotifier {
   }
 
   Future<DownloadTask?> findCompletedTask(String taskId) async {
-    return DownloadService().findCompletedTask(taskId);
+    return DownloadService.instance.findCompletedTask(taskId);
   }
 
   Future<bool> createDownloadTask(TTResult result) async {
-    final model = await DownloadService().createDownloadTask(result);
+    final model = await DownloadService.instance.createDownloadTask(result);
     if (model == null) return false;
     currentTask = model;
-    updateItemsVersion();
     notifyListeners();
     return true;
   }
 
-  pauseDownloadTask(String taskId) async {
-    await DownloadService().pauseDownloadTask(taskId);
+  Future<void> pauseDownloadTask(String taskId) async {
+    await DownloadService.instance.pauseDownloadTask(taskId);
   }
 
-  resumeDownloadTask(String taskId) async {
+  Future<void> resumeDownloadTask(String taskId) async {
     await EasyLoading.show(dismissOnTap: false);
     final newTaskId = await FlutterDownloader.resume(taskId: taskId);
     if (newTaskId == null) {
@@ -74,7 +68,7 @@ class IndexScreenVM extends ChangeNotifier {
     await EasyLoading.dismiss();
   }
 
-  retryDownloadTask(String taskId) async {
+  Future<void> retryDownloadTask(String taskId) async {
     await EasyLoading.show(dismissOnTap: false);
     final newTaskId = await FlutterDownloader.retry(taskId: taskId);
     if (newTaskId == null) {
@@ -86,66 +80,63 @@ class IndexScreenVM extends ChangeNotifier {
     await EasyLoading.dismiss();
   }
 
-  _updateTaskId(String taskId, String newTaskId) {
+  void _updateTaskId(String taskId, String newTaskId) {
     if (currentTask == null) return;
-    currentTask!.taskId = newTaskId;
-    updateItemsVersion();
+    var newTaskModel = currentTask?.copyWith();
+    if (newTaskModel == null) return;
+    newTaskModel.taskId = newTaskId;
+    currentTask = newTaskModel;
     notifyListeners();
   }
 
-  _updateDownloadInfo(String taskId, DownloadTaskStatus status, int progress) {
+  void _updateDownloadInfo(String taskId, DownloadTaskStatus status, int progress) {
     if (currentTask == null) return;
-    currentTask!
+    var newTaskModel = currentTask?.copyWith();
+    if (newTaskModel == null) return;
+    newTaskModel
       ..status = status
       ..progress = progress;
+    currentTask = newTaskModel;
     if (status == DownloadTaskStatus.complete) {
-      AnalyticsService().logEvent(AnalyticsEvent.completeDownload);
-      DownloadService().findCompletedTask(taskId).then((value) {
+      AnalyticsService.instance.logEvent(AnalyticsEvent.completeDownload);
+      DownloadService.instance.findCompletedTask(taskId).then((value) {
         if (value == null) return;
         var filePath = path.join(value.savedDir, value.filename);
         PhotoLibraryService().saveVideo(filePath);
       });
-      showCustomRateView(
-          null, AppPreferenceKey.latest_download_complete_rate_date);
+      showCustomRateView(null, AppPreferenceKey.latest_download_complete_rate_date);
       // 记录红标
-      AppPreference()
-          .setInt(AppPreferenceKey.has_new_history_date, currentMilliseconds());
-      updateTopBarDataVersion();
+      AppPreference.instance.setInt(AppPreferenceKey.has_new_history_date, currentMilliseconds());
     }
-    updateItemsVersion();
     notifyListeners();
   }
 
-  updateTopBarOpacity(double topBarOpacity) {
+  void updateTopBarOpacity(double topBarOpacity) {
     this.topBarOpacity = topBarOpacity;
-    updateTopBarDataVersion();
     notifyListeners();
   }
 
-  deleteDownloadTask(String taskId) async {
+  Future<void> deleteDownloadTask(String taskId) async {
     await EasyLoading.show(dismissOnTap: false);
-    await DownloadService().deleteDownloadTask(taskId);
+    await DownloadService.instance.deleteDownloadTask(taskId);
     if (currentTask != null) currentTask = null;
-    updateItemsVersion();
     notifyListeners();
     await EasyLoading.dismiss();
   }
 
-  registerDownloaderCallback() {
+  void registerDownloaderCallback() {
     FlutterDownloader.registerCallback(downloadCallback, step: 1);
   }
 
   @pragma('vm:entry-point')
-  static downloadCallback(String id, DownloadTaskStatus status, int progress) {
+  static downloadCallback(String id, int status, int progress) {
     logDebug('Callback on background isolate: '
         'task ($id) is in status ($status) and process ($progress)');
-    IsolateNameServer.lookupPortByName(_isolatePortServerName)
-        ?.send([id, status, progress]);
+    IsolateNameServer.lookupPortByName(_isolatePortServerName)?.send([id, status, progress]);
   }
 
-  bindBackgroundIsolate() {
-    final isSuccess = IsolateNameServer.registerPortWithName(
-        _port.sendPort, _isolatePortServerName);
+  void bindBackgroundIsolate() {
+    final isSuccess = IsolateNameServer.registerPortWithName(_port.sendPort, _isolatePortServerName);
     if (!isSuccess) {
       unbindBackgroundIsolate();
       bindBackgroundIsolate();
@@ -153,7 +144,7 @@ class IndexScreenVM extends ChangeNotifier {
     }
     _port.listen((dynamic data) {
       final taskId = (data as List<dynamic>)[0] as String;
-      final status = data[1] as DownloadTaskStatus;
+      final status = DownloadTaskStatus(data[1] as int);
       final progress = data[2] as int;
       logDebug('Callback on UI isolate: '
           'task ($taskId) is in status ($status) and process ($progress)');
@@ -161,7 +152,7 @@ class IndexScreenVM extends ChangeNotifier {
     });
   }
 
-  unbindBackgroundIsolate() {
+  void unbindBackgroundIsolate() {
     IsolateNameServer.removePortNameMapping(_isolatePortServerName);
   }
 }
