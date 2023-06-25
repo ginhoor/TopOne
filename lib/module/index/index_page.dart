@@ -119,25 +119,29 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Column(
-        children: <Widget>[
-          _topBar,
-          _content,
-        ],
-      ),
+      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: _body),
+    );
+  }
+
+  Widget get _body {
+    return Column(
+      children: <Widget>[
+        _topBar,
+        _content,
+      ],
     );
   }
 
   Widget get _topBar {
     return AppTopBar(
-      hasNewHistory: AppPreference.instance.getInt(AppPreferenceKey.has_new_history_date) != null,
+      hasNewHistory: AppPreference.instance.getInt(AppPreferenceKey.hasNewHistoryDate.value) != null,
       tapSettings: () => AppNavigator.pushRoute(SettingsPageRouteHandler.instance.page()),
       tapDownloadList: () async {
         await EasyLoading.show(dismissOnTap: false);
         ADService().historyINTAdService.show((p0) async {
           await EasyLoading.dismiss();
           AppNavigator.pushRoute(HistoryPageRouteHandler.instance.page());
-          AppPreference.instance.remove(AppPreferenceKey.has_new_history_date);
+          AppPreference.instance.remove(AppPreferenceKey.hasNewHistoryDate.value);
         });
       },
     );

@@ -13,7 +13,7 @@ class ADService {
   factory ADService() => instance;
 
   // 仅仅在打包时能被修改
-  final bool forceEnable = true;
+  final bool forceEnable = kReleaseMode ? true : false;
   bool enable = false;
 
   /// index
@@ -66,11 +66,11 @@ class ADService {
   AppLifecycleReactor? appLifecycleReactor;
   int latestInterstitialAdShowTime = 0;
   updateLatestInterstitialAdShowTime() {
-    latestInterstitialAdShowTime = currentTimestamp();
+    latestInterstitialAdShowTime = currentTimestamp;
   }
 
   bool shouldShowInterstitialAd() {
-    final offset = currentTimestamp() - latestInterstitialAdShowTime;
+    final offset = currentTimestamp - latestInterstitialAdShowTime;
     logDebug("shouldShowInterstitialAd offset: $offset");
     return offset > 60;
   }

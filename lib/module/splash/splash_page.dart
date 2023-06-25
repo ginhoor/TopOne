@@ -28,7 +28,7 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     Future.delayed(splashWaitDuration).then((value) {
-      if (AppPreference.instance.getInt(AppPreferenceKey.latest_agree_privacy_date) == null) {
+      if (AppPreference.instance.getInt(AppPreferenceKey.latestAgreePrivacyDate.value) == null) {
         var page = PrivacyLaunchPageRouteHandler.instance.page();
         AppNavigator.pushReplacementRoute(page);
       } else {
@@ -43,20 +43,26 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            ClipRRect(
-              borderRadius: BorderRadius.all(Radius.circular(30.0)),
-              child: Image(
-                image: ResizeImage(ExactAssetImage('assets/icon/ttd_icon.png'),
-                    width: 150, height: 150, allowUpscaling: true),
+      body: WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: Align(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              ClipRRect(
+                borderRadius: BorderRadius.all(Radius.circular(30.0)),
+                child: Image(
+                  image: ResizeImage(ExactAssetImage('assets/icon/ttd_icon.png'),
+                      width: 150, height: 150, allowUpscaling: true),
+                ),
               ),
-            ),
-            SizedBox(height: 40),
-            Padding(padding: EdgeInsets.only(left: 16), child: AppTitleLogo())
-          ],
+              SizedBox(height: 40),
+              Padding(padding: EdgeInsets.only(left: 16), child: AppTitleLogo())
+            ],
+          ),
         ),
       ),
     );

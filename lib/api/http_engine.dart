@@ -53,7 +53,7 @@ class HttpEngine extends BaseHttp {
   }
 
   APISign getAPISign(String path, Map<String, dynamic> params) {
-    final timestamp = currentTimestamp();
+    final timestamp = currentTimestamp;
     final version = AppInfoModule.instance.appVersion;
     final os = AppInfoModule.instance.sysInfo?.os ?? "";
 

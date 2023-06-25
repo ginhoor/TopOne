@@ -72,11 +72,11 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     return Scaffold(
       appBar: createAppNavbar(Text(LocaleKeys.history.tr())),
       backgroundColor: AppTheme.background,
-      body: _buildListView,
+      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: listView),
     );
   }
 
-  Widget get _buildListView {
+  Widget get listView {
     return Consumer(
       builder: (context, ref, child) {
         var adLoaded = ref.watch(provider).inlineadLoaded;

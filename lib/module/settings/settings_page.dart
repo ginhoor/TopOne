@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gh_tool_package/system/web.dart';
 import 'package:top_one/app/app_module/app_info_module.dart';
+import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/generated/locale_keys.g.dart';
+import 'package:top_one/module/debug/debug_page+route.dart';
 import 'package:top_one/tool/store_kit.dart';
 import 'package:top_one/view/app_nav_bar.dart';
 
@@ -15,43 +17,47 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  List<Widget> staticCells = [];
+  List<Widget> items = [];
 
   @override
   void initState() {
-    setupStaticCells();
+    setupItems();
     super.initState();
   }
 
-  setupStaticCells() {
-    staticCells.add(_buildTitleCell(LocaleKeys.rate.tr(), onTap: () => showRateView()));
-    staticCells.add(_buildTitleCell(
-      LocaleKeys.privacy_policy.tr(),
-      onTap: () => launchInBrowser(kPrivacyPolicyURL),
-    ));
-    staticCells.add(_buildTitleCell(
-      LocaleKeys.terms_of_use.tr(),
-      onTap: () => launchInBrowser(kTermsOfServiceURL),
-    ));
-    staticCells.add(_buildAppCell());
+  setupItems() {
+    items.add(_buildTitleCell(LocaleKeys.rate.tr(), onTap: () => StoreManager.instance.openStorePage()));
+    items.add(_buildTitleCell(LocaleKeys.privacy_policy.tr(), onTap: () => launchInBrowser(kPrivacyPolicyURL)));
+    items.add(_buildTitleCell(LocaleKeys.terms_of_use.tr(), onTap: () => launchInBrowser(kTermsOfServiceURL)));
+
+    if (!kReleaseMode) {
+      items.add(_buildTitleCell("DEBUG", onTap: () {
+        var page = DebugPageRouteHandler().page();
+        AppNavigator.pushRoute(page);
+      }));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: createAppNavbar(Text(LocaleKeys.about.tr())),
-      body: Container(
-        color: const Color(0x00f2f2f7),
-        child: ListView.builder(
-          padding: EdgeInsets.only(
-            bottom: 62 + MediaQuery.of(context).padding.bottom,
-          ),
-          itemCount: staticCells.length,
-          scrollDirection: Axis.vertical,
-          itemBuilder: (BuildContext context, int index) {
-            return staticCells[index];
-          },
+      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: _content),
+    );
+  }
+
+  Widget get _content {
+    return Container(
+      color: const Color(0x00f2f2f7),
+      child: ListView.builder(
+        padding: EdgeInsets.only(
+          bottom: 62 + MediaQuery.of(context).padding.bottom,
         ),
+        itemCount: items.length,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (BuildContext context, int index) {
+          return items[index];
+        },
       ),
     );
   }

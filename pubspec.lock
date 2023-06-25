@@ -554,8 +554,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1.0.0"
-      resolved-ref: d5fa6f0e5e1017a82e83c4047824a6514d431ce0
+      ref: develop
+      resolved-ref: "5e30756bc57fcc133b58c9d46c448282479fb265"
       url: "https://github.com/ginhoor/GHToolPackage.git"
     source: git
     version: "0.0.1"
@@ -1200,10 +1200,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_android
-      sha256: eed4e6a1164aa9794409325c3b707ff424d4d1c2a785e7db67f8bbda00e36e51
+      sha256: "15f5acbf0dce90146a0f5a2c4a002b1814a6303c4c5c075aa2623b2d16156f03"
       url: "https://pub.dev"
     source: hosted
-    version: "6.0.35"
+    version: "6.0.36"
   url_launcher_ios:
     dependency: transitive
     description:

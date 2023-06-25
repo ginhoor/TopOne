@@ -52,7 +52,8 @@ dependencies:
     # path: /Users/ginhoor/Workspace/Personal/Flutter/gh_tool_package
     git:
       url: https://github.com/ginhoor/GHToolPackage.git
-      ref: 1.0.0
+      # ref: 1.0.0
+      ref: develop
 
   flutter_tool_kit:
     git:

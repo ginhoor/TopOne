@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
@@ -81,7 +80,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
     if (position == duration && !playEnd) {
       playEnd = true;
       logDebug("播放完毕");
-      showCustomRateView(context, AppPreferenceKey.latest_play_complete_rate_date);
+      StoreManager.instance.showInAppReview();
     }
     setState(() {
       progressValue = position / duration * 100;
@@ -96,28 +95,32 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Stack(
-        children: <Widget>[
-          Align(alignment: Alignment.center, child: _player),
-          Align(alignment: Alignment.center, child: _playAction),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Column(
-              mainAxisSize: MainAxisSize.min, // 设置 Column 的高度为子项内容的高度
-              children: [
-                _authInfo,
-                SizedBox(height: dPadding_2),
-                _timeSlider,
-                SizedBox(height: dPadding_2),
-                _videoInfo,
-              ],
-            ),
+      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: _content),
+    );
+  }
+
+  Widget get _content {
+    return Stack(
+      children: <Widget>[
+        Align(alignment: Alignment.center, child: _player),
+        Align(alignment: Alignment.center, child: _playAction),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // 设置 Column 的高度为子项内容的高度
+            children: [
+              _authInfo,
+              SizedBox(height: dPadding_2),
+              _timeSlider,
+              SizedBox(height: dPadding_2),
+              _videoInfo,
+            ],
           ),
-          Positioned(left: dPadding, top: (MediaQuery.of(context).padding.top), child: _back),
-          if (widget.localFilePath != null)
-            Positioned(right: dPadding, top: (MediaQuery.of(context).padding.top), child: _save),
-        ],
-      ),
+        ),
+        Positioned(left: dPadding, top: (MediaQuery.of(context).padding.top), child: _back),
+        if (widget.localFilePath != null)
+          Positioned(right: dPadding, top: (MediaQuery.of(context).padding.top), child: _save),
+      ],
     );
   }
 

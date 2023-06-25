@@ -98,9 +98,9 @@ class IndexPageVM extends ChangeNotifier {
         var filePath = path.join(value.savedDir, value.filename);
         PhotoLibraryService().saveVideo(filePath);
       });
-      showCustomRateView(null, AppPreferenceKey.latest_download_complete_rate_date);
+      StoreManager.instance.showInAppReview();
       // 记录红标
-      AppPreference.instance.setInt(AppPreferenceKey.has_new_history_date, currentMilliseconds());
+      AppPreference.instance.setInt(AppPreferenceKey.hasNewHistoryDate.value, currentMilliseconds);
     }
     notifyListeners();
   }
