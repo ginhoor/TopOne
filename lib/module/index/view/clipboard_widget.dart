@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:top_one/app/theme_config.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
@@ -8,23 +8,13 @@ import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/view/utils.dart';
 
 class ClipboardWidget extends StatefulWidget {
-  final AnimationController animationController;
-  final Animation<double> animation;
   final Future<bool> Function(String text)? handleDownload;
-
-  const ClipboardWidget(
-      {Key? key,
-      required this.animationController,
-      required this.animation,
-      this.handleDownload})
-      : super(key: key);
-
+  const ClipboardWidget({Key? key, this.handleDownload}) : super(key: key);
   @override
   State<ClipboardWidget> createState() => _ClipboardWidgetState();
 }
 
-class _ClipboardWidgetState extends State<ClipboardWidget>
-    with WidgetsBindingObserver {
+class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingObserver {
   final TextEditingController _inputController = TextEditingController();
   final OutlineInputBorder _outlineInputBorder = outlineInputBorder;
   @override
@@ -47,11 +37,10 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
       var result = await getClipboardData();
       if (result == null) return;
       var url = result.text!;
-      if (TTResult.verifyURL(url)) {
-        if (widget.handleDownload != null) {
-          widget.handleDownload!(url).then((value) => {clearClipboard()});
-        }
-      }
+      if (!TTResult.verifyURL(url)) return;
+      clearClipboard();
+      if (widget.handleDownload == null) return;
+      widget.handleDownload!(url);
     }
   }
 
@@ -88,41 +77,32 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: widget.animationController,
-      builder: (BuildContext context, Widget? child) {
-        return addFadeTransition(
-            Column(
-              children: <Widget>[
-                generateTextFiled(),
-                const SizedBox(height: 8),
-                generateActionBar(),
-              ],
-            ),
-            widget.animation);
-      },
+    return Column(
+      children: <Widget>[
+        _textFiled,
+        SizedBox(height: dPadding),
+        _actionBar,
+      ],
     );
   }
 
-  Widget generateActionBar() {
+  Widget get _actionBar {
     return Row(
       children: [
         Expanded(
           child: SizedBox(
-            height: 40,
+            height: dBtnSize,
             child: addShadows(
-              generateActionButton("paste", AppTheme.nearlyWhite, AppTheme.grey,
-                  handlePasteAction),
+              generateActionButton("paste", AppTheme.nearlyWhite, AppTheme.grey, handlePasteAction),
             ),
           ),
         ),
-        const SizedBox(width: 20),
+        SizedBox(width: dPadding),
         Expanded(
           child: SizedBox(
-            height: 40,
+            height: dBtnSize,
             child: addShadows(
-              generateActionButton("download", AppTheme.actionGreen,
-                  AppTheme.nearlyWhite, handleDownloadAction),
+              generateActionButton("download", AppTheme.actionGreen, AppTheme.nearlyWhite, handleDownloadAction),
             ),
           ),
         )
@@ -130,7 +110,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
     );
   }
 
-  Widget generateTextFiled() {
+  Widget get _textFiled {
     return addShadows(
       TextField(
         maxLines: 1, //最多多少行
@@ -141,15 +121,14 @@ class _ClipboardWidgetState extends State<ClipboardWidget>
         style: const TextStyle(fontSize: 14, color: Colors.black87),
         decoration: InputDecoration(
           hintText: 'Type In Link To Start...',
-          suffixIcon: IconButton(
-            onPressed: _inputController.clear,
-            icon: const Icon(Icons.clear),
-          ),
+          suffixIcon: InkWell(
+              borderRadius: BorderRadius.circular(30), // 设置一个圆角边框，用于限制点击效果的范围
+              onTap: _inputController.clear,
+              child: Icon(Icons.clear)),
           fillColor: Colors.grey[50],
           filled: true,
           isCollapsed: true,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
           border: _outlineInputBorder,
           focusedBorder: _outlineInputBorder,
           enabledBorder: _outlineInputBorder,

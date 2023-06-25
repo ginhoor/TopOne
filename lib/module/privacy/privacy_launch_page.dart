@@ -45,7 +45,7 @@ class _PrivacyLaunchPageState extends State<PrivacyLaunchPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Videos Downloader for TikTok",
+                        "Video Downloader for TikTok",
                         style: TextStyle(
                             color: AppTheme.nearlyBlack, fontSize: 17, fontWeight: FontWeight.w500, height: 1.5),
                       ),

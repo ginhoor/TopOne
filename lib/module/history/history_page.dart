@@ -6,9 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/app/theme_config.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/history/history_page_vm.dart';
-import 'package:top_one/module/index/view/history_task_info_widget.dart';
+import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/module/video/video_preview_page+route.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/banner_ad_service.dart';
@@ -27,11 +28,11 @@ class HistoryPage extends ConsumerStatefulWidget {
 
 class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderStateMixin {
   final provider = ChangeNotifierProvider<HistoryPageVM>((ref) => HistoryPageVM());
-  late Animation<double> topBarAnimation;
+  // late Animation<double> topBarAnimation;
   // List<Widget> staticCells = [];
   // // 进入页面后的动效时长
   // late AnimationController animationController;
-  final scrollController = ScrollController();
+  // final scrollController = ScrollController();
   BannerADService? adService;
 
   @override
@@ -42,7 +43,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
 
   @override
   void initState() {
-    setupDownloader();
+    setupDownloadService();
     ref.read(provider).loadTasks();
     super.initState();
   }
@@ -64,7 +65,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     adService?.load();
   }
 
-  setupDownloader() {
+  setupDownloadService() {
     ref.read(provider).bindBackgroundIsolate();
     ref.read(provider).registerDownloaderCallback();
   }
@@ -72,38 +73,40 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultAppNavbar(const Text("download").tr()),
+      appBar: createAppNavbar(Text("history".tr())),
       backgroundColor: AppTheme.background,
-      body: Stack(
-        children: <Widget>[
-          _buildListView(),
-          Consumer(
-            builder: (context, ref, child) {
-              var _ = ref.watch(provider).inlineadLoaded;
-              return adService?.adWidget() ?? Container();
-            },
-          ),
-          SizedBox(height: MediaQuery.of(context).padding.bottom)
-        ],
-      ),
+      body: _buildListView,
     );
   }
 
-  Widget _buildListView() {
+  Widget get _buildListView {
     return Consumer(
       builder: (context, ref, child) {
+        var adLoaded = ref.watch(provider).inlineadLoaded;
         var items = ref.watch(provider).items;
+
+        var count = adLoaded ? items.length + 1 : items.length;
+
         return ListView.builder(
-          controller: scrollController,
+          physics: ClampingScrollPhysics(), // 禁止滑动触顶和触底的动效
           padding: EdgeInsets.only(
-            top: MediaQuery.of(context).padding.top + (adService?.ad != null ? adService!.ad!.size.height : 0),
+            // top: MediaQuery.of(context).padding.top + (adService?.ad != null ? adService!.ad!.size.height : 0),
             bottom: MediaQuery.of(context).padding.bottom,
           ),
-          itemCount: items.length,
+          itemCount: count,
           scrollDirection: Axis.vertical,
           itemBuilder: (BuildContext context, int index) {
-            var item = items[index];
-            return buildTaskItem(context, item);
+            if (adLoaded && index == 0) {
+              return adService?.adWidget() ?? Container();
+            }
+            final itemIndex = adLoaded ? index - 1 : index;
+            var item = items[itemIndex];
+            return Padding(
+              padding: adLoaded && itemIndex == 0
+                  ? EdgeInsets.only(left: dPadding, right: dPadding)
+                  : EdgeInsets.only(left: dPadding, right: dPadding, top: dPadding),
+              child: buildTaskItem(context, item),
+            );
           },
         );
       },
@@ -111,7 +114,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
   }
 
   Widget buildTaskItem(BuildContext context, TaskModel model) {
-    return HistoryTaskInfoWidget(
+    return TaskInfoWidget(
       data: model,
       onTap: (model) async {
         AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
@@ -139,7 +142,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
           await vm.retryDownloadTask(model.taskId);
         }
       },
-      onCancel: (model) {
+      onDelete: (model) {
         var vm = ref.read(provider);
         vm.deleteDownloadTask(model.taskId);
       },

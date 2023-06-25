@@ -6,7 +6,6 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
-import 'package:gh_tool_package/extension/string.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_preference.dart';
@@ -27,11 +26,6 @@ class IndexPageVM extends ChangeNotifier {
   final _port = ReceivePort();
 
   TaskModel? currentTask;
-
-  String topBarDataVersion = "";
-  void updateTopBarDataVersion() {
-    topBarDataVersion = generateRandomString(5);
-  }
 
   bool inlineadLoaded = false;
   void setInlineadLoaded() {

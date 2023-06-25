@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:in_app_review/in_app_review.dart';
-import 'package:top_one/app/app.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/theme/app_theme.dart';
 
@@ -11,14 +10,17 @@ final InAppReview inAppReview = InAppReview.instance;
 
 void showCustomRateView(BuildContext? context, String key) {
   if (AppPreference.instance.getInt(key) != null) return;
-  BuildContext? showContext = context ?? navigatorKey.currentState?.overlay?.context;
-  if (showContext != null) {
-    showRateDialog(showContext);
-    AppPreference.instance.setInt(key, currentMilliseconds());
-  }
+  showRateView();
+  AppPreference.instance.setInt(key, currentMilliseconds());
+
+  // BuildContext? showContext = context ?? navigatorKey.currentState?.overlay?.context;
+  // if (showContext != null) {
+  //   showRateDialog(showContext);
+  //   AppPreference.instance.setInt(key, currentMilliseconds());
+  // }
 }
 
-void showRateView() async {
+Future<void> showRateView() async {
   if (await inAppReview.isAvailable()) inAppReview.requestReview();
 }
 

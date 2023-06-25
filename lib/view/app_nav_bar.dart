@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/theme/app_theme.dart';
 
-AppBar defaultAppNavbar(Widget titleWidget) {
+AppBar createAppNavbar(Widget titleWidget, {Widget? leading, List<Widget>? actions, double elevation = 1}) {
   return AppBar(
-    backgroundColor: AppTheme.nearlyWhite,
+    backgroundColor: Colors.white,
     centerTitle: true,
     title: titleWidget,
-    elevation: 1,
+    iconTheme: IconThemeData(color: Colors.black),
+    elevation: elevation,
     titleTextStyle: const TextStyle(
-      color: AppTheme.nearlyBlack,
+      color: Colors.black,
       fontSize: 17,
       fontWeight: FontWeight.bold,
     ),
-    leading: IconButton(
-      icon: const Icon(Icons.arrow_back_ios, color: AppTheme.nearlyBlack),
-      onPressed: () => AppNavigator.popPage(),
-    ),
+    leading: leading,
+    actions: actions,
   );
 }

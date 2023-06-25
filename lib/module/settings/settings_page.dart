@@ -23,12 +23,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   setupStaticCells() {
-    staticCells.add(_buildTitleCell(
-      "rate",
-      onTap: () {
-        showRateDialog(context);
-      },
-    ));
+    staticCells.add(_buildTitleCell("rate", onTap: () {
+      showRateView();
+    }));
     staticCells.add(_buildTitleCell(
       "privacy_policy",
       onTap: () => launchInBrowser(kPrivacyPolicyURL),
@@ -43,7 +40,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: defaultAppNavbar(const Text("about").tr()),
+      appBar: createAppNavbar(const Text("about").tr()),
       body: Container(
         color: const Color(0x00f2f2f7),
         child: ListView.builder(

@@ -4,7 +4,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_tool_kit/interface/app_module_interface.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-String appName = "Top One";
+String appName = "Downloader for TT no watermark";
 
 const kPrivacyPolicyURL = "https://gfrtopone.github.io/privacy-policy.html";
 const kTermsOfServiceURL = "https://gfrtopone.github.io/terms-of-service.html";

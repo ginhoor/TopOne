@@ -11,11 +11,12 @@ import 'package:path/path.dart' as path;
 import 'package:top_one/api/ttd_request.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
+import 'package:top_one/app/theme_config.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/history/history_page+route.dart';
 import 'package:top_one/module/index/index_page_vm.dart';
-import 'package:top_one/module/index/view/index_task_info_widget.dart';
+import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/module/settings/settings_page+route.dart';
 import 'package:top_one/module/video/video_preview_page+route.dart';
 import 'package:top_one/service/ad/Inline_ad_service.dart';
@@ -37,11 +38,6 @@ class IndexPage extends ConsumerStatefulWidget {
 
 class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateMixin {
   final provider = ChangeNotifierProvider<IndexPageVM>((ref) => IndexPageVM());
-  late Animation<double> topBarAnimation;
-
-  // 进入页面后的动效时长
-  late AnimationController animationController;
-  final scrollController = ScrollController();
 
   InlineADService? adService;
 
@@ -53,14 +49,9 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
 
   @override
   void initState() {
-    animationController = AnimationController(duration: const Duration(milliseconds: 1000), vsync: this);
-    topBarAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: animationController, curve: const Interval(0, 0.5, curve: Curves.fastOutSlowIn)));
-    scrollController.addListener(_handleTopBarWhenScroll);
     var vm = ref.read(provider);
     vm.bindBackgroundIsolate();
     vm.registerDownloaderCallback();
-    animationController.forward();
     super.initState();
   }
 
@@ -72,7 +63,7 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
 
   static const _insets = 16.0;
   double get _adWidth => MediaQuery.of(context).size.width - (2 * _insets);
-  setupAd() async {
+  Future<void> setupAd() async {
     // Get an inline adaptive size for the current orientation.
     int width = _adWidth.truncate();
     AdSize size = AdSize.getInlineAdaptiveBannerAdSize(width, (width / 328.0 * 310.0).truncate());
@@ -128,78 +119,65 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: Stack(
+      body: Column(
         children: <Widget>[
-          _buildContent(),
-          _buildAppTopBar(),
+          _topBar,
+          _content,
         ],
       ),
     );
   }
 
-  Widget _buildAppTopBar() {
-    return Consumer(
-      builder: (context, ref, child) {
-        var topBarOpacity = ref.watch(provider).topBarOpacity;
-        return AppTopBar(
-          animationController,
-          topBarAnimation,
-          topBarOpacity,
-          hasNewHistory: AppPreference.instance.getInt(AppPreferenceKey.has_new_history_date) != null,
-          tapSettings: () => AppNavigator.pushRoute(SettingsPageRouteHandler.instance.page()),
-          tapDownloadList: () async {
-            ADService().historyINTAdService.show((p0) async {
-              AppNavigator.pushRoute(HistoryPageRouteHandler.instance.page());
-              AppPreference.instance.remove(AppPreferenceKey.has_new_history_date);
-              ref.read(provider).updateTopBarDataVersion();
-            });
-          },
-        );
+  Widget get _topBar {
+    return AppTopBar(
+      hasNewHistory: AppPreference.instance.getInt(AppPreferenceKey.has_new_history_date) != null,
+      tapSettings: () => AppNavigator.pushRoute(SettingsPageRouteHandler.instance.page()),
+      tapDownloadList: () async {
+        await EasyLoading.show(dismissOnTap: false);
+        ADService().historyINTAdService.show((p0) async {
+          await EasyLoading.dismiss();
+          AppNavigator.pushRoute(HistoryPageRouteHandler.instance.page());
+          AppPreference.instance.remove(AppPreferenceKey.has_new_history_date);
+        });
       },
     );
   }
 
-  Widget _buildContent() {
+  Widget get _content {
     return SingleChildScrollView(
-      controller: scrollController,
+      physics: ClampingScrollPhysics(), // 禁止滑动触顶和触底的动效
       padding: EdgeInsets.only(
-        top: AppBar().preferredSize.height + MediaQuery.of(context).padding.top + 15,
-        bottom: 62 + MediaQuery.of(context).padding.bottom,
+        bottom: MediaQuery.of(context).padding.bottom,
       ),
-      child: IntrinsicHeight(
-        child: Column(
-          children: [
-            ClipboardWidget(
-              animation: Tween<double>(begin: 0.0, end: 1.0).animate(
-                CurvedAnimation(
-                  parent: animationController,
-                  curve: const Interval((1 / 9) * 1, 1.0, curve: Curves.fastOutSlowIn),
-                ),
-              ),
-              animationController: animationController,
-              handleDownload: handleDownloadAction,
-            ),
-            Consumer(
-              builder: (context, ref, child) {
-                var task = ref.watch(provider).currentTask;
-                if (task == null) return Container();
-                return buildTaskItem(context, task);
-              },
-            ),
-            Consumer(
-              builder: (context, ref, child) {
-                var _ = ref.watch(provider).inlineadLoaded;
-                return adService?.adWidget() ?? Container();
-              },
-            ),
-          ],
-        ),
+      child: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(dPadding),
+            child: ClipboardWidget(handleDownload: handleDownloadAction),
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              var task = ref.watch(provider).currentTask;
+              if (task == null) return Container();
+              return Padding(
+                padding: EdgeInsets.only(left: dPadding, right: dPadding, bottom: dPadding),
+                child: buildTaskItem(context, task),
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              var _ = ref.watch(provider).inlineadLoaded;
+              return adService?.adWidget() ?? Container();
+            },
+          ),
+        ],
       ),
     );
   }
 
   Widget buildTaskItem(BuildContext context, TaskModel model) {
-    return IndexTaskInfoWidget(
+    return TaskInfoWidget(
       data: model,
       onTap: (_) async {
         AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
@@ -230,23 +208,11 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
           await vm.retryDownloadTask(task.taskId);
         }
       },
-      onCancel: (_) async {
+      onDelete: (_) async {
         var task = ref.read(provider).currentTask;
         if (task == null) return;
         await ref.read(provider).deleteDownloadTask(task.taskId);
       },
     );
-  }
-
-  void _handleTopBarWhenScroll() {
-    var vm = ref.read(provider);
-    if (scrollController.offset >= 24) {
-      if (vm.topBarOpacity != 1.0) vm.updateTopBarOpacity(1.0);
-    } else if (scrollController.offset <= 24 && scrollController.offset >= 0) {
-      var val = scrollController.offset / 24;
-      if (vm.topBarOpacity != val) vm.updateTopBarOpacity(val);
-    } else if (scrollController.offset <= 0) {
-      if (vm.topBarOpacity != 0.0) vm.updateTopBarOpacity(0.0);
-    }
   }
 }
