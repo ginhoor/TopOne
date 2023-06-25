@@ -99,9 +99,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
             final itemIndex = adLoaded ? index - 1 : index;
             var item = items[itemIndex];
             return Padding(
-              padding: adLoaded && itemIndex == 0
-                  ? EdgeInsets.only(left: dPadding, right: dPadding)
-                  : EdgeInsets.only(left: dPadding, right: dPadding, top: dPadding),
+              padding: EdgeInsets.only(left: dPadding, right: dPadding, top: dPadding),
               child: buildTaskItem(context, item),
             );
           },

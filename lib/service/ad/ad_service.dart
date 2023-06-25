@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
-import 'package:gh_tool_package/extension/time.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
+import 'package:gh_tool_package/extension/time.dart';
 import 'package:top_one/service/ad/app_lifecycle_reactor.dart';
 import 'package:top_one/service/ad/app_open_ad_manager.dart';
 import 'package:top_one/service/ad/interstitial_ad_service.dart';
@@ -13,7 +13,7 @@ class ADService {
   factory ADService() => instance;
 
   // 仅仅在打包时能被修改
-  final bool forceEnable = false;
+  final bool forceEnable = true;
   bool enable = false;
 
   /// index
