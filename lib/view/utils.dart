@@ -1,7 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:top_one/app/theme_config.dart';
 import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/theme_config.dart';
 
 final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
   gapPadding: 5,

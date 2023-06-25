@@ -93,14 +93,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         onUnknownRoute: (settings) => Routes.onUnknownRoute(),
         home: Container(
           color: AppTheme.background,
-          child: const SafeArea(
-            top: false,
-            bottom: false,
-            child: Scaffold(
-              backgroundColor: AppTheme.background,
-              body: SplashPage(),
-            ),
-          ),
+          child: SplashPage(),
         ),
         builder: EasyLoading.init(),
       ),

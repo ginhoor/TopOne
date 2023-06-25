@@ -5,14 +5,16 @@ import 'package:common_utils/common_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
-import 'package:top_one/app/theme_config.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/tool/store_kit.dart';
 import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
@@ -36,7 +38,30 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
     ADService().videoPlayINTAdService.show((p0) => null);
     playerCtrl.removeListener(listen);
     playerCtrl.dispose();
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    var localFilePath = widget.localFilePath;
+    if (localFilePath != null) {
+      var file = File(localFilePath);
+      playerCtrl = VideoPlayerController.file(file);
+    } else if (widget.metaData.video != null) {
+      playerCtrl = VideoPlayerController.network(widget.metaData.video!);
+    } else {
+      playerCtrl = VideoPlayerController.asset("");
+    }
+    playerCtrl.addListener(listen);
+    playerCtrl.initialize().then((_) {
+      if (!mounted) return;
+      setState(() {
+        playerCtrl.play();
+      });
+    });
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
 
   void handlePlayAction() {
@@ -65,28 +90,6 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
       }
       labelProgress = DateUtil.formatDateMs(progressValue.toInt(), format: 'mm:ss');
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    var localFilePath = widget.localFilePath;
-    if (localFilePath != null) {
-      var file = File(localFilePath);
-      playerCtrl = VideoPlayerController.file(file);
-    } else if (widget.metaData.video != null) {
-      playerCtrl = VideoPlayerController.network(widget.metaData.video!);
-    } else {
-      playerCtrl = VideoPlayerController.asset("");
-    }
-    playerCtrl.addListener(listen);
-    playerCtrl.initialize().then((_) {
-      if (!mounted) return;
-      setState(() {
-        playerCtrl.play();
-      });
-    });
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
 
   @override
@@ -194,11 +197,13 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
           title: Text('defualt_alert_title'.tr()),
           actions: [
             TextButton(
-              child: Text('save'.tr()),
+              child: Text(LocaleKeys.save.tr()),
               onPressed: () async {
+                await EasyLoading.show(dismissOnTap: false);
                 if (widget.localFilePath != null) {
                   await PhotoLibraryService().saveVideo(widget.localFilePath!);
                 }
+                await EasyLoading.dismiss();
                 AppNavigator.popPage();
               },
             ),

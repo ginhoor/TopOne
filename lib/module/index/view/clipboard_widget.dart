@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:top_one/app/theme_config.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/utils.dart';
 
 class ClipboardWidget extends StatefulWidget {

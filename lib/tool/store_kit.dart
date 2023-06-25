@@ -12,12 +12,6 @@ void showCustomRateView(BuildContext? context, String key) {
   if (AppPreference.instance.getInt(key) != null) return;
   showRateView();
   AppPreference.instance.setInt(key, currentMilliseconds());
-
-  // BuildContext? showContext = context ?? navigatorKey.currentState?.overlay?.context;
-  // if (showContext != null) {
-  //   showRateDialog(showContext);
-  //   AppPreference.instance.setInt(key, currentMilliseconds());
-  // }
 }
 
 Future<void> showRateView() async {

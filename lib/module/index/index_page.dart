@@ -11,7 +11,6 @@ import 'package:path/path.dart' as path;
 import 'package:top_one/api/ttd_request.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
-import 'package:top_one/app/theme_config.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/history/history_page+route.dart';
@@ -24,6 +23,7 @@ import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/app_top_bar.dart';
 import 'package:top_one/view/toast.dart';
 
@@ -49,10 +49,10 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
 
   @override
   void initState() {
+    super.initState();
     var vm = ref.read(provider);
     vm.bindBackgroundIsolate();
     vm.registerDownloaderCallback();
-    super.initState();
   }
 
   @override

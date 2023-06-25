@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/app/theme_config.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/module/history/history_page_vm.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
@@ -16,6 +16,7 @@ import 'package:top_one/service/ad/banner_ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/app_nav_bar.dart';
 import 'package:top_one/view/toast.dart';
 
@@ -28,11 +29,7 @@ class HistoryPage extends ConsumerStatefulWidget {
 
 class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderStateMixin {
   final provider = ChangeNotifierProvider<HistoryPageVM>((ref) => HistoryPageVM());
-  // late Animation<double> topBarAnimation;
-  // List<Widget> staticCells = [];
-  // // 进入页面后的动效时长
-  // late AnimationController animationController;
-  // final scrollController = ScrollController();
+
   BannerADService? adService;
 
   @override
@@ -65,7 +62,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     adService?.load();
   }
 
-  setupDownloadService() {
+  void setupDownloadService() {
     ref.read(provider).bindBackgroundIsolate();
     ref.read(provider).registerDownloaderCallback();
   }
@@ -73,7 +70,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: createAppNavbar(Text("history".tr())),
+      appBar: createAppNavbar(Text(LocaleKeys.history.tr())),
       backgroundColor: AppTheme.background,
       body: _buildListView,
     );
@@ -122,7 +119,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
         var exist = await vm.findCompletedTask(model.taskId);
         if (exist == null) {
           if (!mounted) return;
-          showToast(context, const Text('open_file_error').tr());
+          showToast(context, Text(LocaleKeys.open_file_error.tr()));
           return;
         }
         var metaData = model.metaData;
