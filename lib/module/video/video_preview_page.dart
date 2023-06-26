@@ -66,7 +66,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   void handleSaveAction() {
     DialogManager.instance.showMessageDialog(
       context,
-      title: Text(LocaleKeys.defualt_alert_title.tr()),
+      title: Text(LocaleKeys.save_video.tr()),
       actions: [
         TextButton(
           child: Text(LocaleKeys.save.tr()),

@@ -181,7 +181,7 @@ class TaskInfoWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Text(LocaleKeys.done.tr(), style: TextStyle(color: ColorName.mainThemeAction)).tr(),
+        Text(LocaleKeys.done.tr(), style: TextStyle(color: ColorName.mainThemeAction)),
         if (onActionTap != null)
           IconButton(
             onPressed: () => onActionTap!(data),
