@@ -118,7 +118,7 @@ class IndexPageVM extends ChangeNotifier {
   }
 
   void registerDownloaderCallback() {
-    FlutterDownloader.registerCallback(downloadCallback, step: 1);
+    FlutterDownloader.registerCallback(downloadCallback, step: 5);
   }
 
   @pragma('vm:entry-point')

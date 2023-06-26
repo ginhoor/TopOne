@@ -1,7 +1,7 @@
 name: top_one
 description: A new Flutter project.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
-version: 1.1.0+2000000003
+version: 1.1.0+2000000005
 
 environment:
   sdk: ">=2.18.6 <3.0.0"
@@ -29,6 +29,7 @@ dependencies:
   dio: ^5.2.1+1
   flutter_downloader: ^1.10.4
   connectivity_plus: ^4.0.1
+  # background_downloader: ^7.4.1
 
   firebase_crashlytics: ^3.0.11
   firebase_analytics: ^10.1.0
