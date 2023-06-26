@@ -13,14 +13,14 @@ class PrivacyLaunchPageRouteHandler implements PageRouteHandler {
   String routeName = "privacy_launch";
   Route page() {
     var settings = RouteSettings(name: routeName);
-    var route = generateRoute(settings);
+    var route = generateRoute(settings, animated: false);
     if (route == null) throw AXVError.paramsInvalid;
     return route;
   }
 
   @override
-  Route? generateRoute(RouteSettings settings) {
+  Route? generateRoute(RouteSettings settings, {bool animated = true}) {
     if (settings.name == null || settings.name != routeName) return null;
-    return AppNavigator.buildRouter(settings, const PrivacyLaunchPage());
+    return AppNavigator.buildRouter(settings, const PrivacyLaunchPage(), animated: animated);
   }
 }

@@ -13,14 +13,14 @@ class IndexPageRouteHandler implements PageRouteHandler {
   String routeName = "index";
   Route page() {
     var settings = RouteSettings(name: routeName);
-    var route = generateRoute(settings);
+    var route = generateRoute(settings, animated: false);
     if (route == null) throw AXVError.paramsInvalid;
     return route;
   }
 
   @override
-  Route? generateRoute(RouteSettings settings) {
+  Route? generateRoute(RouteSettings settings, {bool animated = true}) {
     if (settings.name == null || settings.name != routeName) return null;
-    return AppNavigator.buildRouter(settings, const IndexPage());
+    return AppNavigator.buildRouter(settings, const IndexPage(), animated: animated);
   }
 }

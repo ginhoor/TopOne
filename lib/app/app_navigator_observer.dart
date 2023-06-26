@@ -13,9 +13,11 @@ class AppNavigator {
     return AppNavigatorObserver().navigator!;
   }
 
-  static PageRouteBuilder buildRouter(RouteSettings settings, Widget page) {
+  static PageRouteBuilder buildRouter(RouteSettings settings, Widget page, {bool animated = true}) {
     return PageRouteBuilder(
       pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
+        if (!animated) return page;
+
         final begin = Offset(1.0, 0.0);
         final end = Offset.zero;
         final curve = Curves.ease;

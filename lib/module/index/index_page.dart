@@ -114,7 +114,11 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: WillPopScope(onWillPop: () => AppNavigator.handleOnWillPop(), child: _body),
+      body: WillPopScope(
+          onWillPop: () async {
+            return false;
+          },
+          child: _body),
     );
   }
 
