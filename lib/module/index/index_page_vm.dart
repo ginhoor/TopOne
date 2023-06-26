@@ -29,7 +29,6 @@ class IndexPageVM extends ChangeNotifier {
 
   bool inlineadLoaded = false;
   void setInlineadLoaded() {
-    if (inlineadLoaded) return;
     inlineadLoaded = true;
     notifyListeners();
   }

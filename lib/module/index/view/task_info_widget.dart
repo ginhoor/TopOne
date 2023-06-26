@@ -24,7 +24,7 @@ class TaskInfoWidget extends StatelessWidget {
   final Function(TaskModel)? onActionTap;
   final Function(TaskModel)? onDelete;
 
-  final BoxConstraints actionIconSize = BoxConstraints(minHeight: 32, minWidth: 32);
+  final BoxConstraints actionIconSize = BoxConstraints(maxHeight: 32, maxWidth: 32);
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +65,6 @@ class TaskInfoWidget extends StatelessWidget {
             Expanded(child: _title),
           ],
         ),
-        SizedBox(height: dPadding_2),
         Row(
           children: [
             _timeIcon,
@@ -81,7 +80,7 @@ class TaskInfoWidget extends StatelessWidget {
 
   Widget get _image {
     return ClipRRect(
-      borderRadius: BorderRadius.all(Radius.circular(dRadius)),
+      borderRadius: BorderRadius.all(Radius.circular(dRadius / 2)),
       child: CachedNetworkImage(
         imageUrl: data.metaData.img ?? "",
         placeholder: (context, url) => Padding(
@@ -93,8 +92,8 @@ class TaskInfoWidget extends StatelessWidget {
           ),
         ),
         errorWidget: (context, url, error) => Icon(Icons.error),
-        width: 60,
-        height: 60,
+        width: 50,
+        height: 50,
         fit: BoxFit.cover,
       ),
     );

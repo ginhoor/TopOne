@@ -84,7 +84,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
     return Column(
       children: <Widget>[
         _textFiled,
-        SizedBox(height: dPadding),
+        SizedBox(height: dPadding_2),
         _actionBar,
       ],
     );

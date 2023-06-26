@@ -62,13 +62,13 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
     super.didChangeDependencies();
   }
 
-  static const _insets = 16.0;
-  double get _adWidth => MediaQuery.of(context).size.width - (2 * _insets);
-  Future<void> setupAd() async {
-    // Get an inline adaptive size for the current orientation.
-    int width = _adWidth.truncate();
-    AdSize size = AdSize.getInlineAdaptiveBannerAdSize(width, (width / 328.0 * 310.0).truncate());
+  double get _adWidth => MediaQuery.of(context).size.width - (2 * dPadding);
+  double get _adHeight {
+    return MediaQuery.of(context).size.height - 88 - 146 - 122;
+  }
 
+  Future<void> setupAd() async {
+    AdSize size = AdSize.getInlineAdaptiveBannerAdSize(_adWidth.truncate(), _adHeight.truncate());
     adService = InlineADService(kDebugMode ? ADService.TESTBannerUnitId : ADService.bannderUnitId1, size: size,
         onAdLoaded: (p0) {
       ref.read(provider).setInlineadLoaded();
@@ -157,7 +157,7 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
       child: Column(
         children: [
           Padding(
-            padding: EdgeInsets.all(dPadding),
+            padding: EdgeInsets.only(top: dPadding_2, left: dPadding, right: dPadding, bottom: dPadding),
             child: ClipboardWidget(handleDownload: handleDownloadAction),
           ),
           Consumer(
@@ -172,8 +172,10 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
           ),
           Consumer(
             builder: (context, ref, child) {
-              var _ = ref.watch(provider).inlineadLoaded;
-              return adService?.adWidget() ?? Container();
+              var loaded = ref.watch(provider).inlineadLoaded;
+              var adWidget = adService?.adWidget();
+              logDebug("[ad] index ad loaded: $loaded, widget: $adWidget");
+              return adWidget ?? Container();
             },
           ),
         ],

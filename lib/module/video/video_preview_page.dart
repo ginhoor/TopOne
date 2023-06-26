@@ -26,38 +26,58 @@ class VideoPreviewPage extends StatefulWidget {
   State<VideoPreviewPage> createState() => _VideoPreviewPageState();
 }
 
-class _VideoPreviewPageState extends State<VideoPreviewPage> {
-  late VideoPlayerController playerCtrl;
+class _VideoPreviewPageState extends State<VideoPreviewPage> with WidgetsBindingObserver {
+  late VideoPlayerController _videoCtrl;
   double progressValue = 0; //进度
 
   bool playEnd = false;
   @override
   void dispose() {
-    ADService().videoPlayINTAdService.show((p0) => null);
-    playerCtrl.removeListener(listen);
-    playerCtrl.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+    _videoCtrl.removeListener(listen);
+    _videoCtrl.dispose();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: [SystemUiOverlay.top]);
     super.dispose();
+    ADService().videoPlayINTAdService.show((p0) => null);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.inactive:
+        _videoCtrl.pause();
+        break;
+      case AppLifecycleState.resumed:
+        _videoCtrl.play();
+        break;
+      case AppLifecycleState.paused:
+        _videoCtrl.pause();
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     var localFilePath = widget.localFilePath;
 
     if (localFilePath != null) {
       var file = File(localFilePath);
-      playerCtrl = VideoPlayerController.file(file);
+      _videoCtrl = VideoPlayerController.file(file);
     } else if (widget.metaData.video != null) {
-      playerCtrl = VideoPlayerController.network(widget.metaData.video!);
+      _videoCtrl = VideoPlayerController.network(widget.metaData.video!);
     } else {
-      playerCtrl = VideoPlayerController.asset("");
+      _videoCtrl = VideoPlayerController.asset("");
     }
-    playerCtrl.addListener(listen);
-    playerCtrl.initialize().then((_) {
+    _videoCtrl.addListener(listen);
+    _videoCtrl.initialize().then((_) {
       if (!mounted) return;
       setState(() {
-        playerCtrl.play();
+        _videoCtrl.play();
       });
     });
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
@@ -86,13 +106,13 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
 
   void handlePlayAction() {
     setState(() {
-      playerCtrl.value.isPlaying ? playerCtrl.pause() : playerCtrl.play();
+      _videoCtrl.value.isPlaying ? _videoCtrl.pause() : _videoCtrl.play();
     });
   }
 
   void listen() {
-    int position = playerCtrl.value.position.inMilliseconds;
-    int duration = playerCtrl.value.duration.inMilliseconds;
+    int position = _videoCtrl.value.position.inMilliseconds;
+    int duration = _videoCtrl.value.duration.inMilliseconds;
     setState(() {
       if (duration == 0) {
         progressValue = 0;
@@ -106,7 +126,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   }
 
   String get labelProgress {
-    int duration = playerCtrl.value.duration.inMilliseconds;
+    int duration = _videoCtrl.value.duration.inMilliseconds;
     if (duration == 0) return "00:00";
     int progress = (progressValue / 100 * duration).toInt();
     return ms_to_mm_ss(progress);
@@ -150,9 +170,9 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
       width: double.infinity,
       height: double.infinity,
       child: AspectRatio(
-        aspectRatio: playerCtrl.value.aspectRatio,
-        child: playerCtrl.value.isInitialized
-            ? VideoPlayer(playerCtrl)
+        aspectRatio: _videoCtrl.value.aspectRatio,
+        child: _videoCtrl.value.isInitialized
+            ? VideoPlayer(_videoCtrl)
             : CachedNetworkImage(imageUrl: widget.metaData.img ?? ""),
       ),
     );
@@ -164,7 +184,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
         width: double.infinity,
         height: double.infinity,
         color: Colors.transparent,
-        child: playerCtrl.value.isPlaying
+        child: _videoCtrl.value.isPlaying
             ? null
             : Stack(
                 children: [
@@ -198,7 +218,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
         ),
       ),
       onTap: () async {
-        await playerCtrl.pause();
+        await _videoCtrl.pause();
         AppNavigator.popPage();
       },
     );
@@ -280,19 +300,19 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   }
 
   void _onChangeEnd(_) async {
-    int duration = playerCtrl.value.duration.inMilliseconds;
+    int duration = _videoCtrl.value.duration.inMilliseconds;
     int newPosition = (progressValue / 100 * duration).toInt();
-    await playerCtrl.seekTo(
+    await _videoCtrl.seekTo(
       Duration(milliseconds: newPosition),
     );
 
-    if (progressValue != 100 && !playerCtrl.value.isPlaying) {
-      await playerCtrl.play();
+    if (progressValue != 100 && !_videoCtrl.value.isPlaying) {
+      await _videoCtrl.play();
     }
   }
 
   void _onChangeStart(_) async {
-    if (playerCtrl.value.isPlaying) await playerCtrl.pause();
+    if (_videoCtrl.value.isPlaying) await _videoCtrl.pause();
   }
 
   void _onChanged(double value) {

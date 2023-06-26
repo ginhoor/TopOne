@@ -70,8 +70,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget get versionCell {
-    String version = '${AppInfoModule.instance.appVersion}(${AppInfoModule.instance.sysInfo?.shortVer})';
-    if (kDebugMode) version += ' Debug';
+    String version = AppInfoModule.instance.appVersion;
+    if (kDebugMode) version += '(${AppInfoModule.instance.sysInfo?.shortVer}) Debug';
 
     return Padding(
       padding: EdgeInsets.only(left: dPadding, right: dPadding),
