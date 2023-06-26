@@ -11,6 +11,7 @@ import 'package:path/path.dart' as path;
 import 'package:top_one/api/ttd_request.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/history/history_page+route.dart';
@@ -81,17 +82,15 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
     var url = text;
     if (url.endsWith('/')) url = url.substring(0, url.length - 1);
     if (!TTResult.verifyURL(url)) {
-      if (mounted) showToast(context, const Text("url_invaild_error").tr());
+      if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.url_invaild_error.tr());
       return false;
     }
-    await EasyLoading.show(status: "chacking".tr(), dismissOnTap: false);
+    await EasyLoading.show(status: LocaleKeys.chacking.tr(), dismissOnTap: false);
     try {
       var result = await TDDResultRequest().requestResult(url);
       if (result == null) {
         await EasyLoading.dismiss();
-        if (mounted) {
-          showToast(context, const Text("create_task_failed_error").tr());
-        }
+        if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.create_task_failed_error.tr());
         return false;
       }
       var success = await ref.read(provider).createDownloadTask(result);
@@ -100,17 +99,13 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
         ADService().indexINTAdService.show((p0) => null);
         return true;
       } else {
-        if (mounted) {
-          showToast(context, const Text("create_task_failed_error").tr());
-        }
+        if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.create_task_failed_error.tr());
         return false;
       }
     } catch (e) {
-      logDebug("handleDownloadAction", e);
+      logWarn("handleDownloadAction", e);
       await EasyLoading.dismiss();
-      if (mounted) {
-        showToast(context, const Text("create_task_failed_error").tr());
-      }
+      if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.create_task_failed_error.tr());
       return false;
     }
   }
@@ -119,24 +114,26 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: _body),
+      body: WillPopScope(onWillPop: () => AppNavigator.handleOnWillPop(), child: _body),
     );
   }
 
   Widget get _body {
-    return Column(
-      children: <Widget>[
-        _topBar,
-        _content,
-      ],
-    );
+    return Column(children: <Widget>[
+      _topBar,
+      _content,
+    ]);
   }
 
   Widget get _topBar {
     return AppTopBar(
       hasNewHistory: AppPreference.instance.getInt(AppPreferenceKey.hasNewHistoryDate.value) != null,
-      tapSettings: () => AppNavigator.pushRoute(SettingsPageRouteHandler.instance.page()),
+      tapSettings: () {
+        FocusScope.of(context).unfocus();
+        AppNavigator.pushRoute(SettingsPageRouteHandler.instance.page());
+      },
       tapDownloadList: () async {
+        FocusScope.of(context).unfocus();
         await EasyLoading.show(dismissOnTap: false);
         ADService().historyINTAdService.show((p0) async {
           await EasyLoading.dismiss();
@@ -189,8 +186,7 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
         if (task == null) return;
         var exist = await ref.read(provider).findCompletedTask(task.taskId);
         if (exist == null) {
-          if (!mounted) return;
-          showToast(context, const Text('open_file_error').tr());
+          if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.open_file_error.tr());
           return;
         }
         var metaData = task.metaData;

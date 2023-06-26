@@ -9,6 +9,7 @@ import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_preference.dart';
+import 'package:top_one/manager/store_manager.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
@@ -16,7 +17,6 @@ import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
-import 'package:top_one/tool/store_kit.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
 

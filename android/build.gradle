@@ -1,5 +1,10 @@
+// buildscript 块中的 repositories 用于配置构建脚本自身所需的依赖项和仓库。
+// allprojects 块中的 repositories 用于配置项目中所有子项目的依赖项和仓库。
+// buildscript 配置仅适用于构建脚本本身，allprojects 配置适用于所有子项目。
+// 在 buildscript 配置中声明的依赖项和仓库仅在构建脚本执行时生效，而在 allprojects 配置中声明的依赖项和仓库会被所有子项目继承并生效。
+
 buildscript {
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.8.10'
     repositories {
         google()
         mavenCentral()
@@ -9,6 +14,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:7.1.2'
         // START: FlutterFire Configuration
         classpath 'com.google.gms:google-services:4.3.10'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.1'
         // END: FlutterFire Configuration
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }

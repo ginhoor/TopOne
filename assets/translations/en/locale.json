@@ -16,6 +16,7 @@
    "rate": "Rate",
    "rate_now": "Rate Now",
    "rate_title": "Please Give Us 5 Stars!",
+   "email_settings_is_wrong_title": "Email service is incorrect, please check your email account in Settings.",
    "pending": "Pending",
    "save": "Save",
    "save_video": "Do you want to save the video to the album?",
@@ -31,6 +32,7 @@
    "terms_of_use": "Terms of Use",
    "privacy_subtile_2": "and confirm that you have read our",
    "privacy_policy": "Privacy Policy",
+   "contact_us": "Contact Us",
    "storage_permission_error": "Grant storage permission to continue",
    "url_invaild_error": "Link is invaild, please try again",
    "create_task_failed_error": "Create task failed"

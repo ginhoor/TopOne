@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
 
@@ -34,10 +33,11 @@ class AppNavigator {
     );
   }
 
-  static Future<bool> onWillPop() async {
+  static Future<bool> handleOnWillPop() async {
     if (EasyLoading.isShow) return false;
     if (Platform.isAndroid) {
-      SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+      popPage();
+      // SystemChannels.platform.invokeMethod('SystemNavigator.pop');
       return true;
     }
     exit(0);

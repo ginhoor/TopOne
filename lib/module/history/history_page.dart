@@ -8,7 +8,7 @@ import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/model/downloads.dart';
-import 'package:top_one/module/history/history_page_vm.dart';
+import 'package:top_one/model/history_page_vm.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/module/video/video_preview_page+route.dart';
 import 'package:top_one/service/ad/ad_service.dart';
@@ -72,7 +72,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     return Scaffold(
       appBar: createAppNavbar(Text(LocaleKeys.history.tr())),
       backgroundColor: AppTheme.background,
-      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: listView),
+      body: WillPopScope(onWillPop: AppNavigator.handleOnWillPop, child: listView),
     );
   }
 
@@ -117,7 +117,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
         var exist = await vm.findCompletedTask(model.taskId);
         if (exist == null) {
           if (!mounted) return;
-          showToast(context, Text(LocaleKeys.open_file_error.tr()));
+          ToastManager.instance.showTextToast(context, LocaleKeys.open_file_error.tr());
           return;
         }
         var metaData = model.metaData;

@@ -9,12 +9,12 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
+import 'package:top_one/manager/store_manager.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
-import 'package:top_one/tool/store_kit.dart';
 import 'package:top_one/view/dialog.dart';
 import 'package:video_player/video_player.dart';
 
@@ -95,7 +95,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: _content),
+      body: WillPopScope(onWillPop: AppNavigator.handleOnWillPop, child: _content),
     );
   }
 
@@ -154,7 +154,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
                         color: Colors.black45,
                         width: 120,
                         height: 120,
-                        child: Icon(Icons.play_arrow, size: 120, color: AppTheme.nearlyWhite),
+                        child: Icon(Icons.play_arrow, size: 120, color: Colors.white),
                       ),
                     ),
                   ),
@@ -173,7 +173,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
           color: Colors.black45,
           width: 50,
           height: 50,
-          child: Icon(Icons.arrow_back, size: 30, color: AppTheme.nearlyWhite),
+          child: Icon(Icons.arrow_back, size: 30, color: Colors.white),
         ),
       ),
       onTap: () {
@@ -191,7 +191,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
           color: Colors.black45,
           width: 50,
           height: 50,
-          child: Icon(Icons.save_alt, size: 30, color: AppTheme.nearlyWhite),
+          child: Icon(Icons.save_alt, size: 30, color: Colors.white),
         ),
       ),
       onTap: () {
@@ -264,7 +264,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
     return SizedBox(
       height: 20,
       child: Slider(
-          activeColor: AppTheme.nearlyWhite,
+          activeColor: Colors.white,
           inactiveColor: AppTheme.dismissibleBackground,
           value: progressValue,
           label: labelProgress,

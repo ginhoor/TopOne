@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:top_one/gen/colors.gen.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/theme/theme_config.dart';
-import 'package:top_one/theme/app_theme.dart';
 
 class AppTopBar extends StatelessWidget {
   final bool hasNewHistory;
@@ -30,10 +32,7 @@ class AppTopBar extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: _title,
-          ),
+          child: Padding(padding: EdgeInsets.all(dPadding), child: _title),
         ),
         _settings,
         _history,
@@ -43,29 +42,22 @@ class AppTopBar extends StatelessWidget {
 
   Widget get _title {
     return Text(
-      "Start",
+      LocaleKeys.start.tr(),
       textAlign: TextAlign.left,
-      style: TextStyle(
-        fontWeight: FontWeight.w700,
-        fontSize: 22,
-        letterSpacing: 1.2,
-        color: AppTheme.nearlyBlack,
-      ),
+      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 22, letterSpacing: 1.2, color: ColorName.blackText),
     );
   }
 
   Widget get _settings {
-    return IconButton(
-        iconSize: 30, icon: const Icon(Icons.settings), color: AppTheme.nearlyBlack, onPressed: tapSettings);
+    return IconButton(iconSize: 30, icon: Icon(Icons.settings), color: ColorName.blackText, onPressed: tapSettings);
   }
 
   Widget get _history {
     var iconBtn = IconButton(
-      iconSize: 30,
-      color: AppTheme.nearlyBlack,
-      icon: const Icon(Icons.download_for_offline_rounded),
-      onPressed: tapDownloadList,
-    );
+        iconSize: 30,
+        color: ColorName.blackText,
+        icon: Icon(Icons.download_for_offline_rounded),
+        onPressed: tapDownloadList);
 
     if (hasNewHistory) {
       return Stack(

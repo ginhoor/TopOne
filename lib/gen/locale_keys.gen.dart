@@ -18,6 +18,7 @@ abstract class  LocaleKeys {
   static const rate = 'rate';
   static const rate_now = 'rate_now';
   static const rate_title = 'rate_title';
+  static const email_settings_is_wrong_title = 'email_settings_is_wrong_title';
   static const pending = 'pending';
   static const save = 'save';
   static const save_video = 'save_video';
@@ -33,6 +34,7 @@ abstract class  LocaleKeys {
   static const terms_of_use = 'terms_of_use';
   static const privacy_subtile_2 = 'privacy_subtile_2';
   static const privacy_policy = 'privacy_policy';
+  static const contact_us = 'contact_us';
   static const storage_permission_error = 'storage_permission_error';
   static const url_invaild_error = 'url_invaild_error';
   static const create_task_failed_error = 'create_task_failed_error';

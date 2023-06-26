@@ -1,12 +1,14 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:gh_tool_package/system/web.dart';
 import 'package:top_one/app/app_module/app_info_module.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/generated/locale_keys.g.dart';
+import 'package:top_one/gen/colors.gen.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
+import 'package:top_one/manager/store_manager.dart';
+import 'package:top_one/manager/system_component_manager.dart';
 import 'package:top_one/module/debug/debug_page+route.dart';
-import 'package:top_one/tool/store_kit.dart';
+import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/app_nav_bar.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -27,8 +29,14 @@ class _SettingsPageState extends State<SettingsPage> {
 
   setupItems() {
     items.add(_buildTitleCell(LocaleKeys.rate.tr(), onTap: () => StoreManager.instance.openStorePage()));
-    items.add(_buildTitleCell(LocaleKeys.privacy_policy.tr(), onTap: () => launchInBrowser(kPrivacyPolicyURL)));
-    items.add(_buildTitleCell(LocaleKeys.terms_of_use.tr(), onTap: () => launchInBrowser(kTermsOfServiceURL)));
+    items.add(_buildTitleCell(LocaleKeys.contact_us.tr(),
+        onTap: () => SystemComponentManager.instance.sendFeedbackEmail(context)));
+    items.add(_buildTitleCell(LocaleKeys.privacy_policy.tr(),
+        onTap: () => SystemComponentManager.instance.launchInBrowser(kPrivacyPolicyURL)));
+    items.add(_buildTitleCell(LocaleKeys.terms_of_use.tr(),
+        onTap: () => SystemComponentManager.instance.launchInBrowser(kTermsOfServiceURL)));
+
+    items.add(_buildAppCell());
 
     if (!kReleaseMode) {
       items.add(_buildTitleCell("DEBUG", onTap: () {
@@ -42,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: createAppNavbar(Text(LocaleKeys.about.tr())),
-      body: WillPopScope(onWillPop: AppNavigator.onWillPop, child: _content),
+      body: WillPopScope(onWillPop: AppNavigator.handleOnWillPop, child: _content),
     );
   }
 
@@ -96,19 +104,16 @@ class _SettingsPageState extends State<SettingsPage> {
     return GestureDetector(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16),
+          padding: EdgeInsets.only(left: dPadding, right: dPadding),
           child: SizedBox(
-            height: 60,
+            height: 44,
             child: Row(
               children: [
                 Expanded(
                   child: Text(
                     title,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      color: Color(0xFF303337),
-                    ),
-                  ).tr(),
+                    style: TextStyle(fontSize: 15, color: ColorName.blackText),
+                  ),
                 ),
                 value != null
                     ? Expanded(
@@ -121,7 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       )
                     : Container(),
-                const Icon(Icons.keyboard_arrow_right_rounded)
+                Icon(Icons.keyboard_arrow_right_rounded)
               ],
             ),
           ),

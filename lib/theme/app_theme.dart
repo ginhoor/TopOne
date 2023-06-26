@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class AppTheme {
   AppTheme._();
 
-  static const Color redDialogActionTitle = Color(0xFFF54040);
+  // static const Color redDialogActionTitle = Color(0xFFF54040);
 
-  static const Color nearlyWhite = Color(0xFFFAFAFA);
+  // static const Color nearlyWhite = Color(0xFFFAFAFA);
   static const Color white = Color(0xFFFFFFFF);
   static const Color background = Color(0xFFF2F3F8);
 
-  static Color actionGreen = Colors.green.shade400;
+  static Color actionGreen = Color(0xFF66BB6A);
 
   static const Color nearlyLightBlue = Color(0xFFE8EDFE);
   static const Color nearlyDarkBlue = Color(0xFF2633C5);

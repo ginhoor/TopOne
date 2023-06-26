@@ -41,12 +41,12 @@ Widget addShadows(Widget child) {
 Widget generateActionButton(String title, Color backgroundColor, Color textColor, void Function() onTap) {
   return Center(
     child: Material(
-      borderRadius: dCircularRadius,
+      borderRadius: dBorderRadius,
       // 设置背景颜色 默认矩形
       color: backgroundColor,
       child: InkWell(
         customBorder: RoundedRectangleBorder(
-          borderRadius: dCircularRadius,
+          borderRadius: dBorderRadius,
         ),
         //点击事件回调
         onTap: onTap,

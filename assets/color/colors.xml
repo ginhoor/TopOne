@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <color name="redAction">#F54040</color>
+  <color name="blackText">#2c2d34</color>
+  <color name="mainThemeAction">#66BB6A</color>
+
+  <color name="nearlyWhite">#FAFAFA</color>
+  <color name="background">#F2F3F8</color>
+  <color name="nearlyLightBlue">#E8EDFE</color>
+  <color name="nearlyDarkBlue">#2633C5</color>
+  <color name="nearlyBlue">#00B6F0</color>
+  <color name="nearlyBlack">#213333</color>
+  <color name="grey">#3A5160</color>
+  <color name="darkGrey">#313A44</color>
+  <color name="darkText">#253840</color>
+  <color name="darkerText">#17262A</color>
+  <color name="lightText">#4A6572</color>
+  <color name="deactivatedText">#767676</color>
+  <color name="dismissibleBackground">#364A54</color>
+  <color name="spacer">#F2F2F2</color>
+</resources>

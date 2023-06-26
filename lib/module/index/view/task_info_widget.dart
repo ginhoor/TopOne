@@ -5,7 +5,7 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/theme/app_theme.dart';
-import 'package:top_one/tool/time.dart';
+import 'package:top_one/manager/time.dart';
 
 class TaskInfoWidget extends StatelessWidget {
   TaskInfoWidget({

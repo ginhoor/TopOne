@@ -1,7 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
-import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/gen/colors.gen.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
 
 class DialogManager {
   static final DialogManager instance = DialogManager._instance();
@@ -15,7 +16,7 @@ class DialogManager {
     if (hasCancel) {
       newActions.add(
         TextButton(
-          child: Text("cancel".tr(), style: TextStyle(color: AppTheme.redDialogActionTitle)),
+          child: Text(LocaleKeys.cancel.tr(), style: TextStyle(color: ColorName.redAction)),
           onPressed: () => AppNavigator.popPage(),
         ),
       );

@@ -1,5 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:top_one/gen/colors.gen.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
@@ -93,7 +96,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
           child: SizedBox(
             height: dBtnSize,
             child: addShadows(
-              generateActionButton("paste", AppTheme.nearlyWhite, AppTheme.grey, handlePasteAction),
+              generateActionButton(LocaleKeys.paste.tr(), Colors.white, AppTheme.grey, handlePasteAction),
             ),
           ),
         ),
@@ -102,7 +105,8 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
           child: SizedBox(
             height: dBtnSize,
             child: addShadows(
-              generateActionButton("download", AppTheme.actionGreen, AppTheme.nearlyWhite, handleDownloadAction),
+              generateActionButton(
+                  LocaleKeys.download.tr(), ColorName.mainThemeAction, Colors.white, handleDownloadAction),
             ),
           ),
         )
