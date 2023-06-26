@@ -118,6 +118,7 @@ class _PrivacyLaunchPageState extends State<PrivacyLaunchPage> {
             SizedBox(height: dPadding),
             SizedBox(
               height: dBtnSize,
+              width: double.infinity,
               child: actionBtn(LocaleKeys.continue_title.tr(), onTap: () {
                 var page = IndexPageRouteHandler.instance.page();
                 AppNavigator.pushReplacementRoute(page);
@@ -127,6 +128,7 @@ class _PrivacyLaunchPageState extends State<PrivacyLaunchPage> {
             SizedBox(height: dPadding),
             SizedBox(
               height: dBtnSize,
+              width: double.infinity,
               child: normalBtn(LocaleKeys.later.tr(), onTap: () {
                 ToastManager.instance.showTextToast(context, LocaleKeys.privacy_skip_tips.tr());
               }),
