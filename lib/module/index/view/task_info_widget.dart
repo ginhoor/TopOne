@@ -2,10 +2,12 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:top_one/theme/theme_config.dart';
+import 'package:top_one/gen/colors.gen.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
+import 'package:top_one/manager/time.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/theme/app_theme.dart';
-import 'package:top_one/manager/time.dart';
+import 'package:top_one/theme/theme_config.dart';
 
 class TaskInfoWidget extends StatelessWidget {
   TaskInfoWidget({
@@ -46,7 +48,7 @@ class TaskInfoWidget extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: EdgeInsets.all(dPadding),
+        padding: EdgeInsets.only(left: dPadding, right: dPadding, top: dPadding, bottom: dPadding_2),
         child: child,
       ),
     );
@@ -63,15 +65,14 @@ class TaskInfoWidget extends StatelessWidget {
             Expanded(child: _title),
           ],
         ),
-        Padding(
-          padding: EdgeInsets.only(top: dPadding_2),
-          child: Row(
-            children: [
-              _timeIcon,
-              Expanded(child: _time),
-              _taskAction,
-            ],
-          ),
+        SizedBox(height: dPadding_2),
+        Row(
+          children: [
+            _timeIcon,
+            SizedBox(width: dPadding_2),
+            Expanded(child: _time),
+            _taskAction,
+          ],
         ),
         _progressIndicator
       ],
@@ -86,9 +87,9 @@ class TaskInfoWidget extends StatelessWidget {
         placeholder: (context, url) => Padding(
           padding: EdgeInsets.all(dPadding_2),
           child: CircularProgressIndicator(
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation(Colors.grey[800]),
-            strokeWidth: 10.0,
+            backgroundColor: ColorName.background,
+            valueColor: AlwaysStoppedAnimation(ColorName.mainThemeAction),
+            strokeWidth: 2,
           ),
         ),
         errorWidget: (context, url, error) => Icon(Icons.error),
@@ -118,22 +119,14 @@ class TaskInfoWidget extends StatelessWidget {
   }
 
   Widget get _timeIcon {
-    return Icon(Icons.access_time, color: AppTheme.grey.withOpacity(0.5), size: 14);
+    return Icon(Icons.access_time, color: ColorName.deactivatedText, size: 14);
   }
 
   Widget get _time {
-    return Padding(
-      padding: EdgeInsets.only(left: dPadding_2),
-      child: Text(
-        timeFormatMDHMS(data.startTime),
-        textAlign: TextAlign.left,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 14,
-          letterSpacing: 0.0,
-          color: AppTheme.grey.withOpacity(0.5),
-        ),
-      ),
+    return Text(
+      timeFormatMDHMS(data.startTime),
+      textAlign: TextAlign.left,
+      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, letterSpacing: 0.0, color: ColorName.deactivatedText),
     );
   }
 
@@ -159,12 +152,12 @@ class TaskInfoWidget extends StatelessWidget {
       onPressed: () => onActionTap?.call(data),
       constraints: actionIconSize,
       icon: Icon(Icons.file_download),
-      tooltip: 'start'.tr(),
+      tooltip: LocaleKeys.start.tr(),
     );
   }
 
   Widget get pendingAction {
-    return Text('pending'.tr(), style: TextStyle(color: Colors.orange));
+    return Text(LocaleKeys.pending.tr(), style: TextStyle(color: Colors.orange));
   }
 
   Widget get retryAction {
@@ -172,12 +165,12 @@ class TaskInfoWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Text('failed'.tr(), style: TextStyle(color: Colors.red)),
+        Text(LocaleKeys.failed.tr(), style: TextStyle(color: ColorName.redAction)),
         if (onActionTap != null)
           IconButton(
             onPressed: () => onActionTap!(data),
-            icon: Icon(Icons.refresh, color: Colors.green),
-            tooltip: 'retry'.tr(),
+            icon: Icon(Icons.refresh, color: ColorName.mainThemeAction),
+            tooltip: LocaleKeys.retry.tr(),
           )
       ],
     );
@@ -188,31 +181,30 @@ class TaskInfoWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Text('done', style: TextStyle(color: Colors.green)).tr(),
+        Text(LocaleKeys.done.tr(), style: TextStyle(color: ColorName.mainThemeAction)).tr(),
         if (onActionTap != null)
           IconButton(
             onPressed: () => onActionTap!(data),
             constraints: actionIconSize,
             icon: Icon(Icons.delete),
-            tooltip: 'delete'.tr(),
+            tooltip: LocaleKeys.delete.tr(),
           )
       ],
     );
   }
 
-  // TODO: 测试
   Widget get canceledAction {
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Text('cancel'.tr(), style: TextStyle(color: Colors.red)),
+        Text(LocaleKeys.cancel.tr(), style: TextStyle(color: ColorName.redAction)),
         if (onActionTap != null)
           IconButton(
             onPressed: () => onActionTap!(data),
             constraints: actionIconSize,
             icon: const Icon(Icons.cancel),
-            tooltip: 'cancel'.tr(),
+            tooltip: LocaleKeys.cancel.tr(),
           )
       ],
     );
@@ -226,15 +218,15 @@ class TaskInfoWidget extends StatelessWidget {
           IconButton(
             onPressed: () => onActionTap!(data),
             constraints: actionIconSize,
-            icon: Icon(Icons.play_arrow, color: Colors.green),
-            tooltip: 'resume'.tr(),
+            icon: Icon(Icons.play_arrow, color: ColorName.mainThemeAction),
+            tooltip: LocaleKeys.resume.tr(),
           ),
         if (onDelete != null)
           IconButton(
             onPressed: () => onDelete!(data),
             constraints: actionIconSize,
             icon: Icon(Icons.delete),
-            tooltip: 'delete'.tr(),
+            tooltip: LocaleKeys.delete.tr(),
           ),
       ],
     );
@@ -249,7 +241,7 @@ class TaskInfoWidget extends StatelessWidget {
             onPressed: () => onActionTap!(data),
             constraints: actionIconSize,
             icon: Icon(Icons.pause, color: Colors.yellow),
-            tooltip: 'pause'.tr(),
+            tooltip: LocaleKeys.pause.tr(),
           )
       ],
     );

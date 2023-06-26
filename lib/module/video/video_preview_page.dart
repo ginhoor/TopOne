@@ -1,18 +1,18 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:common_utils/common_utils.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_tool_kit/log/logger.dart';
+import 'package:gh_tool_package/extension/time.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/gen/colors.gen.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
+import 'package:top_one/manager/photo_library_manager.dart';
 import 'package:top_one/manager/store_manager.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/ad/ad_service.dart';
-import 'package:top_one/service/photo_library_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/dialog.dart';
@@ -29,7 +29,6 @@ class VideoPreviewPage extends StatefulWidget {
 class _VideoPreviewPageState extends State<VideoPreviewPage> {
   late VideoPlayerController playerCtrl;
   double progressValue = 0; //进度
-  String labelProgress = "00:00"; //tip内容
 
   bool playEnd = false;
   @override
@@ -45,6 +44,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   void initState() {
     super.initState();
     var localFilePath = widget.localFilePath;
+
     if (localFilePath != null) {
       var file = File(localFilePath);
       playerCtrl = VideoPlayerController.file(file);
@@ -63,6 +63,27 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
   }
 
+  void handleSaveAction() {
+    DialogManager.instance.showMessageDialog(
+      context,
+      title: Text(LocaleKeys.defualt_alert_title.tr()),
+      actions: [
+        TextButton(
+          child: Text(LocaleKeys.save.tr()),
+          onPressed: () async {
+            await EasyLoading.show(dismissOnTap: false);
+            if (widget.localFilePath != null) {
+              await PhotoLibraryManager.instance.saveVideo(widget.localFilePath!);
+            }
+            await EasyLoading.dismiss();
+            AppNavigator.popPage();
+            StoreManager.instance.showInAppReview();
+          },
+        ),
+      ],
+    );
+  }
+
   void handlePlayAction() {
     setState(() {
       playerCtrl.value.isPlaying ? playerCtrl.pause() : playerCtrl.play();
@@ -70,25 +91,25 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
   }
 
   void listen() {
-    if (!playerCtrl.value.isPlaying) {
-      if (mounted) setState(() {});
-    } else {
-      playEnd = false;
-    }
     int position = playerCtrl.value.position.inMilliseconds;
     int duration = playerCtrl.value.duration.inMilliseconds;
-    if (position == duration && !playEnd) {
-      playEnd = true;
-      logDebug("播放完毕");
-      StoreManager.instance.showInAppReview();
-    }
     setState(() {
-      progressValue = position / duration * 100;
-      if (progressValue.isNaN || progressValue.isInfinite) {
-        progressValue = 0.0;
+      if (duration == 0) {
+        progressValue = 0;
+      } else {
+        progressValue = position / duration * 100;
+        if (progressValue.isNaN || progressValue.isInfinite) {
+          progressValue = 0.0;
+        }
       }
-      labelProgress = DateUtil.formatDateMs(progressValue.toInt(), format: 'mm:ss');
     });
+  }
+
+  String get labelProgress {
+    int duration = playerCtrl.value.duration.inMilliseconds;
+    if (duration == 0) return "00:00";
+    int progress = (progressValue / 100 * duration).toInt();
+    return ms_to_mm_ss(progress);
   }
 
   @override
@@ -176,8 +197,8 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
           child: Icon(Icons.arrow_back, size: 30, color: Colors.white),
         ),
       ),
-      onTap: () {
-        playerCtrl.pause();
+      onTap: () async {
+        await playerCtrl.pause();
         AppNavigator.popPage();
       },
     );
@@ -185,35 +206,16 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
 
   Widget get _save {
     return GestureDetector(
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(25.0)),
-        child: Container(
-          color: Colors.black45,
-          width: 50,
-          height: 50,
-          child: Icon(Icons.save_alt, size: 30, color: Colors.white),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(25.0)),
+          child: Container(
+            color: Colors.black45,
+            width: 50,
+            height: 50,
+            child: Icon(Icons.save_alt, size: 30, color: Colors.white),
+          ),
         ),
-      ),
-      onTap: () {
-        DialogManager.instance.showMessageDialog(
-          context,
-          title: Text('defualt_alert_title'.tr()),
-          actions: [
-            TextButton(
-              child: Text(LocaleKeys.save.tr()),
-              onPressed: () async {
-                await EasyLoading.show(dismissOnTap: false);
-                if (widget.localFilePath != null) {
-                  await PhotoLibraryService().saveVideo(widget.localFilePath!);
-                }
-                await EasyLoading.dismiss();
-                AppNavigator.popPage();
-              },
-            ),
-          ],
-        );
-      },
-    );
+        onTap: () => handleSaveAction());
   }
 
   Widget get _videoInfo {
@@ -265,7 +267,7 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
       height: 20,
       child: Slider(
           activeColor: Colors.white,
-          inactiveColor: AppTheme.dismissibleBackground,
+          inactiveColor: ColorName.dismissibleBackground,
           value: progressValue,
           label: labelProgress,
           divisions: 100,
@@ -277,26 +279,25 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> {
     );
   }
 
-  void _onChangeEnd(_) {
+  void _onChangeEnd(_) async {
     int duration = playerCtrl.value.duration.inMilliseconds;
-    playerCtrl.seekTo(
-      Duration(milliseconds: (progressValue / 100 * duration).toInt()),
+    int newPosition = (progressValue / 100 * duration).toInt();
+    await playerCtrl.seekTo(
+      Duration(milliseconds: newPosition),
     );
-    if (!playerCtrl.value.isPlaying) playerCtrl.play();
+
+    if (progressValue != 100 && !playerCtrl.value.isPlaying) {
+      await playerCtrl.play();
+    }
   }
 
-  void _onChangeStart(_) {
-    if (playerCtrl.value.isPlaying) playerCtrl.pause();
+  void _onChangeStart(_) async {
+    if (playerCtrl.value.isPlaying) await playerCtrl.pause();
   }
 
   void _onChanged(double value) {
-    int duration = playerCtrl.value.duration.inMilliseconds;
     setState(() {
       progressValue = value;
-      labelProgress = DateUtil.formatDateMs(
-        (value / 100 * duration).toInt(),
-        format: 'mm:ss',
-      );
     });
   }
 }

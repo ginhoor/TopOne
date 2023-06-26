@@ -5,10 +5,10 @@ import 'package:top_one/theme/theme_config.dart';
 
 final OutlineInputBorder outlineInputBorder = OutlineInputBorder(
   gapPadding: 5,
-  borderRadius: const BorderRadius.all(Radius.circular(8.0)),
+  borderRadius: dBorderRadius,
   borderSide: BorderSide(
     width: 0,
-    color: Colors.grey[200]!,
+    color: Colors.transparent,
   ),
 );
 

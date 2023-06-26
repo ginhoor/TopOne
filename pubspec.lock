@@ -201,14 +201,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  common_utils:
-    dependency: "direct main"
-    description:
-      name: common_utils
-      sha256: c26884339b13ff99b0739e56f4b02090c84054ed9dd3a045435cd24e7b99c2c1
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.0"
   connectivity_plus:
     dependency: "direct main"
     description:
@@ -273,14 +265,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.8"
-  decimal:
-    dependency: transitive
-    description:
-      name: decimal
-      sha256: eece91944f523657c75a3a008a90ec7f7eb3986191153a78570c7d0ac8ef3d01
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.2"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -586,8 +570,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "1.1.0"
-      resolved-ref: e62d5d2946a1fc95c549022ae0a3fa3cd93095cc
+      ref: "1.1.1"
+      resolved-ref: "03da563b185269f7af86c76a37561f3ab79a6b6f"
       url: "https://github.com/ginhoor/GHToolPackage.git"
     source: git
     version: "0.0.1"
@@ -683,10 +667,10 @@ packages:
     dependency: "direct main"
     description:
       name: image_gallery_saver
-      sha256: be812580c7a320d3bf583af89cac6b376f170d48000aca75215a73285a3223a0
+      sha256: "467de169167b5c4e1ddde65395e4653c336a82f760b6700ea295085b7f2dd248"
       url: "https://pub.dev"
     source: hosted
-    version: "1.7.1"
+    version: "2.0.2"
   in_app_review:
     dependency: "direct main"
     description:
@@ -999,14 +983,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.3"
-  rational:
-    dependency: transitive
-    description:
-      name: rational
-      sha256: ba58e9e18df9abde280e8b10051e4bce85091e41e8e7e411b6cde2e738d357cf
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.2.2"
   riverpod:
     dependency: transitive
     description:

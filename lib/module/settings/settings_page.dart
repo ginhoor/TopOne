@@ -36,7 +36,7 @@ class _SettingsPageState extends State<SettingsPage> {
     items.add(_buildTitleCell(LocaleKeys.terms_of_use.tr(),
         onTap: () => SystemComponentManager.instance.launchInBrowser(kTermsOfServiceURL)));
 
-    items.add(_buildAppCell());
+    items.add(versionCell);
 
     if (!kReleaseMode) {
       items.add(_buildTitleCell("DEBUG", onTap: () {
@@ -56,11 +56,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget get _content {
     return Container(
-      color: const Color(0x00f2f2f7),
+      color: ColorName.background,
       child: ListView.builder(
-        padding: EdgeInsets.only(
-          bottom: 62 + MediaQuery.of(context).padding.bottom,
-        ),
+        physics: ClampingScrollPhysics(), // 禁止滑动触顶和触底的动效
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
         itemCount: items.length,
         scrollDirection: Axis.vertical,
         itemBuilder: (BuildContext context, int index) {
@@ -70,66 +69,54 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  Widget _buildAppCell() {
+  Widget get versionCell {
     String version = '${AppInfoModule.instance.appVersion}(${AppInfoModule.instance.sysInfo?.shortVer})';
-    if (kDebugMode) version += 'Debug';
+    if (kDebugMode) version += ' Debug';
 
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16),
+      padding: EdgeInsets.only(left: dPadding, right: dPadding),
       child: Column(
         children: [
-          const SizedBox(height: 40),
+          SizedBox(height: dPadding),
           Row(
             children: [
               Expanded(
-                child: Text(
-                  LocaleKeys.version.tr(),
-                  style: TextStyle(fontSize: 17, color: Color(0xFF303337)),
-                ),
+                child: Text(LocaleKeys.version.tr(), style: TextStyle(fontSize: 15, color: ColorName.blackText)),
               ),
-              const SizedBox(width: 20),
-              Text(
-                version,
-                style: const TextStyle(fontSize: 16, color: Color(0xFF7C96A7)),
-              ),
+              SizedBox(width: dPadding),
+              Text(version, style: TextStyle(fontSize: 15, color: ColorName.deactivatedText)),
             ],
           ),
-          const SizedBox(height: 40),
+          SizedBox(height: dPadding),
         ],
       ),
     );
   }
 
   Widget _buildTitleCell(String title, {String? value, void Function()? onTap}) {
-    return GestureDetector(
-        onTap: onTap,
-        child: Padding(
-          padding: EdgeInsets.only(left: dPadding, right: dPadding),
-          child: SizedBox(
-            height: 44,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(fontSize: 15, color: ColorName.blackText),
-                  ),
-                ),
-                value != null
-                    ? Expanded(
-                        child: Text(
-                          value,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color(0xFF7C96A7),
-                          ),
-                        ),
-                      )
-                    : Container(),
-                Icon(Icons.keyboard_arrow_right_rounded)
-              ],
+    return SizedBox(
+      height: 50,
+      child: MaterialButton(
+        onPressed: onTap,
+        child: Row(
+          children: [
+            Expanded(
+              child:
+                  Text(title, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: ColorName.blackText)),
             ),
-          ),
-        ));
+            value != null
+                ? Expanded(
+                    child: Text(
+                      value,
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400, color: ColorName.deactivatedText),
+                    ),
+                  )
+                : Container(),
+            Icon(Icons.keyboard_arrow_right_rounded)
+          ],
+        ),
+        shape: RoundedRectangleBorder(borderRadius: dBorderRadius),
+      ),
+    );
   }
 }

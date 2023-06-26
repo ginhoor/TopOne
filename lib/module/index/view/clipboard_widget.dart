@@ -6,9 +6,8 @@ import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
-import 'package:top_one/theme/app_theme.dart';
+import 'package:top_one/theme/button.dart';
 import 'package:top_one/theme/theme_config.dart';
-import 'package:top_one/view/utils.dart';
 
 class ClipboardWidget extends StatefulWidget {
   final Future<bool> Function(String text)? handleDownload;
@@ -19,7 +18,7 @@ class ClipboardWidget extends StatefulWidget {
 
 class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingObserver {
   final TextEditingController _inputController = TextEditingController();
-  final OutlineInputBorder _outlineInputBorder = outlineInputBorder;
+
   @override
   void initState() {
     super.initState();
@@ -57,6 +56,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
   }
 
   Future<void> handlePasteAction() async {
+    FocusScope.of(context).unfocus();
     AnalyticsService().logEvent(AnalyticsEvent.pasteUrl);
     var result = await getClipboardData();
     if (result != null) {
@@ -68,6 +68,7 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
   }
 
   Future<void> handleDownloadAction() async {
+    FocusScope.of(context).unfocus();
     if (widget.handleDownload != null) {
       var success = await widget.handleDownload!(_inputController.text);
       if (success) {
@@ -95,19 +96,14 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
         Expanded(
           child: SizedBox(
             height: dBtnSize,
-            child: addShadows(
-              generateActionButton(LocaleKeys.paste.tr(), Colors.white, AppTheme.grey, handlePasteAction),
-            ),
+            child: normalBtn(LocaleKeys.paste.tr(), onTap: handlePasteAction),
           ),
         ),
         SizedBox(width: dPadding),
         Expanded(
           child: SizedBox(
             height: dBtnSize,
-            child: addShadows(
-              generateActionButton(
-                  LocaleKeys.download.tr(), ColorName.mainThemeAction, Colors.white, handleDownloadAction),
-            ),
+            child: actionBtn(LocaleKeys.download.tr(), onTap: handleDownloadAction),
           ),
         )
       ],
@@ -115,30 +111,41 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
   }
 
   Widget get _textFiled {
-    return addShadows(
-      TextField(
-        maxLines: 1, //最多多少行
-        minLines: 1,
-        controller: _inputController,
-        // focusNode: _inputFocusNode,
-        cursorColor: AppTheme.nearlyBlack,
-        style: const TextStyle(fontSize: 14, color: Colors.black87),
-        decoration: InputDecoration(
-          hintText: 'Type In Link To Start...',
-          suffixIcon: InkWell(
-              borderRadius: BorderRadius.circular(30), // 设置一个圆角边框，用于限制点击效果的范围
-              onTap: _inputController.clear,
-              child: Icon(Icons.clear)),
-          fillColor: Colors.grey[50],
-          filled: true,
-          isCollapsed: true,
-          contentPadding: EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-          border: _outlineInputBorder,
-          focusedBorder: _outlineInputBorder,
-          enabledBorder: _outlineInputBorder,
-          disabledBorder: _outlineInputBorder,
-          focusedErrorBorder: _outlineInputBorder,
-          errorBorder: _outlineInputBorder,
+    return Container(
+      height: 70,
+      //阴影
+      decoration: BoxDecoration(
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: ColorName.grey.withOpacity(0.2),
+            spreadRadius: 1, // 阴影的扩展半径
+            blurRadius: dPadding_2, // 阴影的模糊半径
+            offset: Offset(0, 0), // 阴影的偏移量
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: dBorderRadius,
+        child: TextField(
+          textAlignVertical: TextAlignVertical.center,
+          maxLines: 1, //最多多少行
+          minLines: 1,
+          controller: _inputController,
+          // focusNode: _inputFocusNode,
+          cursorColor: ColorName.mainThemeAction,
+          style: TextStyle(fontSize: 15, color: ColorName.blackText),
+          decoration: InputDecoration(
+              hintText: LocaleKeys.clipboard_hint_title.tr(),
+              suffixIcon: InkWell(
+                  borderRadius: BorderRadius.circular(70 / 2), // 设置一个圆角边框，用于限制点击效果的范围
+                  onTap: _inputController.clear,
+                  child: Icon(Icons.clear, color: ColorName.blackText)),
+              fillColor: Colors.white,
+              filled: true,
+              isCollapsed: true,
+              contentPadding: EdgeInsets.symmetric(horizontal: dPadding, vertical: dPadding),
+              prefixIcon: SizedBox(height: 70, child: Icon(Icons.link, color: ColorName.blackText)),
+              border: InputBorder.none),
         ),
       ),
     );

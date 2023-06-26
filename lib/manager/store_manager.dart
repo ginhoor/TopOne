@@ -4,6 +4,7 @@ import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/theme/app_theme.dart';
 
 enum StoreManagerKey {
@@ -65,7 +66,7 @@ class StoreManager {
               height: 140,
               child: Column(
                 children: [
-                  Text("rate_title".tr(), style: TextStyle(color: AppTheme.nearlyBlack, fontSize: 17)),
+                  Text(LocaleKeys.rate_title.tr(), style: TextStyle(color: AppTheme.nearlyBlack, fontSize: 17)),
                   const SizedBox(height: 10),
                   SizedBox(
                     height: 40,
@@ -91,7 +92,7 @@ class StoreManager {
                         }
                         return AppTheme.actionGreen;
                       })),
-                      child: Text('rate_now'.tr(), style: TextStyle(color: AppTheme.white, fontSize: 17)),
+                      child: Text(LocaleKeys.rate_now.tr(), style: TextStyle(color: AppTheme.white, fontSize: 17)),
                       onPressed: () {
                         AppNavigator.popPage();
                         Future.delayed(const Duration(milliseconds: 300)).then((value) => openStorePage());

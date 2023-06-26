@@ -9,6 +9,7 @@ import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_preference.dart';
+import 'package:top_one/manager/photo_library_manager.dart';
 import 'package:top_one/manager/store_manager.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
@@ -16,7 +17,6 @@ import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/service/download_service+task.dart';
 import 'package:top_one/service/download_service.dart';
-import 'package:top_one/service/photo_library_service.dart';
 
 const _isolatePortServerName = "index_downloader_send_port";
 
@@ -96,7 +96,7 @@ class IndexPageVM extends ChangeNotifier {
       DownloadService.instance.findCompletedTask(taskId).then((value) {
         if (value == null) return;
         var filePath = path.join(value.savedDir, value.filename);
-        PhotoLibraryService().saveVideo(filePath);
+        PhotoLibraryManager.instance.saveVideo(filePath);
       });
       StoreManager.instance.showInAppReview();
       // 记录红标

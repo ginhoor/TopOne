@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:top_one/gen/colors.gen.dart';
-import 'package:top_one/theme/theme_config.dart';
 
 Widget normalBtn(String title,
     {required void Function() onTap, Color backgroundColor = Colors.white, Color textColor = ColorName.blackText}) {
@@ -15,17 +14,19 @@ Widget actionBtn(String title,
 }
 
 Widget generateBtn(String title,
-    {required void Function() onTap, Color backgroundColor = Colors.white, Color textColor = ColorName.blackText}) {
+    {required void Function() onTap,
+    Color backgroundColor = Colors.white,
+    Color textColor = ColorName.blackText,
+    TextStyle? textStyle}) {
   return MaterialButton(
     onPressed: onTap,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(title, style: TextStyle(color: textColor, fontSize: 16)),
-      ],
+    child: Text(
+      title,
+      style: textStyle ?? TextStyle(color: textColor, fontSize: 16, fontWeight: FontWeight.w400),
     ),
+    elevation: 4,
+    highlightElevation: 2,
     color: backgroundColor,
-    textColor: textColor,
-    shape: RoundedRectangleBorder(borderRadius: dBorderRadius),
+    shape: StadiumBorder(),
   );
 }

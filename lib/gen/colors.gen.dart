@@ -43,6 +43,9 @@ class ColorName {
   /// Color: #66BB6A
   static const Color mainThemeAction = Color(0xFF66BB6A);
 
+  /// Color: #545458a5
+  static const Color mainThemeSeperatorGray = Color(0x545458A5);
+
   /// Color: #213333
   static const Color nearlyBlack = Color(0xFF213333);
 

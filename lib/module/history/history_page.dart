@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -87,8 +89,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
         return ListView.builder(
           physics: ClampingScrollPhysics(), // 禁止滑动触顶和触底的动效
           padding: EdgeInsets.only(
-            // top: MediaQuery.of(context).padding.top + (adService?.ad != null ? adService!.ad!.size.height : 0),
-            bottom: MediaQuery.of(context).padding.bottom,
+            bottom: MediaQuery.of(context).padding.bottom + dPadding,
           ),
           itemCount: count,
           scrollDirection: Axis.vertical,
@@ -100,7 +101,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
             var item = items[itemIndex];
             return Padding(
               padding: EdgeInsets.only(left: dPadding, right: dPadding, top: dPadding),
-              child: buildTaskItem(context, item),
+              child: _buildTaskItem(context, item),
             );
           },
         );
@@ -108,7 +109,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     );
   }
 
-  Widget buildTaskItem(BuildContext context, TaskModel model) {
+  Widget _buildTaskItem(BuildContext context, TaskModel model) {
     return TaskInfoWidget(
       data: model,
       onTap: (model) async {
@@ -122,6 +123,12 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
         }
         var metaData = model.metaData;
         var filePath = path.join(exist.savedDir, exist.filename);
+        var fileExist = await File(filePath).exists();
+        if (!fileExist) {
+          if (!mounted) return;
+          ToastManager.instance.showTextToast(context, LocaleKeys.file_not_exist_error.tr());
+          return;
+        }
         AppNavigator.pushRoute(VideoPreviewPageRouteHandler.instance.page(metaData, filePath));
       },
       onActionTap: (model) async {

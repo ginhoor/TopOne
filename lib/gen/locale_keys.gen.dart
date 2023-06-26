@@ -7,6 +7,7 @@ abstract class  LocaleKeys {
   static const pause = 'pause';
   static const resume = 'resume';
   static const later = 'later';
+  static const clipboard_hint_title = 'clipboard_hint_title';
   static const continue_title = 'continue_title';
   static const canceled = 'canceled';
   static const cancel = 'cancel';
@@ -29,6 +30,7 @@ abstract class  LocaleKeys {
   static const version = 'version';
   static const chacking = 'chacking';
   static const open_file_error = 'open_file_error';
+  static const file_not_exist_error = 'file_not_exist_error';
   static const privacy_skip_tips = 'privacy_skip_tips';
   static const privacy_subtile_1 = 'privacy_subtile_1';
   static const terms_of_use = 'terms_of_use';

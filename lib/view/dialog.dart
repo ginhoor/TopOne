@@ -10,7 +10,7 @@ class DialogManager {
 
   DialogManager._instance();
 
-  showMessageDialog(BuildContext context,
+  Future<void> showMessageDialog(BuildContext context,
       {Widget? title, Widget? message, required List<TextButton> actions, bool hasCancel = true}) async {
     List<TextButton> newActions = [];
     if (hasCancel) {
