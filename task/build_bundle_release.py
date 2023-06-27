@@ -20,7 +20,7 @@ def main():
     build_num = tk.cp_timestamp()
     cmd = "git pull"
     cmd = cmd + "&& fvm flutter pub get"
-    cmd = cmd + f" && fvm flutter build appbundle --split-debug-info={symboldir} --obfuscate"
+    cmd = cmd + f"&& fvm flutter build appbundle --split-debug-info={symboldir} --obfuscate"
     print(f"cmd: {cmd}")
     subprocess.call(cmd, shell=True)
 

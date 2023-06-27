@@ -158,9 +158,9 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> with WidgetsBinding
             ],
           ),
         ),
-        Positioned(left: dPadding, top: (MediaQuery.of(context).padding.top), child: _back),
+        Positioned(left: dPadding, top: (MediaQuery.of(context).padding.top) + dPadding, child: _back),
         if (widget.localFilePath != null)
-          Positioned(right: dPadding, top: (MediaQuery.of(context).padding.top), child: _save),
+          Positioned(right: dPadding, top: (MediaQuery.of(context).padding.top) + dPadding, child: _save),
       ],
     );
   }

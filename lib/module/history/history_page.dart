@@ -1,26 +1,18 @@
-import 'dart:io';
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:path/path.dart' as path;
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
-import 'package:top_one/model/downloads.dart';
-import 'package:top_one/model/history_page_vm.dart';
+import 'package:top_one/module/history/history_page_vm.dart';
+import 'package:top_one/module/index/download_task_vm.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
-import 'package:top_one/module/video/video_preview_page+route.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/ad/banner_ad_service.dart';
-import 'package:top_one/service/analytics/analytics_event.dart';
-import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/app_nav_bar.dart';
-import 'package:top_one/view/toast.dart';
 
 class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -31,7 +23,7 @@ class HistoryPage extends ConsumerStatefulWidget {
 
 class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderStateMixin {
   final provider = ChangeNotifierProvider<HistoryPageVM>((ref) => HistoryPageVM());
-
+  final downloadTaskProvider = ChangeNotifierProvider<DownloadTaskVM>((ref) => DownloadTaskVM());
   BannerADService? adService;
 
   @override
@@ -42,8 +34,8 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
 
   @override
   void initState() {
-    setupDownloadService();
-    ref.read(provider).loadTasks();
+    ref.read(downloadTaskProvider).loadTasks();
+    ref.read(downloadTaskProvider).addOB();
     super.initState();
   }
 
@@ -64,11 +56,6 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     adService?.load();
   }
 
-  void setupDownloadService() {
-    ref.read(provider).bindBackgroundIsolate();
-    ref.read(provider).registerDownloaderCallback();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,10 +69,8 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     return Consumer(
       builder: (context, ref, child) {
         var adLoaded = ref.watch(provider).inlineadLoaded;
-        var items = ref.watch(provider).items;
-
+        var items = ref.watch(downloadTaskProvider).items;
         var count = adLoaded ? items.length + 1 : items.length;
-
         return ListView.builder(
           physics: ClampingScrollPhysics(), // 禁止滑动触顶和触底的动效
           padding: EdgeInsets.only(
@@ -101,52 +86,10 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
             var item = items[itemIndex];
             return Padding(
               padding: EdgeInsets.only(left: dPadding, right: dPadding, top: dPadding),
-              child: _buildTaskItem(context, item),
+              child: buildTaskItem(context, item, ref, mounted, downloadTaskProvider),
             );
           },
         );
-      },
-    );
-  }
-
-  Widget _buildTaskItem(BuildContext context, TaskModel model) {
-    return TaskInfoWidget(
-      data: model,
-      onTap: (model) async {
-        AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
-        var vm = ref.read(provider);
-        var exist = await vm.findCompletedTask(model.taskId);
-        if (exist == null) {
-          if (!mounted) return;
-          ToastManager.instance.showTextToast(context, LocaleKeys.open_file_error.tr());
-          return;
-        }
-        var metaData = model.metaData;
-        var filePath = path.join(exist.savedDir, exist.filename);
-        var fileExist = await File(filePath).exists();
-        if (!fileExist) {
-          if (!mounted) return;
-          ToastManager.instance.showTextToast(context, LocaleKeys.file_not_exist_error.tr());
-          return;
-        }
-        AppNavigator.pushRoute(VideoPreviewPageRouteHandler.instance.page(metaData, filePath));
-      },
-      onActionTap: (model) async {
-        var vm = ref.read(provider);
-        if (model.status == DownloadTaskStatus.undefined) {
-        } else if (model.status == DownloadTaskStatus.running) {
-          await vm.pauseDownloadTask(model.taskId);
-        } else if (model.status == DownloadTaskStatus.paused) {
-          await vm.resumeDownloadTask(model.taskId);
-        } else if (model.status == DownloadTaskStatus.complete || model.status == DownloadTaskStatus.canceled) {
-          await vm.deleteDownloadTask(model.taskId);
-        } else if (model.status == DownloadTaskStatus.failed) {
-          await vm.retryDownloadTask(model.taskId);
-        }
-      },
-      onDelete: (model) {
-        var vm = ref.read(provider);
-        vm.deleteDownloadTask(model.taskId);
       },
     );
   }

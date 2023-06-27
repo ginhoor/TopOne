@@ -1,13 +1,70 @@
+import 'dart:io';
+
+import 'package:background_downloader/background_downloader.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gh_tool_package/extension/time.dart';
+import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/gen/colors.gen.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
-import 'package:top_one/manager/time.dart';
+import 'package:top_one/manager/download_task_manager.dart';
 import 'package:top_one/model/downloads.dart';
+import 'package:top_one/module/index/download_task_vm.dart';
+import 'package:top_one/module/video/video_preview_page+route.dart';
+import 'package:top_one/service/analytics/analytics_event.dart';
+import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
+import 'package:top_one/view/toast.dart';
+
+Widget buildTaskItem(BuildContext context, TaskModel model, WidgetRef ref, bool mounted,
+    ChangeNotifierProvider<DownloadTaskVM> downloadTaskProvider) {
+  return TaskInfoWidget(
+    data: model,
+    onTap: (_) async {
+      AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
+      var vm = ref.read(downloadTaskProvider);
+      var tasks = vm.items;
+      if (tasks.isEmpty) return;
+      var task = tasks.first;
+      if (task.status != TaskStatus.complete) return;
+      var record = await DownloadTaskManager.instance.getRecord(task.taskId);
+      if (record == null) return;
+      var filePath = await record.task.filePath();
+      var fileExist = await File(filePath).exists();
+      if (!fileExist && mounted) {
+        ToastManager.instance.showTextToast(context, LocaleKeys.file_not_exist_error.tr());
+        return;
+      }
+      var metaData = task.metaData;
+      AppNavigator.pushRoute(VideoPreviewPageRouteHandler.instance.page(metaData, filePath));
+    },
+    onActionTap: (_) async {
+      var vm = ref.read(downloadTaskProvider);
+      var tasks = vm.items;
+      if (tasks.isEmpty) return;
+      var task = tasks.first;
+      if (task.status == TaskStatus.running) {
+        await vm.pauseDownloadTask(task.taskId);
+      } else if (task.status == TaskStatus.paused) {
+        await vm.resumeDownloadTask(task.taskId);
+      } else if (task.status == TaskStatus.complete || task.status == TaskStatus.canceled) {
+        await vm.deleteDownloadTask(task.taskId);
+      } else if (task.status == TaskStatus.failed) {
+        await vm.retryDownloadTask(task.taskId);
+      }
+    },
+    onDelete: (_) async {
+      var vm = ref.read(downloadTaskProvider);
+      var tasks = vm.items;
+      if (tasks.isEmpty) return;
+      var task = tasks.first;
+      await vm.deleteDownloadTask(task.taskId);
+    },
+  );
+}
 
 class TaskInfoWidget extends StatelessWidget {
   TaskInfoWidget({
@@ -30,7 +87,7 @@ class TaskInfoWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (data.status != DownloadTaskStatus.complete) return;
+        if (data.status != TaskStatus.complete) return;
         if (onTap == null) return;
         onTap!(data);
       },
@@ -65,13 +122,16 @@ class TaskInfoWidget extends StatelessWidget {
             Expanded(child: _title),
           ],
         ),
-        Row(
-          children: [
-            _timeIcon,
-            SizedBox(width: dPadding_2),
-            Expanded(child: _time),
-            _taskAction,
-          ],
+        SizedBox(
+          height: 32,
+          child: Row(
+            children: [
+              _timeIcon,
+              SizedBox(width: dPadding_2),
+              Expanded(child: _time),
+              _taskAction,
+            ],
+          ),
         ),
         _progressIndicator
       ],
@@ -123,26 +183,26 @@ class TaskInfoWidget extends StatelessWidget {
 
   Widget get _time {
     return Text(
-      timeFormatMDHMS(data.startTime),
+      ms_toMMddHHmmss(data.startTime),
       textAlign: TextAlign.left,
       style: TextStyle(fontWeight: FontWeight.w500, fontSize: 14, letterSpacing: 0.0, color: ColorName.deactivatedText),
     );
   }
 
   Widget get _progressIndicator {
-    if (data.status == DownloadTaskStatus.running || data.status == DownloadTaskStatus.paused) {
+    if (data.status == TaskStatus.running || data.status == TaskStatus.paused) {
       return LinearProgressIndicator(value: data.progress / 100);
     }
     return Container();
   }
 
   Widget get _taskAction {
-    if (data.status == DownloadTaskStatus.running) return pauseAction;
-    if (data.status == DownloadTaskStatus.paused) return resumeAndCancelAction;
-    if (data.status == DownloadTaskStatus.complete) return deleteAction;
-    if (data.status == DownloadTaskStatus.canceled) return canceledAction;
-    if (data.status == DownloadTaskStatus.failed) return retryAction;
-    if (data.status == DownloadTaskStatus.enqueued) return pendingAction;
+    if (data.status == TaskStatus.running) return pauseAction;
+    if (data.status == TaskStatus.paused) return resumeAndCancelAction;
+    if (data.status == TaskStatus.complete) return deleteAction;
+    if (data.status == TaskStatus.canceled) return canceledAction;
+    if (data.status == TaskStatus.failed) return retryAction;
+    if (data.status == TaskStatus.enqueued) return pendingAction;
     return startAction;
   }
 

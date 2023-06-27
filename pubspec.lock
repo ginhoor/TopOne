@@ -49,6 +49,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  background_downloader:
+    dependency: "direct main"
+    description:
+      name: background_downloader
+      sha256: "3cf9a9defa91c04a7b770976283191b6ae7c83ae77a35ad58ce9411481cb4884"
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.4.1"
   boolean_selector:
     dependency: transitive
     description:
@@ -186,7 +194,7 @@ packages:
     source: hosted
     version: "4.5.0"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: "4a07be6cb69c84d677a6c3096fcf960cc3285a8330b4603e0d463d15d9bd934c"
@@ -422,14 +430,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.0"
-  flutter_downloader:
-    dependency: "direct main"
-    description:
-      name: flutter_downloader
-      sha256: "79e05335471e23593f2e22483d2c909a03f19000293cbc7f39c8c2fd4d5d9c3d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.10.4"
   flutter_easyloading:
     dependency: "direct main"
     description:
@@ -569,11 +569,9 @@ packages:
   gh_tool_package:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "1.1.1"
-      resolved-ref: "03da563b185269f7af86c76a37561f3ab79a6b6f"
-      url: "https://github.com/ginhoor/GHToolPackage.git"
-    source: git
+      path: "/Users/ginhoor/Workspace/Personal/Flutter/gh_tool_package"
+      relative: false
+    source: path
     version: "0.0.1"
   glob:
     dependency: transitive

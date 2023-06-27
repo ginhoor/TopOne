@@ -43,8 +43,5 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-        <!-- <meta-data
-            android:name="vn.hunghd.flutterdownloader.NOTIFICATION_ICON"
-            android:resource="@drawable/ic_stat_flutter" /> -->
     </application>
 </manifest>

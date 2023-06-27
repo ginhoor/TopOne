@@ -4,11 +4,13 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.1.0+2000000005
 
 environment:
-  sdk: ">=2.18.6 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+
+  collection: ^1.17.1
 
   flutter_riverpod: ^2.3.6
   logger: ^1.1.0
@@ -21,42 +23,37 @@ dependencies:
   package_info_plus: ^3.0.2
   device_info_plus: ^8.0.0
 
-  # 多语言
-  # 本地创建自动locale_keys.g.dart文件的命令:
-  # fvm flutter pub run easy_localization:generate --source-dir ./assets/translations/en --output-dir lib/gen -f keys -o locale_keys.gen.dart
-  easy_localization: ^3.0.1
-
   dio: ^5.2.1+1
-  flutter_downloader: ^1.10.4
   connectivity_plus: ^4.0.1
-  # background_downloader: ^7.4.1
+  background_downloader: ^7.4.1
 
   firebase_crashlytics: ^3.0.11
   firebase_analytics: ^10.1.0
   google_mobile_ads: ^2.3.0
-  # google_mobile_ads:
-  #   path: packages/google_mobile_ads
 
   flutter_easyloading: ^3.0.5
-
   video_player: ^2.6.1
   cached_network_image: ^3.2.3
-  # common_utils: ^2.1.0
   image_gallery_saver: ^2.0.2
   url_launcher: ^6.1.10
   in_app_review: ^2.0.6
-  # introduction_screen: ^3.1.4
+  # easy_web_view: ^1.6.0
 
   gh_tool_package:
-    # path: /Users/ginhoor/Workspace/Personal/Flutter/gh_tool_package
-    git:
-      url: https://github.com/ginhoor/GHToolPackage.git
-      ref: 1.1.1
+    path: /Users/ginhoor/Workspace/Personal/Flutter/gh_tool_package
+    # git:
+    #   url: https://github.com/ginhoor/GHToolPackage.git
+    #   ref: 1.1.1
 
   flutter_tool_kit:
     git:
       url: https://github.com/AtlasXV/FlutterToolKit.git
       ref: 1.1.0
+
+  # 多语言
+  # 本地创建自动locale_keys.g.dart文件的命令:
+  # fvm flutter pub run easy_localization:generate --source-dir ./assets/translations/en --output-dir lib/gen -f keys -o locale_keys.gen.dart
+  easy_localization: ^3.0.1
 
 dev_dependencies:
   flutter_test:

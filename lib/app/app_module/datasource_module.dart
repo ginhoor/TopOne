@@ -1,6 +1,7 @@
 import 'package:flutter_tool_kit/interface/app_module_interface.dart';
 import 'package:top_one/data/global_config_datasource.dart';
 import 'package:top_one/data/tt_result_datasource.dart';
+import 'package:top_one/manager/download_task_manager.dart';
 
 class DatasourceModule implements AppModuleInterface {
   static final DatasourceModule instance = DatasourceModule._instance();
@@ -13,6 +14,7 @@ class DatasourceModule implements AppModuleInterface {
 
   @override
   Future<void> loadModule() async {
+    await DownloadTaskManager().setup();
     await TTResultDatasource.setup();
     await GlobalConfigDatasource.setup();
   }

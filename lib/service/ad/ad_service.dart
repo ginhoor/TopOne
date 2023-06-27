@@ -13,8 +13,8 @@ class ADService {
   factory ADService() => instance;
 
   // 仅仅在打包时能被修改
-  // final bool forceEnable = false;
-  final bool forceEnable = true;
+  final bool forceEnable = kDebugMode ? false : true;
+  // final bool forceEnable = true;
 
   bool enable = false;
 

@@ -38,7 +38,10 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
       // 自动读取剪贴板，自动开始下载
       var result = await getClipboardData();
       if (result == null) return;
-      var url = result.text!;
+      var text = result.text;
+      if (text == null) return;
+      var url = text;
+      _inputController.text = text;
       if (!TTResult.verifyURL(url)) return;
       clearClipboard();
       if (widget.handleDownload == null) return;

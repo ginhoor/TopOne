@@ -1,6 +1,5 @@
 import 'package:flutter_tool_kit/interface/app_module_interface.dart';
 import 'package:flutter_tool_kit/manager/file_manager.dart';
-import 'package:top_one/service/download_service.dart';
 
 enum SandboxDirType { document, temp }
 
@@ -29,7 +28,7 @@ class ResourceModule implements AppModuleInterface {
 
   @override
   Future<void> loadModule() async {
-    await DownloadService.instance.setupDirs();
+    // await DownloadTaskManager.instance.prepareSaveDir();
   }
 
   @override

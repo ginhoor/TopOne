@@ -10,7 +10,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:top_one/app/app.dart';
 import 'package:top_one/data/hive_datasource.dart';
 import 'package:top_one/firebase_options.dart';
-import 'package:top_one/service/download_service.dart';
 
 const List<Locale> locales = [
   // ar,de,en,es,fa,fr,hi,id,it,ja,ko,pt-BR,ru,th,tr,vi,zh-Hans,zh-Hant
@@ -37,7 +36,6 @@ const List<Locale> locales = [
 
 Future<void> beforeRun() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await DownloadService.ensureInitialized();
   await SystemChrome.setPreferredOrientations(<DeviceOrientation>[DeviceOrientation.portraitUp]);
   await LoggerModule.instance.setup();
   await EasyLocalization.ensureInitialized();

@@ -1,24 +1,21 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:path/path.dart' as path;
 import 'package:top_one/api/ttd_request.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/app/app_preference.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
-import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
 import 'package:top_one/module/history/history_page+route.dart';
+import 'package:top_one/module/index/download_task_vm.dart';
 import 'package:top_one/module/index/index_page_vm.dart';
 import 'package:top_one/module/index/view/task_info_widget.dart';
 import 'package:top_one/module/settings/settings_page+route.dart';
-import 'package:top_one/module/video/video_preview_page+route.dart';
 import 'package:top_one/service/ad/Inline_ad_service.dart';
 import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/service/analytics/analytics_event.dart';
@@ -38,8 +35,8 @@ class IndexPage extends ConsumerStatefulWidget {
 }
 
 class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateMixin {
+  final downloadTaskProvider = ChangeNotifierProvider<DownloadTaskVM>((ref) => DownloadTaskVM());
   final provider = ChangeNotifierProvider<IndexPageVM>((ref) => IndexPageVM());
-
   InlineADService? adService;
 
   @override
@@ -50,10 +47,8 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
 
   @override
   void initState() {
+    ref.read(downloadTaskProvider).addOB();
     super.initState();
-    var vm = ref.read(provider);
-    vm.bindBackgroundIsolate();
-    vm.registerDownloaderCallback();
   }
 
   @override
@@ -93,7 +88,7 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
         if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.create_task_failed_error.tr());
         return false;
       }
-      var success = await ref.read(provider).createDownloadTask(result);
+      var success = await ref.read(downloadTaskProvider).createDownloadTask(result);
       await EasyLoading.dismiss();
       if (success) {
         ADService().indexINTAdService.show((p0) => null);
@@ -162,11 +157,13 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
           ),
           Consumer(
             builder: (context, ref, child) {
-              var task = ref.watch(provider).currentTask;
-              if (task == null) return Container();
+              var tasks = ref.watch(downloadTaskProvider).items;
+              if (tasks.isEmpty) return Container();
+              var task = tasks.first;
+              print("task.status ${task.status}, task progress ${task.progress}");
               return Padding(
                 padding: EdgeInsets.only(left: dPadding, right: dPadding, bottom: dPadding),
-                child: buildTaskItem(context, task),
+                child: buildTaskItem(context, task, ref, mounted, downloadTaskProvider),
               );
             },
           ),
@@ -180,45 +177,6 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
           ),
         ],
       ),
-    );
-  }
-
-  Widget buildTaskItem(BuildContext context, TaskModel model) {
-    return TaskInfoWidget(
-      data: model,
-      onTap: (_) async {
-        AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
-        var task = ref.read(provider).currentTask;
-        if (task == null) return;
-        var exist = await ref.read(provider).findCompletedTask(task.taskId);
-        if (exist == null) {
-          if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.open_file_error.tr());
-          return;
-        }
-        var metaData = task.metaData;
-        var filePath = path.join(exist.savedDir, exist.filename);
-        AppNavigator.pushRoute(VideoPreviewPageRouteHandler.instance.page(metaData, filePath));
-      },
-      onActionTap: (_) async {
-        var vm = ref.read(provider);
-        var task = vm.currentTask;
-        if (task == null) return;
-        if (task.status == DownloadTaskStatus.undefined) {
-        } else if (task.status == DownloadTaskStatus.running) {
-          await vm.pauseDownloadTask(task.taskId);
-        } else if (task.status == DownloadTaskStatus.paused) {
-          await vm.resumeDownloadTask(task.taskId);
-        } else if (task.status == DownloadTaskStatus.complete || task.status == DownloadTaskStatus.canceled) {
-          await vm.deleteDownloadTask(task.taskId);
-        } else if (task.status == DownloadTaskStatus.failed) {
-          await vm.retryDownloadTask(task.taskId);
-        }
-      },
-      onDelete: (_) async {
-        var task = ref.read(provider).currentTask;
-        if (task == null) return;
-        await ref.read(provider).deleteDownloadTask(task.taskId);
-      },
     );
   }
 }
