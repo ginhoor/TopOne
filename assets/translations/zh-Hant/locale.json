@@ -36,5 +36,7 @@
    "privacy_policy": "隱私政策",
    "contact_us": "聯絡我們",
    "url_invaild_error": "連結無效，請檢查並重試",
-   "create_task_failed_error": "建立任務失敗"
+   "create_task_failed_error": "建立任務失敗",
+   "delete_task_title": "您是否要刪除任務和檔案？",
+   "delete_completed_task_title": "您是否要刪除所有已完成的任務和檔案？"
 }

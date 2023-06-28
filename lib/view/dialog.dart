@@ -10,7 +10,19 @@ class DialogManager {
 
   DialogManager._instance();
 
-  Future<void> showMessageDialog(BuildContext context,
+  Future<void> showTextDialog(BuildContext context,
+      {String? title, String? message, required List<TextButton> actions, bool hasCancel = true}) async {
+    return DialogManager.instance.showWidgetDialog(context,
+        title: Text(
+          title ?? "",
+          style: TextStyle(color: ColorName.blackText, fontSize: 15, fontWeight: FontWeight.w500),
+        ),
+        message: Text(message ?? "",
+            style: TextStyle(color: ColorName.blackText, fontSize: 14, fontWeight: FontWeight.w400)),
+        actions: actions);
+  }
+
+  Future<void> showWidgetDialog(BuildContext context,
       {Widget? title, Widget? message, required List<TextButton> actions, bool hasCancel = true}) async {
     List<TextButton> newActions = [];
     if (hasCancel) {

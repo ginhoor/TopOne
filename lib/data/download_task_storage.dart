@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:background_downloader/background_downloader.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart' as sql;
@@ -124,12 +125,20 @@ class DownloadTaskStorage implements PersistentStorage {
   Future<void> store(String table, String taskId, Map<String, dynamic> jsonMap) async {
     final existingRecord =
         await db?.query(table, columns: [objectColumn], where: '$taskIdColumn = ?', whereArgs: [taskId]);
+    logDebug("[task] [db] store ${table} taskId: ${taskId} exist: ${existingRecord}");
     if (existingRecord != null && existingRecord.isEmpty) {
-      print("[error] table ${table} insert ${taskId}");
-      await db?.insert(table, {taskIdColumn: taskId, objectColumn: jsonEncode(jsonMap)});
+      try {
+        var row = await db?.insert(table, {taskIdColumn: taskId, objectColumn: jsonEncode(jsonMap)});
+        logDebug("[task] [db] insert ${table} taskId: ${taskId} row: ${row}");
+      } catch (e) {
+        var row = await db?.update(taskRecordsTable, {objectColumn: jsonEncode(jsonMap)},
+            where: '$taskIdColumn = ?', whereArgs: [taskId]);
+        logDebug("[task] [db] retry update ${table} taskId: ${taskId} row: ${row}");
+      }
     } else {
-      await db?.update(taskRecordsTable, {objectColumn: jsonEncode(jsonMap)},
+      var row = await db?.update(taskRecordsTable, {objectColumn: jsonEncode(jsonMap)},
           where: '$taskIdColumn = ?', whereArgs: [taskId]);
+      logDebug("[task] [db] insert ${table} taskId: ${taskId} row: ${row}");
     }
   }
 
@@ -144,7 +153,9 @@ class DownloadTaskStorage implements PersistentStorage {
       store(resumeDataTable, resumeData.taskId, resumeData.toJsonMap());
 
   @override
-  Future<void> storeTaskRecord(TaskRecord record) => store(taskRecordsTable, record.taskId, record.toJsonMap());
+  Future<void> storeTaskRecord(TaskRecord record) {
+    return store(taskRecordsTable, record.taskId, record.toJsonMap());
+  }
 
   @override
   Future<(String, int)> get storedDatabaseVersion async {

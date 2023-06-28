@@ -569,9 +569,11 @@ packages:
   gh_tool_package:
     dependency: "direct main"
     description:
-      path: "/Users/ginhoor/Workspace/Personal/Flutter/gh_tool_package"
-      relative: false
-    source: path
+      path: "."
+      ref: "1.1.2"
+      resolved-ref: "282e0033c45f7be3a1d0f6a15a8ae37e73fabab1"
+      url: "https://github.com/ginhoor/GHToolPackage.git"
+    source: git
     version: "0.0.1"
   glob:
     dependency: transitive

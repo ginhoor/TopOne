@@ -36,5 +36,7 @@
    "privacy_policy": "Datenschutzrichtlinie",
    "contact_us": "Kontaktieren Sie uns",
    "url_invaild_error": "Link ist ungültig, bitte überprüfen Sie ihn und versuchen Sie es erneut",
-   "create_task_failed_error": "Aufgabe konnte nicht erstellt werden"
+   "create_task_failed_error": "Aufgabe konnte nicht erstellt werden",
+   "delete_task_title": "Möchten Sie die Aufgabe und die Datei löschen?",
+   "delete_completed_task_title": "Möchten Sie alle abgeschlossenen Aufgaben und Dateien löschen?"
 }

@@ -36,5 +36,7 @@
    "privacy_policy": "นโยบายความเป็นส่วนตัวของเรา",
    "contact_us": "ติดต่อเรา",
    "url_invaild_error": "ลิงก์ไม่ถูกต้อง โปรดตรวจสอบและลองอีกครั้ง",
-   "create_task_failed_error": "สร้างงานล้มเหลว"
+   "create_task_failed_error": "สร้างงานล้มเหลว",
+   "delete_task_title": "คุณต้องการลบงานและไฟล์หรือไม่?",
+   "delete_completed_task_title": "คุณต้องการลบงานที่เสร็จสิ้นทั้งหมดและไฟล์หรือไม่?"
 }

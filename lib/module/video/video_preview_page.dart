@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:gh_tool_package/extension/time.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
 import 'package:top_one/gen/colors.gen.dart';
@@ -16,6 +15,7 @@ import 'package:top_one/service/ad/ad_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/dialog.dart';
+import 'package:top_one/view/hud_easy_loading.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoPreviewPage extends StatefulWidget {
@@ -84,18 +84,18 @@ class _VideoPreviewPageState extends State<VideoPreviewPage> with WidgetsBinding
   }
 
   void handleSaveAction() {
-    DialogManager.instance.showMessageDialog(
+    DialogManager.instance.showTextDialog(
       context,
-      title: Text(LocaleKeys.save_video.tr()),
+      message: LocaleKeys.save_video.tr(),
       actions: [
         TextButton(
           child: Text(LocaleKeys.save.tr()),
           onPressed: () async {
-            await EasyLoading.show(dismissOnTap: false);
+            await HUDEasyLoading.showLoading();
             if (widget.localFilePath != null) {
               await PhotoLibraryManager.instance.saveVideo(widget.localFilePath!);
             }
-            await EasyLoading.dismiss();
+            await HUDEasyLoading.dismiss();
             AppNavigator.popPage();
             StoreManager.instance.showInAppReview();
           },

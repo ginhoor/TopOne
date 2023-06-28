@@ -36,5 +36,7 @@
    "privacy_policy": "Chính sách Bảo mật của chúng tôi",
    "contact_us": "Liên hệ chúng tôi",
    "url_invaild_error": "Liên kết không hợp lệ, vui lòng kiểm tra và thử lại",
-   "create_task_failed_error": "Tạo nhiệm vụ không thành công"
+   "create_task_failed_error": "Tạo nhiệm vụ không thành công",
+   "delete_task_title": "Bạn có muốn xóa công việc và tệp tin không?",
+   "delete_completed_task_title": "Bạn có muốn xóa tất cả các công việc đã hoàn thành và tệp tin không?"
 }

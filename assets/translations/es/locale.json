@@ -36,5 +36,7 @@
    "privacy_policy": "Política de Privacidad",
    "contact_us": "Contáctanos",
    "url_invaild_error": "Enlace no válido, por favor verifica e intenta nuevamente",
-   "create_task_failed_error": "Error al crear la tarea"
+   "create_task_failed_error": "Error al crear la tarea",
+   "delete_task_title": "¿Desea eliminar la tarea y el archivo?",
+   "delete_completed_task_title": "¿Desea eliminar todas las tareas completadas y los archivos?"
 }

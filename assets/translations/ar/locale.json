@@ -36,5 +36,7 @@
    "privacy_policy": "سياسة الخصوصية",
    "contact_us": "اتصل بنا",
    "url_invaild_error": "الرابط غير صالح، يرجى التحقق والمحاولة مرة أخرى",
-   "create_task_failed_error": "فشل إنشاء المهمة"
+   "create_task_failed_error": "فشل إنشاء المهمة",
+   "delete_task_title": "هل ترغب في حذف المهمة والملف؟",
+   "delete_completed_task_title": "هل ترغب في حذف جميع المهام المكتملة والملفات؟"
 }

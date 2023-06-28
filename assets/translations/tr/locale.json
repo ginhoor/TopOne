@@ -36,5 +36,7 @@
    "privacy_policy": "Gizlilik Politikamızı",
    "contact_us": "Bize Ulaşın",
    "url_invaild_error": "Bağlantı geçersiz, lütfen kontrol edip tekrar deneyin",
-   "create_task_failed_error": "Görev oluşturma başarısız oldu"
+   "create_task_failed_error": "Görev oluşturma başarısız oldu",
+   "delete_task_title": "Görevi ve dosyayı silmek istiyor musunuz?",
+   "delete_completed_task_title": "Tamamlanan tüm görevleri ve dosyaları silmek istiyor musunuz?"
 }

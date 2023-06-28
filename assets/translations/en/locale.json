@@ -36,5 +36,7 @@
    "privacy_policy": "Privacy Policy",
    "contact_us": "Contact Us",
    "url_invaild_error": "Link is invaild, please check and try again",
-   "create_task_failed_error": "Create task failed"
+   "create_task_failed_error": "Create task failed",
+   "delete_task_title": "Do you want to delete the task and file?",
+   "delete_completed_task_title": "Do you want to delete all completed tasks and files?"
 }

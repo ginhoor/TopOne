@@ -36,5 +36,7 @@
    "privacy_policy": "Politique de confidentialité",
    "contact_us": "Contactez-nous",
    "url_invaild_error": "Le lien n'est pas valide, veuillez vérifier et réessayer",
-   "create_task_failed_error": "Échec de la création de la tâche"
+   "create_task_failed_error": "Échec de la création de la tâche",
+   "delete_task_title": "Voulez-vous supprimer la tâche et le fichier ?",
+   "delete_completed_task_title": "Voulez-vous supprimer toutes les tâches terminées et les fichiers ?"
 }

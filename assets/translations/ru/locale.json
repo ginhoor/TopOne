@@ -36,5 +36,7 @@
    "privacy_policy": "Политику конфиденциальности",
    "contact_us": "Свяжитесь с нами",
    "url_invaild_error": "Неверная ссылка, проверьте и попробуйте снова",
-   "create_task_failed_error": "Не удалось создать задачу"
+   "create_task_failed_error": "Не удалось создать задачу",
+   "delete_task_title": "Вы хотите удалить задачу и файл?",
+   "delete_completed_task_title": "Вы хотите удалить все завершенные задачи и файлы?"
 }

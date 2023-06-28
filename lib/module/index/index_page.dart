@@ -1,7 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_tool_kit/config/app_preference.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
@@ -23,6 +22,7 @@ import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/app_top_bar.dart';
+import 'package:top_one/view/hud_easy_loading.dart';
 import 'package:top_one/view/toast.dart';
 
 import 'view/clipboard_widget.dart';
@@ -80,16 +80,16 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
       if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.url_invaild_error.tr());
       return false;
     }
-    await EasyLoading.show(status: LocaleKeys.chacking.tr(), dismissOnTap: false);
+    await HUDEasyLoading.showLoading(status: LocaleKeys.chacking.tr());
     try {
       var result = await TDDResultRequest().requestResult(url);
       if (result == null) {
-        await EasyLoading.dismiss();
+        await HUDEasyLoading.dismiss();
         if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.create_task_failed_error.tr());
         return false;
       }
       var success = await ref.read(downloadTaskProvider).createDownloadTask(result);
-      await EasyLoading.dismiss();
+      await HUDEasyLoading.dismiss();
       if (success) {
         ADService().indexINTAdService.show((p0) => null);
         return true;
@@ -99,7 +99,7 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
       }
     } catch (e) {
       logWarn("handleDownloadAction", e);
-      await EasyLoading.dismiss();
+      await HUDEasyLoading.dismiss();
       if (mounted) ToastManager.instance.showTextToast(context, LocaleKeys.create_task_failed_error.tr());
       return false;
     }
@@ -133,9 +133,9 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
       },
       tapDownloadList: () async {
         FocusScope.of(context).unfocus();
-        await EasyLoading.show(dismissOnTap: false);
+        await HUDEasyLoading.showLoading();
         ADService().historyINTAdService.show((p0) async {
-          await EasyLoading.dismiss();
+          await HUDEasyLoading.dismiss();
           AppNavigator.pushRoute(HistoryPageRouteHandler.instance.page());
           AppPreference.instance.remove(AppPreferenceKey.hasNewHistoryDate.value);
         });
@@ -153,14 +153,14 @@ class _IndexPageState extends ConsumerState<IndexPage> with TickerProviderStateM
         children: [
           Padding(
             padding: EdgeInsets.only(top: dPadding_2, left: dPadding, right: dPadding, bottom: dPadding),
-            child: ClipboardWidget(handleDownload: handleDownloadAction),
+            child: ClipboardWidget(downloadByURL: handleDownloadAction),
           ),
           Consumer(
             builder: (context, ref, child) {
               var tasks = ref.watch(downloadTaskProvider).items;
               if (tasks.isEmpty) return Container();
               var task = tasks.first;
-              print("task.status ${task.status}, task progress ${task.progress}");
+              // logDebug("[item] task.id: ${task.taskId}, task.status ${task.status}, task progress ${task.progress}");
               return Padding(
                 padding: EdgeInsets.only(left: dPadding, right: dPadding, bottom: dPadding),
                 child: buildTaskItem(context, task, ref, mounted, downloadTaskProvider),

@@ -10,8 +10,8 @@ import 'package:top_one/theme/button.dart';
 import 'package:top_one/theme/theme_config.dart';
 
 class ClipboardWidget extends StatefulWidget {
-  final Future<bool> Function(String text)? handleDownload;
-  const ClipboardWidget({Key? key, this.handleDownload}) : super(key: key);
+  final Future<bool> Function(String text)? downloadByURL;
+  const ClipboardWidget({Key? key, this.downloadByURL}) : super(key: key);
   @override
   State<ClipboardWidget> createState() => _ClipboardWidgetState();
 }
@@ -34,23 +34,30 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.resumed) {
-      // 自动读取剪贴板，自动开始下载
-      var result = await getClipboardData();
-      if (result == null) return;
-      var text = result.text;
-      if (text == null) return;
-      var url = text;
-      _inputController.text = text;
-      if (!TTResult.verifyURL(url)) return;
-      clearClipboard();
-      if (widget.handleDownload == null) return;
-      widget.handleDownload!(url);
-    }
+    if (state != AppLifecycleState.resumed) return;
+
+    // 自动读取剪贴板，自动开始下载
+    var result = await getClipboardData();
+    if (result == null) return;
+    var text = result.text;
+    if (text == null) return;
+    var url = text;
+    _inputController.text = text;
+    if (!TTResult.verifyURL(url)) return;
+    clearClipboard();
+    if (widget.downloadByURL == null) return;
+    var success = await widget.downloadByURL!(url);
+    if (success) clearTextFiled();
   }
 
-  clearClipboard() {
+  void clearClipboard() {
     Clipboard.setData(const ClipboardData(text: ""));
+  }
+
+  void clearTextFiled() {
+    setState(() {
+      _inputController.text = "";
+    });
   }
 
 //读取剪切板 返回
@@ -72,14 +79,9 @@ class _ClipboardWidgetState extends State<ClipboardWidget> with WidgetsBindingOb
 
   Future<void> handleDownloadAction() async {
     FocusScope.of(context).unfocus();
-    if (widget.handleDownload != null) {
-      var success = await widget.handleDownload!(_inputController.text);
-      if (success) {
-        setState(() {
-          _inputController.text = "";
-        });
-      }
-    }
+    if (widget.downloadByURL == null) return;
+    var success = await widget.downloadByURL!(_inputController.text);
+    if (success) clearTextFiled();
   }
 
   @override

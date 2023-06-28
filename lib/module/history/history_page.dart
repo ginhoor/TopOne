@@ -2,8 +2,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:top_one/app/app_navigator_observer.dart';
+import 'package:top_one/gen/colors.gen.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
 import 'package:top_one/module/history/history_page_vm.dart';
 import 'package:top_one/module/index/download_task_vm.dart';
@@ -13,6 +15,7 @@ import 'package:top_one/service/ad/banner_ad_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
 import 'package:top_one/view/app_nav_bar.dart';
+import 'package:top_one/view/dialog.dart';
 
 class HistoryPage extends ConsumerStatefulWidget {
   const HistoryPage({Key? key}) : super(key: key);
@@ -45,7 +48,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
     super.didChangeDependencies();
   }
 
-  setupAd() async {
+  Future<void> setupAd() async {
     final AnchoredAdaptiveBannerAdSize? size =
         await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(MediaQuery.of(context).size.width.truncate());
     if (size == null) return;
@@ -59,10 +62,36 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: createAppNavbar(Text(LocaleKeys.history.tr())),
+      appBar: createAppNavbar(
+        Text(LocaleKeys.history.tr()),
+        actions: [_deleteAllCompletedTasks],
+      ),
       backgroundColor: AppTheme.background,
       body: WillPopScope(onWillPop: AppNavigator.handleOnWillPop, child: listView),
     );
+  }
+
+  Widget get _deleteAllCompletedTasks {
+    return IconButton(
+        iconSize: 30,
+        icon: Icon(Icons.delete_sweep),
+        color: ColorName.blackText,
+        onPressed: () {
+          DialogManager.instance.showTextDialog(
+            context,
+            title: LocaleKeys.delete_completed_task_title.tr(),
+            actions: [
+              TextButton(
+                child: Text(LocaleKeys.delete.tr()),
+                onPressed: () {
+                  var vm = ref.read(downloadTaskProvider);
+                  AppNavigator.popPage();
+                  vm.deleteAllCompletedDownloadTask();
+                },
+              ),
+            ],
+          );
+        });
   }
 
   Widget get listView {
@@ -84,6 +113,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> with TickerProviderSt
             }
             final itemIndex = adLoaded ? index - 1 : index;
             var item = items[itemIndex];
+            logDebug("[item] task.id: ${item.taskId}, task.status ${item.status}, task progress ${item.progress}");
             return Padding(
               padding: EdgeInsets.only(left: dPadding, right: dPadding, top: dPadding),
               child: buildTaskItem(context, item, ref, mounted, downloadTaskProvider),

@@ -36,5 +36,7 @@
    "privacy_policy": "Política de Privacidade",
    "contact_us": "Contate-nos",
    "url_invaild_error": "Link inválido, verifique e tente novamente",
-   "create_task_failed_error": "Falha ao criar tarefa"
+   "create_task_failed_error": "Falha ao criar tarefa",
+   "delete_task_title": "Deseja excluir a tarefa e o arquivo?",
+   "delete_completed_task_title": "Deseja excluir todas as tarefas concluídas e os arquivos?"
 }

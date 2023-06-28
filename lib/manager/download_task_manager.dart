@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:background_downloader/background_downloader.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_tool_kit/log/logger.dart';
 import 'package:flutter_tool_kit/manager/file_manager.dart';
 import 'package:flutter_tool_kit/service/notification_center.dart';
 import 'package:gh_tool_package/extension/time.dart';
-import 'package:top_one/data/download_task_storage.dart';
 import 'package:top_one/data/tt_result_datasource.dart';
 import 'package:top_one/model/downloads.dart';
 import 'package:top_one/model/tt_result.dart';
@@ -25,8 +25,8 @@ class DownloadTaskManager {
   }
 
   Future<void> setup() async {
-    var downloader = FileDownloader(persistentStorage: DownloadTaskStorage());
-    await downloader.trackTasks();
+    // var downloader = FileDownloader(persistentStorage: DownloadTaskStorage());
+    var downloader = FileDownloader();
     // 状态监控
     downloader.registerCallbacks(taskNotificationTapCallback: myNotificationTapCallback);
     // downloader.configureNotificationForGroup(FileDownloader.defaultGroup,
@@ -63,7 +63,8 @@ class DownloadTaskManager {
     // 例如，以下创建一个侦听器来监控下载的状态和进度更新，然后将任务排队作为示例：
     downloader.updates.listen((update) => notificationManager.sendMessage(update));
     // 为了确保您的应用程序在后台暂停时可能发生的回调或侦听器捕获事件，请在注册回调或侦听器后立即调用
-    await FileDownloader().resumeFromBackground();
+    await downloader.resumeFromBackground();
+    await downloader.trackTasks();
   }
 
   Future<TaskModel?> createDownloadTask(TTResult result) async {
@@ -130,6 +131,7 @@ class DownloadTaskManager {
     AnalyticsService().logEvent(AnalyticsEvent.deleteDownload);
     var exist = await FileDownloader().database.recordForId(taskId);
     if (exist != null) {
+      await cancelDownloadTask(taskId);
       var filepath = await exist.task.filePath();
       await FileManager.delete(filepath);
       await FileDownloader().database.deleteRecordWithId(taskId);
@@ -152,6 +154,8 @@ class DownloadTaskManager {
   Future<DownloadTask?> resumeDownloadTask(String taskId) async {
     AnalyticsService().logEvent(AnalyticsEvent.resumeDownload);
     var task = await getDownloadTask(taskId);
+    var dtask = await FileDownloader().taskForId(taskId);
+    logDebug("task: ${task}, dtask: ${dtask}");
     if (task == null) return null;
     var success = await FileDownloader().resume(task);
     if (!success) return null;

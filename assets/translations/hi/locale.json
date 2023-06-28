@@ -36,5 +36,7 @@
    "privacy_policy": "गोपनीयता नीति",
    "contact_us": "हमसे संपर्क करें",
    "url_invaild_error": "लिंक अमान्य है, कृपया जाँच करें और पुनः प्रयास करें",
-   "create_task_failed_error": "कार्य बनाने में विफल"
+   "create_task_failed_error": "कार्य बनाने में विफल",
+   "delete_task_title": "क्या आप कार्य और फ़ाइल को हटाना चाहते हैं?",
+   "delete_completed_task_title": "क्या आप सभी पूर्ण कार्य और फ़ाइलें हटाना चाहते हैं?"
 }

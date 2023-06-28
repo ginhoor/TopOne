@@ -36,5 +36,7 @@
    "privacy_policy": "Kebijakan Privasi",
    "contact_us": "Hubungi Kami",
    "url_invaild_error": "Tautan tidak valid, harap periksa dan coba lagi",
-   "create_task_failed_error": "Gagal membuat tugas"
+   "create_task_failed_error": "Gagal membuat tugas",
+   "delete_task_title": "Apakah Anda ingin menghapus tugas dan file?",
+   "delete_completed_task_title": "Apakah Anda ingin menghapus semua tugas yang sudah selesai dan file?"
 }

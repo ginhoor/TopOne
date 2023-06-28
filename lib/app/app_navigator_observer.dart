@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tool_kit/log/logger.dart';
+import 'package:top_one/view/hud_easy_loading.dart';
 
 class AppNavigator {
   static final AppNavigator instance = AppNavigator._instance();
@@ -36,7 +36,7 @@ class AppNavigator {
   }
 
   static Future<bool> handleOnWillPop() async {
-    if (EasyLoading.isShow) return false;
+    if (HUDEasyLoading.isShowing) return false;
     if (Platform.isAndroid) {
       popPage();
       // SystemChannels.platform.invokeMethod('SystemNavigator.pop');

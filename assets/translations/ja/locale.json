@@ -36,5 +36,7 @@
    "privacy_policy": "プライバシーポリシー",
    "contact_us": "お問い合わせ",
    "url_invaild_error": "リンクが無効です。確認してもう一度試してください",
-   "create_task_failed_error": "タスクの作成に失敗しました"
+   "create_task_failed_error": "タスクの作成に失敗しました",
+   "delete_task_title": "タスクとファイルを削除しますか？",
+   "delete_completed_task_title": "すべての完了したタスクとファイルを削除しますか？"
 }

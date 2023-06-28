@@ -17,52 +17,75 @@ import 'package:top_one/service/analytics/analytics_event.dart';
 import 'package:top_one/service/analytics/analytics_service.dart';
 import 'package:top_one/theme/app_theme.dart';
 import 'package:top_one/theme/theme_config.dart';
+import 'package:top_one/view/dialog.dart';
 import 'package:top_one/view/toast.dart';
+
+Future<void> _onTap(BuildContext context, TaskModel model, WidgetRef ref, bool mounted,
+    ChangeNotifierProvider<DownloadTaskVM> downloadTaskProvider) async {
+  AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
+  var vm = ref.read(downloadTaskProvider);
+  var tasks = vm.items;
+  if (tasks.isEmpty) return;
+  var task = vm.findTask(model.taskId);
+  if (task == null) return;
+  if (task.status != TaskStatus.complete) return;
+  var record = await DownloadTaskManager.instance.getRecord(task.taskId);
+  if (record == null) return;
+  var filePath = await record.task.filePath();
+  var fileExist = await File(filePath).exists();
+  if (!fileExist && mounted) {
+    ToastManager.instance.showTextToast(context, LocaleKeys.file_not_exist_error.tr());
+    return;
+  }
+  var metaData = task.metaData;
+  AppNavigator.pushRoute(VideoPreviewPageRouteHandler.instance.page(metaData, filePath));
+}
+
+Future<void> _onActionTap(BuildContext context, TaskModel model, WidgetRef ref, bool mounted,
+    ChangeNotifierProvider<DownloadTaskVM> downloadTaskProvider) async {
+  var vm = ref.read(downloadTaskProvider);
+  var tasks = vm.items;
+  if (tasks.isEmpty) return;
+  var task = vm.findTask(model.taskId);
+  if (task == null) return;
+  if (task.status == TaskStatus.running) {
+    await vm.pauseDownloadTask(task.taskId);
+  } else if (task.status == TaskStatus.paused) {
+    await vm.resumeDownloadTask(task.taskId);
+  } else if (task.status == TaskStatus.complete || task.status == TaskStatus.canceled) {
+    await vm.deleteDownloadTask(task.taskId);
+  } else if (task.status == TaskStatus.failed) {
+    await vm.retryDownloadTask(task.taskId);
+  }
+  return;
+}
+
+Future<void> _onDelete(BuildContext context, TaskModel model, WidgetRef ref, bool mounted,
+    ChangeNotifierProvider<DownloadTaskVM> downloadTaskProvider) async {
+  DialogManager.instance.showTextDialog(
+    context,
+    title: LocaleKeys.delete_task_title.tr(),
+    message: model.metaData.title ?? "",
+    actions: [
+      TextButton(
+        child: Text(LocaleKeys.delete.tr()),
+        onPressed: () async {
+          var vm = ref.read(downloadTaskProvider);
+          await vm.deleteDownloadTask(model.taskId);
+          AppNavigator.popPage();
+        },
+      ),
+    ],
+  );
+}
 
 Widget buildTaskItem(BuildContext context, TaskModel model, WidgetRef ref, bool mounted,
     ChangeNotifierProvider<DownloadTaskVM> downloadTaskProvider) {
   return TaskInfoWidget(
     data: model,
-    onTap: (_) async {
-      AnalyticsService().logEvent(AnalyticsEvent.previewVideo);
-      var vm = ref.read(downloadTaskProvider);
-      var tasks = vm.items;
-      if (tasks.isEmpty) return;
-      var task = tasks.first;
-      if (task.status != TaskStatus.complete) return;
-      var record = await DownloadTaskManager.instance.getRecord(task.taskId);
-      if (record == null) return;
-      var filePath = await record.task.filePath();
-      var fileExist = await File(filePath).exists();
-      if (!fileExist && mounted) {
-        ToastManager.instance.showTextToast(context, LocaleKeys.file_not_exist_error.tr());
-        return;
-      }
-      var metaData = task.metaData;
-      AppNavigator.pushRoute(VideoPreviewPageRouteHandler.instance.page(metaData, filePath));
-    },
-    onActionTap: (_) async {
-      var vm = ref.read(downloadTaskProvider);
-      var tasks = vm.items;
-      if (tasks.isEmpty) return;
-      var task = tasks.first;
-      if (task.status == TaskStatus.running) {
-        await vm.pauseDownloadTask(task.taskId);
-      } else if (task.status == TaskStatus.paused) {
-        await vm.resumeDownloadTask(task.taskId);
-      } else if (task.status == TaskStatus.complete || task.status == TaskStatus.canceled) {
-        await vm.deleteDownloadTask(task.taskId);
-      } else if (task.status == TaskStatus.failed) {
-        await vm.retryDownloadTask(task.taskId);
-      }
-    },
-    onDelete: (_) async {
-      var vm = ref.read(downloadTaskProvider);
-      var tasks = vm.items;
-      if (tasks.isEmpty) return;
-      var task = tasks.first;
-      await vm.deleteDownloadTask(task.taskId);
-    },
+    onTap: (_) => _onTap(context, model, ref, mounted, downloadTaskProvider),
+    onActionTap: (_) => _onActionTap(context, model, ref, mounted, downloadTaskProvider),
+    onDelete: (_) => _onDelete(context, model, ref, mounted, downloadTaskProvider),
   );
 }
 
@@ -81,15 +104,14 @@ class TaskInfoWidget extends StatelessWidget {
   final Function(TaskModel)? onActionTap;
   final Function(TaskModel)? onDelete;
 
-  final BoxConstraints actionIconSize = BoxConstraints(maxHeight: 32, maxWidth: 32);
+  final BoxConstraints actionIconSize = BoxConstraints(minHeight: 32, minWidth: 32);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
         if (data.status != TaskStatus.complete) return;
-        if (onTap == null) return;
-        onTap!(data);
+        if (onTap != null) onTap!(data);
       },
       child: _buildBorder(child: _content),
     );
@@ -122,16 +144,13 @@ class TaskInfoWidget extends StatelessWidget {
             Expanded(child: _title),
           ],
         ),
-        SizedBox(
-          height: 32,
-          child: Row(
-            children: [
-              _timeIcon,
-              SizedBox(width: dPadding_2),
-              Expanded(child: _time),
-              _taskAction,
-            ],
-          ),
+        Row(
+          children: [
+            _timeIcon,
+            SizedBox(width: dPadding_2),
+            Expanded(child: _time),
+            _taskAction,
+          ],
         ),
         _progressIndicator
       ],
@@ -193,12 +212,12 @@ class TaskInfoWidget extends StatelessWidget {
     if (data.status == TaskStatus.running || data.status == TaskStatus.paused) {
       return LinearProgressIndicator(value: data.progress / 100);
     }
-    return Container();
+    return Container(height: 4);
   }
 
   Widget get _taskAction {
     if (data.status == TaskStatus.running) return pauseAction;
-    if (data.status == TaskStatus.paused) return resumeAndCancelAction;
+    if (data.status == TaskStatus.paused) return resumeAndDeleteAction;
     if (data.status == TaskStatus.complete) return deleteAction;
     if (data.status == TaskStatus.canceled) return canceledAction;
     if (data.status == TaskStatus.failed) return retryAction;
@@ -260,32 +279,35 @@ class TaskInfoWidget extends StatelessWidget {
         Text(LocaleKeys.cancel.tr(), style: TextStyle(color: ColorName.redAction)),
         if (onActionTap != null)
           IconButton(
+            alignment: Alignment.center,
             onPressed: () => onActionTap!(data),
             constraints: actionIconSize,
-            icon: const Icon(Icons.cancel),
+            icon: Icon(Icons.cancel, size: 24),
             tooltip: LocaleKeys.cancel.tr(),
           )
       ],
     );
   }
 
-  Widget get resumeAndCancelAction {
+  Widget get resumeAndDeleteAction {
     return Row(
       children: [
         Text('${data.progress}%'),
-        if (onActionTap != null)
-          IconButton(
-            onPressed: () => onActionTap!(data),
-            constraints: actionIconSize,
-            icon: Icon(Icons.play_arrow, color: ColorName.mainThemeAction),
-            tooltip: LocaleKeys.resume.tr(),
-          ),
+        SizedBox(
+          width: dPadding_2,
+        ),
         if (onDelete != null)
           IconButton(
             onPressed: () => onDelete!(data),
             constraints: actionIconSize,
             icon: Icon(Icons.delete),
             tooltip: LocaleKeys.delete.tr(),
+          ),
+        if (onActionTap != null)
+          IconButton(
+            constraints: actionIconSize,
+            icon: Icon(Icons.play_arrow, color: ColorName.mainThemeAction),
+            onPressed: () => onActionTap!(data),
           ),
       ],
     );
@@ -295,6 +317,9 @@ class TaskInfoWidget extends StatelessWidget {
     return Row(
       children: [
         Text('${data.progress}%'),
+        SizedBox(
+          width: dPadding_2,
+        ),
         if (onActionTap != null)
           IconButton(
             onPressed: () => onActionTap!(data),

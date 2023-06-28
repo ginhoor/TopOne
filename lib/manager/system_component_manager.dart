@@ -1,9 +1,9 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_tool_kit/manager/locale_manager.dart';
 import 'package:top_one/app/app_module/app_info_module.dart';
 import 'package:top_one/gen/locale_keys.gen.dart';
+import 'package:top_one/view/hud_easy_loading.dart';
 import 'package:top_one/view/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,7 +20,7 @@ class SystemComponentManager {
   }
 
   Future<bool> sendFeedbackEmail(BuildContext context) async {
-    EasyLoading.show(dismissOnTap: false);
+    await HUDEasyLoading.showLoading();
     final String email = 'gfr.top.one@gmail.com';
     final String subject = 'Feedback';
     final String body = 'app:${AppInfoModule.instance.sysInfo?.packageName}\n'
@@ -40,11 +40,11 @@ class SystemComponentManager {
 
     if (await canLaunchUrl(emailLaunchUri)) {
       var result = launchUrl(emailLaunchUri);
-      EasyLoading.dismiss();
+      await HUDEasyLoading.dismiss();
       return result;
     }
     ToastManager.instance.showTextToast(context, LocaleKeys.email_settings_is_wrong_title.tr());
-    EasyLoading.dismiss();
+    await HUDEasyLoading.dismiss();
     return false;
   }
 }

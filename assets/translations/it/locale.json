@@ -36,5 +36,7 @@
    "privacy_policy": "Politica sulla Privacy",
    "contact_us": "Contattaci",
    "url_invaild_error": "Il link non è valido, controlla e riprova",
-   "create_task_failed_error": "Creazione del compito non riuscita"
+   "create_task_failed_error": "Creazione del compito non riuscita",
+   "delete_task_title": "Do you want to delete the task and file?",
+   "delete_completed_task_title": "Do you want to delete all completed tasks and files?"
 }

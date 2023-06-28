@@ -36,5 +36,7 @@
    "privacy_policy": "隐私政策",
    "contact_us": "联系我们",
    "url_invaild_error": "链接无效，请检查并重试",
-   "create_task_failed_error": "创建任务失败"
+   "create_task_failed_error": "创建任务失败",
+   "delete_task_title": "您是否要删除任务和文件？",
+   "delete_completed_task_title": "您是否要删除所有已完成的任务和文件？"
 }

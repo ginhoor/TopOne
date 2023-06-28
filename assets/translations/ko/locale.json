@@ -36,5 +36,7 @@
    "privacy_policy": "개인정보 처리 방침",
    "contact_us": "문의하기",
    "url_invaild_error": "유효하지 않은 링크입니다. 확인하고 다시 시도해주세요",
-   "create_task_failed_error": "작업 생성에 실패했습니다"
+   "create_task_failed_error": "작업 생성에 실패했습니다",
+   "delete_task_title": "작업과 파일을 삭제하시겠습니까?",
+   "delete_completed_task_title": "완료된 모든 작업과 파일을 삭제하시겠습니까?"
 }

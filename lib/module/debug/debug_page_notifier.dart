@@ -42,7 +42,7 @@ class DebugPageNotifier extends ChangeNotifier {
         ipTextCtrl.text = currentIP ?? "";
         portTextCtrl.text = currentPort ?? "";
 
-        DialogManager.instance.showMessageDialog(
+        DialogManager.instance.showWidgetDialog(
           context,
           title: Text("当前抓包启用状态：$enable",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.black)),
@@ -86,7 +86,7 @@ class DebugPageNotifier extends ChangeNotifier {
     return DebugItem(
       title: "重置记录",
       action: (BuildContext context) async {
-        DialogManager.instance.showMessageDialog(
+        DialogManager.instance.showWidgetDialog(
           context,
           title: Text("重置记录", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400, color: Colors.black)),
           actions: [

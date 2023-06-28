@@ -39,5 +39,7 @@ abstract class  LocaleKeys {
   static const contact_us = 'contact_us';
   static const url_invaild_error = 'url_invaild_error';
   static const create_task_failed_error = 'create_task_failed_error';
+  static const delete_task_title = 'delete_task_title';
+  static const delete_completed_task_title = 'delete_completed_task_title';
 
 }
